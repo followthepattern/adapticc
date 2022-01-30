@@ -13,7 +13,7 @@ function App() {
               path={route.path}
               key={route.path}
               element={<route.Layout>
-                <div>Hello</div>
+                <route.Page/>
               </route.Layout>}
             />
           );
