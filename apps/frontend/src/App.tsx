@@ -1,11 +1,25 @@
-import React from 'react';
-import './App.css';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import "./App.css";
+
+import { mainRoutes } from "./routes/main";
 
 function App() {
   return (
-    <div className="App">
-      Adapticc
-    </div>
+    <BrowserRouter>
+      <Routes>
+        {mainRoutes.map((route) => {
+          return (
+            <Route
+              path={route.path}
+              key={route.path}
+              element={<route.Layout>
+                <div>Hello</div>
+              </route.Layout>}
+            />
+          );
+        })}
+      </Routes>
+    </BrowserRouter>
   );
 }
 
