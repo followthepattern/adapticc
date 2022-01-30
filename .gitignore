@@ -1,0 +1,3 @@
+apps/backend/adapticc
+config.yaml
+db/dump/*
