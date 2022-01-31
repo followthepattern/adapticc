@@ -35,7 +35,7 @@ services:
     image: node:16.13.2-buster-slim
     hostname: adapticc_frontend_app
     container_name: adapticc_frontend_app
-    command: bash -c "npm install && npm start"
+    command: bash -c "npm run start"
     environment:
       - NODE_ENV=dev
     expose:

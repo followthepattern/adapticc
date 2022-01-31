@@ -1,6 +1,6 @@
 import PublicLayout from "../layouts/PublicLayout";
 import Dashboard from "../pages/Dashboard";
-import Users from "../pages/Users";
+import Users from "../pages/Users/Users";
 
 export interface Route {
   path: string;
