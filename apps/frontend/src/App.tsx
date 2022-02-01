@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./App.css";
 
-import { mainRoutes } from "./routes/main";
+import { mainRoutes } from "./routes/main_routes";
 
 function App() {
   return (
