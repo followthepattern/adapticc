@@ -1,7 +1,7 @@
 import AccountLayout from "../layouts/AccountLayout/AccountLayout";
 import PublicLayout from "../layouts/PublicLayout";
-import Dashboard from "../pages/Dashboard";
-import Users from "../pages/Users/Users";
+import Dashboard from "../modules/dashboard/views/Dashboard";
+import Users from "../modules/user/views/UserListPage";
 
 export interface Route {
   path: string;
@@ -18,7 +18,7 @@ export const mainRoutes: Route[] = [
   {
     path: "/",
     exact: true,
-    public: true,
+    public: false,
     Page: Dashboard,
     title: "Dashboard",
     icon: "D",
@@ -27,7 +27,7 @@ export const mainRoutes: Route[] = [
   {
     path: "/users",
     exact: true,
-    public: true,
+    public: false,
     title: "Users",
     icon: "U",
     Page: Users,

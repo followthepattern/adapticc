@@ -32,7 +32,7 @@ func ResolverDependencyConstructor(cont container.IContainer) (interface{}, erro
 }
 
 func resolveUserController(cont container.IContainer) (*controllers.UserController, error) {
-	dependency := (*controllers.UserController)(nil)
+	var dependency *controllers.UserController
 	key := utils.GetKey(dependency)
 	obj, err := cont.Resolve(key)
 
