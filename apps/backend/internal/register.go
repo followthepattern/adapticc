@@ -10,7 +10,8 @@ import (
 )
 
 func RegisterDependencies(cont container.IContainer) (err error) {
-	err = cont.Register(utils.GetKey((*repositories.User)(nil)), repositories.UserDependencyConstructor)
+	var userRepository *repositories.User
+	err = cont.Register(utils.GetKey(userRepository), repositories.UserDependencyConstructor)
 	if err != nil {
 		return err
 	}
@@ -20,17 +21,20 @@ func RegisterDependencies(cont container.IContainer) (err error) {
 		return err
 	}
 
-	err = cont.Register(utils.GetKey((*services.User)(nil)), services.UserDependencyConstructor)
+	var userService *services.User
+	err = cont.Register(utils.GetKey(userService), services.UserDependencyConstructor)
 	if err != nil {
 		return err
 	}
 
-	err = cont.Register(utils.GetKey((*controllers.UserController)(nil)), controllers.UserDependencyConstructor)
+	var userController *controllers.UserController
+	err = cont.Register(utils.GetKey(userController), controllers.UserDependencyConstructor)
 	if err != nil {
 		return err
 	}
 
-	err = cont.Register(utils.GetKey((*resolvers.Resolver)(nil)), resolvers.ResolverDependencyConstructor)
+	var resolver *resolvers.Resolver
+	err = cont.Register(utils.GetKey(resolver), resolvers.ResolverDependencyConstructor)
 	if err != nil {
 		return err
 	}
@@ -39,17 +43,20 @@ func RegisterDependencies(cont container.IContainer) (err error) {
 }
 
 func registerAuthentication(cont container.IContainer) (err error) {
-	err = cont.Register(utils.GetKey((*repositories.UserToken)(nil)), repositories.UserTokenDependencyConstructor)
+	var userTokenRepository *repositories.UserToken
+	err = cont.Register(utils.GetKey(userTokenRepository), repositories.UserTokenDependencyConstructor)
 	if err != nil {
 		return err
 	}
 
-	err = cont.Register(utils.GetKey((*services.Auth)(nil)), services.AuthDependencyConstructor)
+	var authServices *services.Auth
+	err = cont.Register(utils.GetKey(authServices), services.AuthDependencyConstructor)
 	if err != nil {
 		return err
 	}
 
-	err = cont.Register(utils.GetKey((*controllers.AuthController)(nil)), controllers.AuthDependencyConstructor)
+	var authController *controllers.AuthController
+	err = cont.Register(utils.GetKey(authController), controllers.AuthDependencyConstructor)
 	if err != nil {
 		return err
 	}

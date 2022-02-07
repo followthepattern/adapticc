@@ -18,20 +18,19 @@ func (User) tableName() string {
 	return "users"
 }
 
-func ResolveUser(cont container.IContainer) (*User, error) {
-	dependency := (*User)(nil)
+func ResolveUser(cont container.IContainer) (dependency *User, err error) {
 	key := utils.GetKey(dependency)
 	obj, err := cont.Resolve(key)
-
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("can't resolve %T, error: %s", dependency, err.Error())
 	}
 
-	if result, ok := obj.(*User); ok {
-		return result, nil
+	dependency, ok := obj.(*User)
+	if !ok {
+		return nil, fmt.Errorf("%T can't be resolved to %T", obj, dependency)
 	}
 
-	return nil, fmt.Errorf("can't resolve %T", dependency)
+	return dependency, nil
 }
 
 func UserDependencyConstructor(cont container.IContainer) (interface{}, error) {

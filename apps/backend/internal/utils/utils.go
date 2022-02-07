@@ -16,7 +16,8 @@ type ContextKey struct {
 }
 
 func GetKey(i interface{}) string {
-	return fmt.Sprintf("%T", i)
+	ttype := GetUnderlyingTypeRecursive(reflect.TypeOf(i))
+	return fmt.Sprintf("%s.%s", ttype.PkgPath(), ttype.Name())
 }
 
 func GetUnderlyingPtrValue(vvalue reflect.Value) interface{} {
@@ -27,6 +28,13 @@ func GetUnderlyingPtrValue(vvalue reflect.Value) interface{} {
 		return vvalue.Elem().Interface()
 	}
 	return vvalue.Interface()
+}
+
+func GetUnderlyingTypeRecursive(ttype reflect.Type) reflect.Type {
+	if ttype.Kind() == reflect.Ptr || ttype.Kind() == reflect.Interface {
+		return GetUnderlyingTypeRecursive(ttype.Elem())
+	}
+	return ttype
 }
 
 func GenerateHash(bytes []byte) []byte {
