@@ -2,10 +2,9 @@ package middlewares
 
 import (
 	"backend/internal/container"
-	"backend/internal/models"
 	"backend/internal/services"
 	"backend/internal/utils"
-	"context"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -25,24 +24,29 @@ type Auth struct {
 }
 
 func NewAuth(cont container.IContainer) Auth {
-	return Auth{logger: cont.GetLogger()}
+	result := Auth{
+		logger: cont.GetLogger(),
+	}
+	cont.Resolve2(&result.us)
+	return result
 }
 
 func (a Auth) Authenticate(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get(AuthorizationHeader)
 		if authHeader != "" {
+			fmt.Println(authHeader)
 			tokenHeader := strings.Split(authHeader, BearerPrefix)
 			if len(tokenHeader) == 2 {
-				token := tokenHeader[1]
-				user, err := a.us.GetByToken(token)
-				if err != nil {
-					a.logger.Error(err.Error())
-				}
-				if user != nil && user.ID != nil {
-					ctx := context.WithValue(r.Context(), CtxUserKey, models.User{})
-					r = r.WithContext(ctx)
-				}
+				// token := strings.Trim(tokenHeader[1], " ")
+				// user, err := a.us.GetByToken(token)
+				// if err != nil {
+				// 	a.logger.Error(err.Error())
+				// }
+				// if user != nil && user.ID != nil {
+				// 	ctx := context.WithValue(r.Context(), CtxUserKey, models.User{})
+				// 	r = r.WithContext(ctx)
+				// }
 			}
 		}
 		next.ServeHTTP(w, r)

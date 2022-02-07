@@ -86,9 +86,9 @@ func (repo User) GetByToken(token string) (*models.User, error) {
 
 	query := repo.db.From(repo.tableName()).
 		LeftJoin(
-			goqu.T("user_token"),
+			goqu.T("user_tokens"),
 			goqu.On(goqu.Ex{
-				repo.tableName() + ".id": goqu.I("user_token.user_id"),
+				repo.tableName() + ".id": goqu.I("user_tokens.user_id"),
 			}),
 		).
 		Where(goqu.Ex{"token": token})

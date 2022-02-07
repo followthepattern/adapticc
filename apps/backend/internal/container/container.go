@@ -2,9 +2,11 @@ package container
 
 import (
 	"backend/internal/config"
+	"backend/internal/utils"
 	"context"
 	"database/sql"
 	"fmt"
+	"reflect"
 
 	"go.uber.org/zap"
 )
@@ -12,6 +14,7 @@ import (
 type IContainer interface {
 	Register(key string, constructor func(IContainer) (interface{}, error)) error
 	Resolve(string) (interface{}, error)
+	Resolve2(target interface{}) error
 	GetContext() *context.Context
 	GetConfig() *config.Cfg
 	GetDB() *sql.DB
@@ -54,6 +57,22 @@ func (c Container) Resolve(key string) (interface{}, error) {
 		return dependeny, nil
 	}
 	return nil, fmt.Errorf("there is no registered object for this key: %v", key)
+}
+
+func (c Container) Resolve2(target interface{}) error {
+	rv := reflect.ValueOf(target)
+
+	if rv.Kind() != reflect.Ptr {
+		return fmt.Errorf("target is not a pointer")
+	}
+	key := utils.GetKey(target)
+	dependency, ok := c.dependencies[key]
+	if !ok {
+		return fmt.Errorf("there is no registered object for this key: %v", key)
+	}
+	target = &dependency
+
+	return nil
 }
 
 func (c Container) GetContext() *context.Context {

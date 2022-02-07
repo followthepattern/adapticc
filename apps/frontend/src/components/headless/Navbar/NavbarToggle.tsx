@@ -1,16 +1,16 @@
 export interface NavbarToggleProperties {
-  children?: string,
   className?: string,
   onClick?: () => void,
+  icon: JSX.Element
 }
 
 const NavbarToggle = ({
-  children,
   className,
   onClick,
+  icon
 }: NavbarToggleProperties) => {
   return (
-    <div className={className} onClick={onClick}>{children}</div>
+    <div className={className} onClick={onClick}>{icon}</div>
   );
 };
 

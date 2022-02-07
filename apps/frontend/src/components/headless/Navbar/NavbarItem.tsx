@@ -1,3 +1,6 @@
+import { Icon } from "./NavbarItemIcon";
+import { Title } from "./NavbarItemTitle";
+
 interface NavbarItemProperties {
     path: string
     className: string
@@ -9,5 +12,8 @@ const NavbarItem = (props: NavbarItemProperties) => {
         <a href={props.path} className={props.className}>{props.children}</a>
     )
 }
+
+NavbarItem.Icon = Icon
+NavbarItem.Title = Title
 
 export default NavbarItem;

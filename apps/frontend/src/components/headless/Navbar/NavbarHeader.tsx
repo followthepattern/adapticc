@@ -1,17 +1,15 @@
-interface NavbarHeaderProperties {
+interface HeaderProperties {
   children?: any;
   className?: string;
 }
 
-const NavbarHeader = ({
+export const Header = ({
   children,
   className,
-}: NavbarHeaderProperties) => {
+}: HeaderProperties) => {
   return (
     <div className={className}>
         {children}
     </div>
   );
 };
-
-export default NavbarHeader;
