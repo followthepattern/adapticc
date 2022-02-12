@@ -2,14 +2,24 @@ import Navbar from "./components/Navbar";
 import Header from "./components/Header";
 
 import { mainRoutes } from "../../routes/main_routes";
+import { useNavbarStore } from "../../utils/store";
+import classNames from "classnames";
 
 const AccountLayout = (props: any) => {
+  const {navbarExpanded, closeNavbar} = useNavbarStore();
+
+  const handleCloseNavbar = () => {
+    if (navbarExpanded) {
+      closeNavbar();
+    }
+  }
+
   return (
-    <div className="flex">
-      <div className="border-r">{Navbar(mainRoutes)}</div>
-      <div className="h-[20px]">
-        <Header className="w-full" />
-        <div className="w-full">{props.children}</div>
+    <div className="flex h-screen w-screen" onClick={handleCloseNavbar}>
+      <div className={classNames("md:static bg-white xs:absolute h-full border-r", {"hidden": !navbarExpanded} )}>{Navbar(mainRoutes)}</div>
+      <div className="flex-col w-full">
+        <Header className="w-full h-10"/>
+        <div className="w-full container">{props.children}</div>
       </div>
     </div>
   );

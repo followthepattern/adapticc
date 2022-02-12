@@ -2,7 +2,7 @@ import NavbarItem from "../../../components/headless/Navbar/NavbarItem";
 import HeadlessNavbar from "../../../components/headless/Navbar/Navbar";
 import classNames from "classnames";
 import { useNavbarStore } from "../../../utils/store";
-import { UserCircleIcon } from '@heroicons/react/outline'
+import { UserCircleIcon } from "@heroicons/react/outline";
 
 export interface Route {
   path: string;
@@ -12,16 +12,10 @@ export interface Route {
 }
 
 const Navbar = (items: Route[]) => {
-  const navbarExpanded = useNavbarStore((state) => state.navbarExpanded);
-
   return (
-    <HeadlessNavbar className={classNames("flex-col", navbarExpanded ? "w-[250px]" : "hidden")}>
-      <HeadlessNavbar.Header
-        className={classNames({"h-[50px]": navbarExpanded })}
-      >
-        <div className="flex h-[50px] w-full justify-center items-center">
-          Navbar title
-        </div>
+    <HeadlessNavbar className="h-full flex-col">
+      <HeadlessNavbar.Header className="flex h-[50px] w-full justify-center items-center">
+        <div>Navbar title</div>
       </HeadlessNavbar.Header>
       {items.map((item) => (
         <NavbarItem
@@ -40,7 +34,7 @@ const Navbar = (items: Route[]) => {
       <HeadlessNavbar.AccountProfile
         className="flex absolute bottom-0 w-full"
         accountProfilePath="/users"
-        icon={<UserCircleIcon className="h-5 w-5"/>}
+        icon={<UserCircleIcon className="h-5 w-5" />}
       >
         View Profile
       </HeadlessNavbar.AccountProfile>
