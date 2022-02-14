@@ -3,6 +3,7 @@ import { devtools, persist, StoreApiWithPersist } from "zustand/middleware";
 
 const storeNames = {
   navbar: "navbar-store",
+  userStore: "user-store",
 };
 
 interface NavbarExpandedSate {
@@ -10,7 +11,7 @@ interface NavbarExpandedSate {
   toggleNavbarExpanded: () => void;
   closeNavbar: () => void;
   openNavbar: () => void;
-};
+}
 
 export const useNavbarStore = create<
   NavbarExpandedSate,
@@ -18,15 +19,40 @@ export const useNavbarStore = create<
   GetState<NavbarExpandedSate>,
   StoreApiWithPersist<NavbarExpandedSate>
 >(
-    persist(devtools(
-        (set) => ({
-            navbarExpanded: true,
-            toggleNavbarExpanded: () => set((state) => ({navbarExpanded: !state.navbarExpanded})),
-            closeNavbar: () => set(() => ({navbarExpanded: false})),
-            openNavbar: () => set(() => ({navbarExpanded: true})),
-        })
-    ),{
-        name: storeNames.navbar,
-        getStorage: () => localStorage
-    })
-)
+  persist(
+    devtools((set) => ({
+      navbarExpanded: true,
+      toggleNavbarExpanded: () =>
+        set((state) => ({ navbarExpanded: !state.navbarExpanded })),
+      closeNavbar: () => set(() => ({ navbarExpanded: false })),
+      openNavbar: () => set(() => ({ navbarExpanded: true })),
+    })),
+    {
+      name: storeNames.navbar,
+      getStorage: () => localStorage,
+    }
+  )
+);
+
+interface UserState {
+  jwt: string | null;
+  setJwt: (jwt: string) => void;
+}
+
+export const useUserStore = create<
+  UserState,
+  SetState<UserState>,
+  GetState<UserState>,
+  StoreApiWithPersist<UserState>
+>(
+  persist(
+    devtools((set) => ({
+      jwt: null,
+      setJwt: (newJwt: string) => set(() => ({jwt: newJwt}))
+    })),
+    {
+      name: storeNames.userStore,
+      getStorage: () => localStorage,
+    }
+  )
+);

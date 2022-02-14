@@ -1,7 +1,5 @@
 import NavbarItem from "../../../components/headless/Navbar/NavbarItem";
 import HeadlessNavbar from "../../../components/headless/Navbar/Navbar";
-import classNames from "classnames";
-import { useNavbarStore } from "../../../utils/store";
 import { UserCircleIcon } from "@heroicons/react/outline";
 
 export interface Route {
