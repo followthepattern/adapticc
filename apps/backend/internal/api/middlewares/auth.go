@@ -6,6 +6,7 @@ import (
 	"backend/internal/services"
 	"backend/internal/utils"
 	"context"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -47,6 +48,8 @@ func (a Auth) Authenticate(next http.Handler) http.Handler {
 			if len(tokenHeader) == 2 && a.us != nil {
 				token := strings.Trim(tokenHeader[1], " ")
 				user, err := a.us.GetByToken(token)
+
+				fmt.Println(token)
 				if err != nil {
 					a.logger.Error(err.Error())
 				}

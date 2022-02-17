@@ -1,7 +1,7 @@
 import Navbar from "./components/Navbar";
 import Header from "./components/Header";
 
-import { mainRoutes } from "../../routes/main_routes";
+import { mainRoutes } from "../../router/main_routes";
 import { useNavbarStore } from "../../utils/store";
 import classNames from "classnames";
 

@@ -1,4 +1,3 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 import {
   ApolloClient,
   ApolloProvider,
@@ -6,26 +5,28 @@ import {
   createHttpLink,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-import "./App.css";
 
-import { mainRoutes } from "./routes/main_routes";
+import Router from "./router/Router";
+import { GetTokenFromStorage } from "./utils/store";
 
 function App() {
+  const jwt = GetTokenFromStorage();
+  console.info("jwt:", jwt);
+
   const httpLink = createHttpLink({
     uri: "http://localhost:3011/graphql",
   });
 
   const authLink = setContext((_, { headers }) => {
-    // get the authentication token from local storage if it exists
-    // const token = localStorage.getItem("token");
-    // return the headers to the context so httpLink can read them
     return {
       headers: {
         ...headers,
-        Authorization: `Bearer test3`,
+        Authorization: jwt ? `Bearer ${jwt}` : "",
       },
     };
   });
+
+  console.debug("APP RENDER!");
 
   const client = new ApolloClient({
     link: authLink.concat(httpLink),
@@ -34,23 +35,7 @@ function App() {
 
   return (
     <ApolloProvider client={client}>
-      <BrowserRouter>
-        <Routes>
-          {mainRoutes.map((route) => {
-            return (
-              <Route
-                path={route.path}
-                key={route.path}
-                element={
-                  <route.Layout>
-                    <route.Page />
-                  </route.Layout>
-                }
-              />
-            );
-          })}
-        </Routes>
-      </BrowserRouter>
+      <Router />
     </ApolloProvider>
   );
 }

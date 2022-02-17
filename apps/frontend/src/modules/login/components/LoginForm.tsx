@@ -12,7 +12,7 @@ type FormValues = {
 
 const LoginForm = () => {
   const { register, handleSubmit } = useForm<FormValues>();
-  const setJwt = useUserStore(state => state.setJwt);
+  const setToken = useUserStore(state => state.setToken);
 
   const [executeLogin, { data, loading, error }] = useMutation(
     gql(login)
@@ -74,7 +74,7 @@ const LoginForm = () => {
     );
   }
 
-  setJwt(data.authentication.login.jwt)
+  setToken(data.authentication.login.jwt)
 
   return <div>{JSON.stringify(data)}</div>;
 };

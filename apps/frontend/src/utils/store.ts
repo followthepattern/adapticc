@@ -35,8 +35,8 @@ export const useNavbarStore = create<
 );
 
 interface UserState {
-  jwt: string | null;
-  setJwt: (jwt: string) => void;
+  token: string | null;
+  setToken: (jwt: string) => void;
 }
 
 export const useUserStore = create<
@@ -47,8 +47,8 @@ export const useUserStore = create<
 >(
   persist(
     devtools((set) => ({
-      jwt: null,
-      setJwt: (newJwt: string) => set(() => ({jwt: newJwt}))
+      token: null,
+      setToken: (newToken: string) => set(() => ({token: newToken}))
     })),
     {
       name: storeNames.userStore,
@@ -56,3 +56,24 @@ export const useUserStore = create<
     }
   )
 );
+
+interface StorageWrapper<T> {
+  state: T;
+  version: number;
+}
+
+export function GetTokenFromStorage(): string | null{
+  let userSateStr = localStorage.getItem(storeNames.userStore);
+
+  if (!userSateStr) {
+    return null;
+  }
+
+  let userState = JSON.parse(userSateStr) as StorageWrapper<UserState>;
+
+  if (!userState) {
+    return null;
+  }
+
+  return userState.state.token;
+}
