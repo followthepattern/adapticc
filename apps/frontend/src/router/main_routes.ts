@@ -41,7 +41,7 @@ export const mainRoutes: Route[] = [
   {
     path: "/login",
     exact: true,
-    public: false,
+    public: true,
     title: "Login",
     icon: "U",
     Page: Login,

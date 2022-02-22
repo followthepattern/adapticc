@@ -1,44 +1,25 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import UserContext from "../contexts/UserContext";
+import WithAuthorization from "../authorization/components/WithAuthorization";
 
-import { mainRoutes, Route as MainRoute } from "./main_routes";
-
-function GetPublicPage(route: MainRoute) {
-  return (
-    <route.Layout>
-      <route.Page />
-    </route.Layout>
-  );
-}
-
-function GetAccountPage(route: MainRoute) {
-  return (
-    <route.Layout>
-      <UserContext.Provider value={{
-          isAuthenticated: true,
-      }}>
-          <route.Page/>
-      </UserContext.Provider>
-    </route.Layout>
-  );
-}
+import { mainRoutes } from "./main_routes";
 
 function Router() {
   return (
-    <BrowserRouter>
-      <Routes>
-        {mainRoutes.map((route) => {
-          let element;
-          if (route.public) {
-            element = GetPublicPage(route);
-          } else {
-            element = GetAccountPage(route);
-          }
+    <Routes>
+      {mainRoutes.map((route) => {
+        const getElement = () => (
+          <route.Layout>
+            <route.Page />
+          </route.Layout>
+        );
 
-          return <Route path={route.path} key={route.path} element={element} />;
-        })}
-      </Routes>
-    </BrowserRouter>
+        const element = route.public
+          ? getElement()
+          : WithAuthorization(getElement);
+
+        return <Route path={route.path} key={route.path} element={element} />;
+      })}
+    </Routes>
   );
 }
 

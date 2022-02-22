@@ -5,6 +5,7 @@ import {
   createHttpLink,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+import { BrowserRouter } from "react-router-dom";
 
 import Router from "./router/Router";
 import { GetTokenFromStorage } from "./utils/store";
@@ -35,7 +36,9 @@ function App() {
 
   return (
     <ApolloProvider client={client}>
-      <Router />
+      <BrowserRouter>
+        <Router />
+      </BrowserRouter>
     </ApolloProvider>
   );
 }
