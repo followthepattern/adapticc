@@ -42,6 +42,7 @@ type Mutation {
 
 type UserQuery {
 	single(id: String!): User
+	profile: User
 }
 
 type AuthMutation {

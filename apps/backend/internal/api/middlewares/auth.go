@@ -6,7 +6,6 @@ import (
 	"backend/internal/services"
 	"backend/internal/utils"
 	"context"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -42,6 +41,7 @@ func NewAuth(cont container.IContainer) Auth {
 
 func (a Auth) Authenticate(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
+		userContext := &models.AnnonymusUser
 		authHeader := r.Header.Get(AuthorizationHeader)
 		if authHeader != "" {
 			tokenHeader := strings.Split(authHeader, BearerPrefix)
@@ -49,16 +49,16 @@ func (a Auth) Authenticate(next http.Handler) http.Handler {
 				token := strings.Trim(tokenHeader[1], " ")
 				user, err := a.us.GetByToken(token)
 
-				fmt.Println(token)
 				if err != nil {
 					a.logger.Error(err.Error())
 				}
 				if user != nil && user.ID != nil {
-					ctx := context.WithValue(r.Context(), CtxUserKey, models.User{})
-					r = r.WithContext(ctx)
+					userContext = user
 				}
 			}
 		}
+		ctx := context.WithValue(r.Context(), CtxUserKey, userContext)
+		r = r.WithContext(ctx)
 		next.ServeHTTP(w, r)
 	}
 	return http.HandlerFunc(fn)

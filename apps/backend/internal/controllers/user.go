@@ -1,10 +1,13 @@
 package controllers
 
 import (
+	"backend/internal/api/middlewares"
 	"backend/internal/container"
 	"backend/internal/models"
 	"backend/internal/services"
 	"backend/internal/utils"
+	"context"
+	"fmt"
 )
 
 type UserController struct {
@@ -27,6 +30,17 @@ func (ctrl UserController) Create(user *models.User) error {
 
 func (ctrl UserController) GetByID(id string) (*models.User, error) {
 	return ctrl.us.GetByID(id)
+}
+
+func (ctrl UserController) Profile(ctx context.Context) (*models.User, error) {
+	obj := ctx.Value(middlewares.CtxUserKey)
+
+	user, ok := obj.(*models.User)
+	if !ok {
+		return nil, fmt.Errorf("invalid user context")
+	}
+
+	return user, nil
 }
 
 func (ctrl UserController) Get() ([]models.User, error) {

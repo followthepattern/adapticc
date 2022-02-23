@@ -1,6 +1,7 @@
 package models
 
 import (
+	"backend/internal/utils/pointers"
 	"time"
 )
 
@@ -18,4 +19,14 @@ type User struct {
 
 func (u User) IsNil() bool {
 	return u.ID == nil
+}
+
+var AnnonymusUser User = User{
+	ID:        pointers.String("annonymus"),
+	Email:     pointers.String("annonymus@annonymus.com"),
+	FirstName: pointers.String("Annonymus"),
+	LastName:  pointers.String("Annonymus"),
+	Userlog: Userlog{
+		CreatedAt: pointers.Time(time.Now()),
+	},
 }

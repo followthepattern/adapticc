@@ -38,9 +38,5 @@ func GetFromModel(model *models.User) *user {
 		UpdateUserID:   model.UpdateUserID,
 	}
 
-	if result.LastLoginAt != nil {
-		result.LastLoginAt = &graphql.Time{Time: *model.LastLoginAt}
-	}
-
 	return &result
 }

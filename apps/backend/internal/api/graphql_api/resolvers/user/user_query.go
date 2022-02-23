@@ -22,3 +22,12 @@ func (uq UserQuery) Single(ctx context.Context, args struct{ Id string }) (*user
 	}
 	return GetFromModel(result), nil
 }
+
+func (uq UserQuery) Profile(ctx context.Context) (*user, error) {
+	result, err := uq.userController.Profile(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+	return GetFromModel(result), nil
+}
