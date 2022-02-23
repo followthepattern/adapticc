@@ -1,9 +1,10 @@
-import { FormEvent } from "react";
+import { FormEvent, useEffect } from "react";
 import Form from "../../../components/headless/Form/Form";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { gql, useMutation } from "@apollo/client";
 import { login } from "../../../graphql/auth/login";
 import { useUserStore } from "../../../utils/store";
+import { useNavigate } from "react-router";
 
 type FormValues = {
   email: string;
@@ -12,7 +13,8 @@ type FormValues = {
 
 const LoginForm = () => {
   const { register, handleSubmit } = useForm<FormValues>();
-  const setToken = useUserStore(state => state.setToken);
+  const navigate = useNavigate();
+  const { setToken } = useUserStore();
 
   const [executeLogin, { data, loading, error }] = useMutation(
     gql(login)
@@ -26,6 +28,13 @@ const LoginForm = () => {
       },
     });
   };
+
+  useEffect(() => {
+    if (data?.authentication?.login?.jwt?.length > 0) {
+      setToken(data.authentication.login.jwt);
+      navigate("/dashboard");
+    }
+  }, [data])
 
   if (error) {
     return <div>{JSON.stringify(error)}</div>;
@@ -74,9 +83,7 @@ const LoginForm = () => {
     );
   }
 
-  setToken(data.authentication.login.jwt)
-
-  return <div>{JSON.stringify(data)}</div>;
+  return <div></div>;
 };
 
 export default LoginForm;
