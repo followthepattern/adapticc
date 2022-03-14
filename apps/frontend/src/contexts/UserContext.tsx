@@ -1,14 +1,11 @@
 import { createContext } from "react";
 
 interface UserProfile {
-    isAuthenticated: boolean,
     email?: string,
     firstName?: string,
     lastName?: string,
 }
 
-const UserContext = createContext<UserProfile>({
-    isAuthenticated: false,
-});
+const UserContext = createContext<UserProfile>({});
 
 export default UserContext;

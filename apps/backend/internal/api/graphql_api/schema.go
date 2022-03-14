@@ -4,13 +4,13 @@ const Schema = `
 scalar Time
 
 type User {
-	id: String!
-	email: String!
-	firstName: String!
-	lastName: String!
+	id: String
+	email: String
+	firstName: String
+	lastName: String
 	active: Boolean
 	lastLoginAt: Time
-	createdAt: Time!
+	createdAt: Time
 	creationUserID: String
 	updatedAt: Time
 	updateUserID: String

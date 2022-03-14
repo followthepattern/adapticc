@@ -37,6 +37,7 @@ export const useNavbarStore = create<
 interface UserState {
   token: string | null;
   setToken: (jwt: string) => void;
+  removeToken: () => void;
 }
 
 export const useUserStore = create<
@@ -48,7 +49,8 @@ export const useUserStore = create<
   persist(
     devtools((set) => ({
       token: null,
-      setToken: (newToken: string) => set(() => ({token: newToken}))
+      setToken: (newToken: string) => set(() => ({token: newToken})),
+      removeToken: () => set(() => ({token: null})),
     })),
     {
       name: storeNames.userStore,

@@ -6,6 +6,7 @@ import (
 	"backend/internal/utils"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/doug-martin/goqu/v9"
 )
@@ -90,7 +91,11 @@ func (repo User) GetByToken(token string) (*models.User, error) {
 				repo.tableName() + ".id": goqu.I("user_tokens.user_id"),
 			}),
 		).
-		Where(goqu.Ex{"token": token})
+		Where(goqu.Ex{"token": token}, goqu.C("expires_at").Gt(time.Now()))
+
+	sql, _, _ := query.ToSQL()
+
+	fmt.Println(sql)
 
 	_, err := query.ScanStruct(&user)
 	if err != nil {

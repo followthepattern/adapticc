@@ -1,30 +1,44 @@
+import { useLazyQuery, gql } from "@apollo/client";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import UserContext from "../../contexts/UserContext";
+import { getUserProfile } from "../../graphql/user/query";
+import { useUserStore } from "../../utils/store";
 
 function WithAuthorization(
   Component: (props: any) => JSX.Element
 ): JSX.Element {
-  // download account details ...
-
+  const [executeGetUserProfile, { data, called, loading, error }] =
+    useLazyQuery(gql(getUserProfile));
   const navigate = useNavigate();
-
-  let isAuthenticated = true;
+  const { token, removeToken } = useUserStore();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    executeGetUserProfile();
+
+    if (!token) {
       navigate("/login");
     }
-  }, []);
 
-  return (
-    <UserContext.Provider
-      value={{
-        isAuthenticated: isAuthenticated,
-      }}
-    >
+    if (called && !error && !loading) {
+      let id = data?.users?.profile?.id;
+      if (!id) {
+        removeToken();
+        navigate("/login");
+      }
+    }
+  }, [data]);
+
+  if (error) {
+    return <div>{JSON.stringify(error)}</div>;
+  }
+
+  return called && !loading ? (
+    <UserContext.Provider value={data.users.profile}>
       <Component />
     </UserContext.Provider>
+  ) : (
+    <div>Loading...</div>
   );
 }
 

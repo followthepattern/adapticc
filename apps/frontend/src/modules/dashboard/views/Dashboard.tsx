@@ -1,21 +1,10 @@
-import { gql, useLazyQuery } from "@apollo/client";
-
-import { getUser } from "../../../graphql/user/query";
+import { useContext } from "react";
+import UserContext from "../../../contexts/UserContext";
 
 const Dashboard = (props: any) => {
-  const [loadGreeting, { called, loading, data, error }] = useLazyQuery(
-    gql(getUser),
-    { variables: { language: "english" } }
-  );
+  const userProfile = useContext(UserContext);
 
-  if (error) return <p>{JSON.stringify(error)}</p>;
-
-  if (called && loading) return <p>loading</p>;
-  if (!called) {
-    loadGreeting();
-  }
-
-  return <p className="w-full break-words">{JSON.stringify(data?.users?.single)}</p>;
+  return <p className="w-full break-words">{JSON.stringify(userProfile)}</p>;
 };
 
 export default Dashboard;

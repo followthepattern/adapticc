@@ -8,13 +8,13 @@ import (
 )
 
 type user struct {
-	ID             string
-	Email          string
-	FirstName      string
-	LastName       string
+	ID             *string
+	Email          *string
+	FirstName      *string
+	LastName       *string
 	Active         *bool
 	LastLoginAt    *graphql.Time
-	CreatedAt      graphql.Time
+	CreatedAt      *graphql.Time
 	CreationUserID *string
 	UpdatedAt      *graphql.Time
 	UpdateUserID   *string
@@ -26,13 +26,13 @@ func GetFromModel(model *models.User) *user {
 	}
 
 	result := user{
-		ID:             *model.ID,
-		Email:          *model.Email,
-		FirstName:      *model.FirstName,
-		LastName:       *model.LastName,
+		ID:             model.ID,
+		Email:          model.Email,
+		FirstName:      model.FirstName,
+		LastName:       model.LastName,
 		Active:         model.Active,
 		LastLoginAt:    utils.TimeToGraphqlTime(model.LastLoginAt),
-		CreatedAt:      *utils.TimeToGraphqlTime(model.CreatedAt),
+		CreatedAt:      utils.TimeToGraphqlTime(model.CreatedAt),
 		CreationUserID: model.CreationUserID,
 		UpdatedAt:      utils.TimeToGraphqlTime(model.UpdatedAt),
 		UpdateUserID:   model.UpdateUserID,

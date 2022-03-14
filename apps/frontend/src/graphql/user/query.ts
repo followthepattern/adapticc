@@ -9,3 +9,14 @@ export const getUser = `{
 		}
 	}
 }`
+
+export const getUserProfile = `{
+	users {
+		profile {
+			id
+			email
+			firstName
+			lastName
+		}
+	}
+}`

@@ -60,7 +60,7 @@ func (a Auth) Login(email string, password string) (*models.LoginResponse, error
 	token := models.UserToken{
 		UserID:    user.ID,
 		Token:     &jwt,
-		ExpiresAt: pointers.Time(time.Now()),
+		ExpiresAt: pointers.Time(time.Now().Add(time.Hour * 24)),
 	}
 
 	err = a.userTokenRepository.Create(&token)

@@ -1,10 +1,9 @@
-import { FormEvent, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Form from "../../../components/headless/Form/Form";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { gql, useMutation } from "@apollo/client";
 import { login } from "../../../graphql/auth/login";
 import { useUserStore } from "../../../utils/store";
-import { useNavigate } from "react-router";
 
 type FormValues = {
   email: string;
@@ -13,8 +12,11 @@ type FormValues = {
 
 const LoginForm = () => {
   const { register, handleSubmit } = useForm<FormValues>();
-  const navigate = useNavigate();
-  const { setToken } = useUserStore();
+  const { token, setToken } = useUserStore();
+
+  if (token) {
+    window.location.href = "/dashboard";
+  }
 
   const [executeLogin, { data, loading, error }] = useMutation(
     gql(login)
@@ -32,7 +34,6 @@ const LoginForm = () => {
   useEffect(() => {
     if (data?.authentication?.login?.jwt?.length > 0) {
       setToken(data.authentication.login.jwt);
-      navigate("/dashboard");
     }
   }, [data])
 

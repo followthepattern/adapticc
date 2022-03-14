@@ -22,11 +22,5 @@ func (u User) IsNil() bool {
 }
 
 var AnnonymusUser User = User{
-	ID:        pointers.String("annonymus"),
-	Email:     pointers.String("annonymus@annonymus.com"),
-	FirstName: pointers.String("Annonymus"),
-	LastName:  pointers.String("Annonymus"),
-	Userlog: Userlog{
-		CreatedAt: pointers.Time(time.Now()),
-	},
+	ID: pointers.String(""),
 }
