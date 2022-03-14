@@ -20,7 +20,7 @@ const Navbar = (items: Route[]) => {
         .filter((item) => item.showNavbar)
         .map((item) => (
           <NavbarItem
-            className="flex w-full h-[40px] items-center justify-center items-center pl-8 rounded bg-gray-300"
+            className="flex w-full h-[40px] items-center justify-center items-center pl-8 rounded bg-gray-300 cursor-pointer"
             path={item.path}
             key={item.path}
           >
