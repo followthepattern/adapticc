@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 interface NavbarAccountProfileProperties {
   children?: any;
   className?: string;
@@ -11,12 +13,13 @@ export const AccountProfile = ({
   accountProfilePath,
   icon
 }: NavbarAccountProfileProperties) => {
+  const navigate = useNavigate()
   return (
     <div className={className}>
       {icon}
-      <a href={accountProfilePath}>
+      <div onClick={() => navigate(accountProfilePath)}>
         {children}
-      </a>
+      </div>
     </div>
   );
 };

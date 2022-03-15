@@ -15,9 +15,9 @@ const AccountLayout = (props: any) => {
   }
 
   return (
-    <div className="flex h-screen w-screen" onClick={handleCloseNavbar}>
+    <div className="flex h-screen w-screen">
       <div className={classNames("md:static bg-white xs:absolute h-full border-r", {"hidden": !navbarExpanded} )}>{Navbar(mainRoutes)}</div>
-      <div className="flex-col w-full">
+      <div className="flex-col w-full" onClick={handleCloseNavbar}>
         <Header className="w-full h-10"/>
         <div className="w-full container">{props.children}</div>
       </div>
