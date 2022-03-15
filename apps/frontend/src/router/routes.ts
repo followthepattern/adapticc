@@ -1,9 +1,10 @@
 import AccountLayout from "../layouts/AccountLayout/AccountLayout";
 import LoginLayout from "../layouts/LoginLayout/LoginLayout";
-import PublicLayout from "../layouts/PublicLayout";
+// import PublicLayout from "../layouts/PublicLayout";
 import Dashboard from "../modules/dashboard/views/Dashboard";
 import Login from "../modules/login/views/Login";
 import Users from "../modules/user/views/UserListPage";
+import { ViewBoardsIcon, UsersIcon } from "@heroicons/react/outline";
 
 export interface Route {
   path: string;
@@ -13,18 +14,18 @@ export interface Route {
   Page: (props: any) => JSX.Element;
   Layout: (props: any) => JSX.Element;
   title: string;
-  icon: string;
+  icon?: (props: any) => JSX.Element;
   subRoutes?: Route[];
 }
 
-export const mainRoutes: Route[] = [
+export const routes: Route[] = [
   {
     path: "/dashboard",
     exact: true,
     public: false,
     Page: Dashboard,
     title: "Dashboard",
-    icon: "D",
+    icon: ViewBoardsIcon,
     showNavbar: true,
     Layout: AccountLayout,
   },
@@ -34,7 +35,7 @@ export const mainRoutes: Route[] = [
     public: false,
     showNavbar: true,
     title: "Users",
-    icon: "U",
+    icon: UsersIcon,
     Page: Users,
     Layout: AccountLayout,
   },
@@ -43,7 +44,6 @@ export const mainRoutes: Route[] = [
     exact: true,
     public: true,
     title: "Login",
-    icon: "U",
     Page: Login,
     Layout: LoginLayout,
   },

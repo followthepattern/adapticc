@@ -14,7 +14,9 @@ function WithAuthorization(
   const { token, removeToken } = useUserStore();
 
   useEffect(() => {
-    executeGetUserProfile();
+    if (!called) {
+      executeGetUserProfile();
+    }
 
     if (!token) {
       navigate("/login");

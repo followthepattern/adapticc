@@ -1,12 +1,12 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import WithAuthorization from "../authorization/components/WithAuthorization";
 
-import { mainRoutes } from "./main_routes";
+import { routes } from "./routes";
 
 function Router() {
   return (
     <Routes>
-      {mainRoutes.map((route) => {
+      {routes.map((route) => {
         const getElement = () => (
           <route.Layout>
             <route.Page />
