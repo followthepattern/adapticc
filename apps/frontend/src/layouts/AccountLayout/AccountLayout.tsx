@@ -21,7 +21,7 @@ const AccountLayout = (props: any) => {
     .map((route) => route as INavbarItem);
 
   return (
-    <div className="flex h-screen w-screen">
+    <div className="flex h-screen w-screen overlay-hidden">
       <div
         className={classNames(
           "md:static bg-white xs:absolute h-full border-r",
@@ -30,9 +30,9 @@ const AccountLayout = (props: any) => {
       >
         {Navbar(navBarItems)}
       </div>
-      <div className="flex-col w-full" onClick={handleCloseNavbar}>
+      <div className="flex flex-col w-full" onClick={handleCloseNavbar}>
         <Header className="w-full h-10" />
-        <div className="w-full container">{props.children}</div>
+        <div className="grow w-full md:container mx-auto overflow-hidden">{props.children}</div>
       </div>
     </div>
   );
