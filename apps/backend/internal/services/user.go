@@ -47,3 +47,7 @@ func (service User) GetByID(id string) (*models.User, error) {
 func (service User) GetByToken(token string) (*models.User, error) {
 	return service.userRepository.GetByToken(token)
 }
+
+func (service User) Get(request models.UserListRequest) (*models.UserListResponse, error) {
+	return service.userRepository.Get(request)
+}

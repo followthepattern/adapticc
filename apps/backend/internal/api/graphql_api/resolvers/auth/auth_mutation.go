@@ -24,7 +24,7 @@ func (am AuthMutation) Login(ctx context.Context, args struct {
 	if err != nil {
 		return nil, err
 	}
-	return GetFromModel(*result), nil
+	return getFromLoginResponseModel(*result), nil
 }
 
 func (am AuthMutation) Register(ctx context.Context, args struct {

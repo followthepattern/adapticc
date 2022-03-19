@@ -43,8 +43,8 @@ func (ctrl UserController) Profile(ctx context.Context) (*models.User, error) {
 	return user, nil
 }
 
-func (ctrl UserController) Get() ([]models.User, error) {
-	return nil, nil
+func (ctrl UserController) Get(request models.UserListRequest) (*models.UserListResponse, error) {
+	return ctrl.us.Get(request)
 }
 
 func (ctrl UserController) Update(user *models.User) error {

@@ -20,8 +20,8 @@ type user struct {
 	UpdateUserID   *string
 }
 
-func GetFromModel(model *models.User) *user {
-	if model.IsNil() {
+func getFromModel(model *models.User) *user {
+	if model == nil || model.IsNil() {
 		return nil
 	}
 
@@ -39,4 +39,12 @@ func GetFromModel(model *models.User) *user {
 	}
 
 	return &result
+}
+
+func getFromModels(ms []models.User) []*user {
+	result := make([]*user, len(ms))
+	for i := 0; i < len(ms); i++ {
+		result[i] = getFromModel(&ms[i])
+	}
+	return result
 }

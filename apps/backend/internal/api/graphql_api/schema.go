@@ -2,6 +2,8 @@ package graphql_api
 
 const Schema = `
 scalar Time
+scalar Int64
+scalar Uint
 
 type User {
 	id: String
@@ -16,6 +18,20 @@ type User {
 	updateUserID: String
 }
 
+input UserListFilter {
+	pageSize: Uint
+	page: Uint
+	name: String
+	email: String
+}
+
+type UserListResponse {
+	count: Int64!
+	pageSize: Uint
+	page: Uint
+	data: [User]!
+}
+
 type LoginResponse {
 	jwt: String
 	expires_at: Time
@@ -23,8 +39,8 @@ type LoginResponse {
 
 type RegisterResponse {
 	email: String
-	first_name: String
-	last_name: String
+	firstName: String
+	lastName: String
 }
 
 schema {
@@ -42,6 +58,7 @@ type Mutation {
 
 type UserQuery {
 	single(id: String!): User
+	list(filter: UserListFilter!): UserListResponse
 	profile: User
 }
 

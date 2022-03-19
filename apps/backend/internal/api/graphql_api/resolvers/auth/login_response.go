@@ -11,7 +11,7 @@ type loginResponse struct {
 	ExpiresAt *graphql.Time `json:"expires_at,omitempty"`
 }
 
-func GetFromModel(m models.LoginResponse) *loginResponse {
+func getFromLoginResponseModel(m models.LoginResponse) *loginResponse {
 	expiresAt := graphql.Time{
 		Time: *m.ExpiresAt,
 	}

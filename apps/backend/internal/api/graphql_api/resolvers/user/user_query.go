@@ -20,7 +20,16 @@ func (uq UserQuery) Single(ctx context.Context, args struct{ Id string }) (*user
 	if err != nil {
 		return nil, err
 	}
-	return GetFromModel(result), nil
+	return getFromModel(result), nil
+}
+
+func (uq UserQuery) List(ctx context.Context, args struct{ Filter userListFilter }) (*userListResponse, error) {
+	result, err := uq.userController.Get(getModelFromUserListFilter(args.Filter))
+	if err != nil {
+		return nil, err
+	}
+
+	return getFromUserListResponseModel(result), nil
 }
 
 func (uq UserQuery) Profile(ctx context.Context) (*user, error) {
@@ -29,5 +38,5 @@ func (uq UserQuery) Profile(ctx context.Context) (*user, error) {
 	if err != nil {
 		return nil, err
 	}
-	return GetFromModel(result), nil
+	return getFromModel(result), nil
 }

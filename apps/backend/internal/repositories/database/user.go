@@ -49,23 +49,52 @@ func (repo User) Create(user *models.User) (err error) {
 	return
 }
 
-func (repo User) Get(request models.ListRequest) (*models.ListResponse, error) {
+func (repo User) Get(request models.UserListRequest) (*models.UserListResponse, error) {
 	users := []models.User{}
 
-	query := repo.db.From(repo.tableName()).Where(request.GetFilter())
+	query := repo.db.From(repo.tableName())
+
+	if request.Email != nil {
+		query = query.Where(goqu.Ex{"email": request.Email})
+	}
+
+	if request.Name != nil {
+		pattern := fmt.Sprintf("%%%v%%", *request.Name)
+		query = query.Where(
+			goqu.Or(
+				goqu.I("first_name").Like(pattern),
+				goqu.I("last_name").Like(pattern),
+			))
+	}
 
 	count, err := query.Count()
 	if err != nil {
 		return nil, err
 	}
 
+	if request.PageSize != nil {
+		query = query.Limit(*request.PageSize)
+	}
+
+	if request.Page != nil && request.PageSize != nil {
+		page := *request.Page
+		if page > 0 {
+			page--
+		}
+		query = query.Offset(page * *request.PageSize)
+	}
+
 	err = query.ScanStructs(&users)
 	if err != nil {
 		return nil, err
 	}
-	return &models.ListResponse{
-		Data:  users,
-		Count: count,
+	return &models.UserListResponse{
+		Data: users,
+		ListResponse: models.ListResponse{
+			Count:    count,
+			Page:     request.Page,
+			PageSize: request.PageSize,
+		},
 	}, nil
 }
 
@@ -92,11 +121,6 @@ func (repo User) GetByToken(token string) (*models.User, error) {
 			}),
 		).
 		Where(goqu.Ex{"token": token}, goqu.C("expires_at").Gt(time.Now()))
-
-	sql, _, _ := query.ToSQL()
-
-	fmt.Println(sql)
-
 	_, err := query.ScanStruct(&user)
 	if err != nil {
 		return nil, err
