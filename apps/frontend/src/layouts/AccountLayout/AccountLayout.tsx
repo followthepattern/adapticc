@@ -32,7 +32,7 @@ const AccountLayout = (props: any) => {
       </div>
       <div className="flex flex-col w-full" onClick={handleCloseNavbar}>
         <Header className="w-full h-10" />
-        <div className="grow w-full md:container mx-auto overflow-hidden">{props.children}</div>
+        <div className="grow w-full md:container mx-auto overflow-auto">{props.children}</div>
       </div>
     </div>
   );
