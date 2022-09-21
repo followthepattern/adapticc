@@ -13,3 +13,11 @@ func Time(t time.Time) *time.Time {
 func Bool(b bool) *bool {
 	return &b
 }
+
+func Int(i int) *int {
+	return &i
+}
+
+func UInt(ui uint) *uint {
+	return &ui
+}

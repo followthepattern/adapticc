@@ -12,7 +12,6 @@ import { GetTokenFromStorage } from "./utils/store";
 
 function App() {
   const jwt = GetTokenFromStorage();
-  console.info("jwt:", jwt);
 
   const httpLink = createHttpLink({
     uri: "http://localhost:3011/graphql",
@@ -27,7 +26,7 @@ function App() {
     };
   });
 
-  console.debug("APP RENDER!");
+  console.debug("App render");
 
   const client = new ApolloClient({
     link: authLink.concat(httpLink),

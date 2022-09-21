@@ -39,6 +39,9 @@ func (i *Uint) UnmarshalGraphQL(input interface{}) error {
 	case int64:
 		i.uint = uint(input)
 		return nil
+	case float64:
+		i.uint = uint(input)
+		return nil
 	case string:
 		int, err := strconv.Atoi(input)
 		if err != nil {

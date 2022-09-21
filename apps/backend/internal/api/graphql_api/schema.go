@@ -21,8 +21,7 @@ type User {
 input UserListFilter {
 	pageSize: Uint
 	page: Uint
-	name: String
-	email: String
+	search: String
 }
 
 type UserListResponse {

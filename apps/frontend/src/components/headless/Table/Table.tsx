@@ -1,13 +1,20 @@
+import Body from "./Body";
+import Header from "./Header";
+
 interface TableProperties {
     children?: any;
+    className?: string;
 }
 
-const Table = ({children}: TableProperties) => {
+const Table = ({children, className}: TableProperties) => {
     return (
-        <td>
+        <table className={className}>
             {children}
-        </td>
+        </table>
     )
 }
+
+Table.Header = Header;
+Table.Body = Body;
 
 export default Table;

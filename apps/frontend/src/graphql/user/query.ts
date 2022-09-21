@@ -20,3 +20,27 @@ export const getUserProfile = `{
 		}
 	}
 }`
+
+export const getUsers =
+`query GetUsers (
+	$page: Uint,
+	$pageSize: Uint
+	$search: String) {
+	users {
+		list (filter: {
+			pageSize: $pageSize,
+			page: $page,
+			search: $search,
+		}) {
+			page
+			pageSize
+			count
+			data {
+				id
+				email
+				firstName
+				lastName
+			}
+		}
+	}
+}`

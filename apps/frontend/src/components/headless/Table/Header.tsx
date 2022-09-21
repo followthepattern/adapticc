@@ -1,9 +1,17 @@
+import TR from "./TR";
+
 interface HeaderProperties {
+    className?: string;
     children?: any;
 }
 
-export const Header = ({
-    children
+const Header = ({
+    children,
+    className
 }: HeaderProperties) => {
-    return 
+    return <thead className={className}>{children}</thead>
 }
+
+Header.TR = TR;
+
+export default Header;

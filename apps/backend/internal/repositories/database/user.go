@@ -4,6 +4,7 @@ import (
 	"backend/internal/container"
 	"backend/internal/models"
 	"backend/internal/utils"
+	"backend/internal/utils/pointers"
 	"errors"
 	"fmt"
 	"time"
@@ -54,16 +55,13 @@ func (repo User) Get(request models.UserListRequest) (*models.UserListResponse, 
 
 	query := repo.db.From(repo.tableName())
 
-	if request.Email != nil {
-		query = query.Where(goqu.Ex{"email": request.Email})
-	}
-
-	if request.Name != nil {
-		pattern := fmt.Sprintf("%%%v%%", *request.Name)
+	if request.Search != nil {
+		pattern := fmt.Sprintf("%%%v%%", *request.Search)
 		query = query.Where(
 			goqu.Or(
 				goqu.I("first_name").Like(pattern),
 				goqu.I("last_name").Like(pattern),
+				goqu.I("email").Like(pattern),
 			))
 	}
 
@@ -72,16 +70,17 @@ func (repo User) Get(request models.UserListRequest) (*models.UserListResponse, 
 		return nil, err
 	}
 
-	if request.PageSize != nil {
-		query = query.Limit(*request.PageSize)
-	}
-
-	if request.Page != nil && request.PageSize != nil {
+	if request.Page != nil && *request.Page > 0 && request.PageSize != nil {
 		page := *request.Page
 		if page > 0 {
 			page--
 		}
+
 		query = query.Offset(page * *request.PageSize)
+		query = query.Limit(*request.PageSize)
+	} else {
+		request.Page = pointers.UInt(1)
+		request.PageSize = nil
 	}
 
 	err = query.ScanStructs(&users)
