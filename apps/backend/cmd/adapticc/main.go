@@ -1,11 +1,6 @@
 package main
 
 import (
-	"backend/internal"
-	"backend/internal/api"
-	"backend/internal/config"
-	"backend/internal/container"
-	"backend/internal/hostserver"
 	"context"
 	"database/sql"
 	"fmt"
@@ -13,8 +8,15 @@ import (
 	"os"
 	"os/signal"
 
+	internal "github.com/followthepattern/adapticc/pkg"
+	"github.com/followthepattern/adapticc/pkg/api"
+	"github.com/followthepattern/adapticc/pkg/config"
+	"github.com/followthepattern/adapticc/pkg/container"
+	"github.com/followthepattern/adapticc/pkg/hostserver"
+
 	_ "github.com/lib/pq"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 func main() {
@@ -23,28 +25,24 @@ func main() {
 		log.Fatal(err)
 	}
 
+	db, err := sql.Open("postgres", cfg.DB.ConnectionURL())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	logConfig := zap.NewProductionConfig()
+	logConfig.Level = zap.NewAtomicLevelAt(zapcore.Level(cfg.Server.LogLevel))
+
+	logger, err := logConfig.Build()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	ctx := context.Background()
 
-	db, err := sql.Open("postgres", cfg.DB.ConnectionURL())
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var logger *zap.Logger
-
-	if cfg.Api.Mode == config.ModeDev {
-		logger, err = zap.NewDevelopment()
-	} else {
-		logger, err = zap.NewProduction()
-	}
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	cont := container.New(
-		&ctx,
-		cfg,
+		ctx,
+		*cfg,
 		db,
 		logger)
 
@@ -70,7 +68,7 @@ func main() {
 		cancel()
 	}()
 
-	if err := server.Serve(ctx, cfg.Api.Host, cfg.Api.Port); err != nil {
+	if err := server.Serve(ctx, cfg.Server.Host, cfg.Server.Port); err != nil {
 		logger.Error("failed to serve server", zap.Error(err))
 	}
 }

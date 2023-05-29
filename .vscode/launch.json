@@ -11,9 +11,7 @@
             "mode": "auto",
             "program": "${workspaceFolder}/apps/backend/cmd/adapticc/main.go",
             "cwd": "${workspaceFolder}/apps/backend",
-            "env": {
-                "DB_HOST": "localhost"
-            }
+            "envFile": "${workspaceFolder}/apps/backend/dev.env",
         }
     ]
 }
