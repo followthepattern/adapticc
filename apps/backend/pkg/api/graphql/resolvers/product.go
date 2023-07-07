@@ -11,7 +11,7 @@ import (
 
 type ProductListFilter struct {
 	ListRequest
-	ProductID *string
+	ID *string
 }
 
 func getFromProductListResponseModel(response models.ProductListResponse) ListResponse[models.Product] {
@@ -34,8 +34,8 @@ func NewProductQuery(cont *container.Container) (*ProductResolver, error) {
 	return &ProductResolver{cont: cont, ctrl: ctrl}, nil
 }
 
-func (resolver ProductResolver) Single(ctx context.Context, args struct{ ProductID string }) (*models.Product, error) {
-	product, err := resolver.ctrl.GetByID(ctx, args.ProductID)
+func (resolver ProductResolver) Single(ctx context.Context, args struct{ Id string }) (*models.Product, error) {
+	product, err := resolver.ctrl.GetByID(ctx, args.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -45,11 +45,11 @@ func (resolver ProductResolver) Single(ctx context.Context, args struct{ Product
 func (resolver ProductResolver) List(ctx context.Context, args struct{ Filter ProductListFilter }) (*ListResponse[models.Product], error) {
 	filter := models.ProductListRequestBody{
 		ListFilter: models.ListFilter{
-			PageSize: &args.Filter.PageSize.uint,
-			Page:     &args.Filter.Page.uint,
+			PageSize: args.Filter.PageSize.ValuePtr(),
+			Page:     args.Filter.Page.ValuePtr(),
 		},
 		ProductRequestBody: models.ProductRequestBody{
-			ProductID: args.Filter.ProductID,
+			ID: args.Filter.ID,
 		},
 	}
 
@@ -64,15 +64,9 @@ func (resolver ProductResolver) List(ctx context.Context, args struct{ Filter Pr
 }
 
 func (resolver ProductResolver) Create(ctx context.Context, args struct {
-	Title       *string
-	Description *string
+	Model models.Product
 }) (*ResponseStatus, error) {
-	Product := models.Product{
-		Title:       args.Title,
-		Description: args.Description,
-	}
-
-	err := resolver.ctrl.Create(ctx, Product)
+	err := resolver.ctrl.Create(ctx, args.Model)
 	if err != nil {
 		return nil, err
 	}
@@ -82,17 +76,10 @@ func (resolver ProductResolver) Create(ctx context.Context, args struct {
 }
 
 func (resolver ProductResolver) Update(ctx context.Context, args struct {
-	ProductID   string
-	Title       *string
-	Description *string
+	Model models.Product
 }) (*ResponseStatus, error) {
-	Product := models.Product{
-		ProductID:   &args.ProductID,
-		Title:       args.Title,
-		Description: args.Description,
-	}
 
-	err := resolver.ctrl.Update(ctx, Product)
+	err := resolver.ctrl.Update(ctx, args.Model)
 	if err != nil {
 		return nil, err
 	}
@@ -102,9 +89,9 @@ func (resolver ProductResolver) Update(ctx context.Context, args struct {
 }
 
 func (resolver ProductResolver) Delete(ctx context.Context, args struct {
-	ProductID string
+	Id string
 }) (*ResponseStatus, error) {
-	err := resolver.ctrl.Delete(ctx, args.ProductID)
+	err := resolver.ctrl.Delete(ctx, args.Id)
 	if err != nil {
 		return nil, err
 	}

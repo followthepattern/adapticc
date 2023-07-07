@@ -79,7 +79,7 @@ func (service Auth) MonitorChannels() {
 				request.Login.Reply(*result)
 			} else if request.Register != nil {
 				register := request.Register.RequestBody()
-				result, err := service.Register(context.Background(), register.Email, register.FirstName, register.LastName, register.Password)
+				result, err := service.Register(request.Register.Context(), register.Email, register.FirstName, register.LastName, register.Password)
 				if err != nil {
 					request.Register.ReplyError(err)
 					continue
@@ -143,7 +143,18 @@ func (a Auth) Login(ctx context.Context, email string, password string) (*models
 func (a Auth) Register(ctx context.Context, email string, firstName string, lastName string, password string) (*models.RegisterResponse, error) {
 	requestBody := models.UserRequestBody{Email: pointers.String(email)}
 
-	req := request.New[models.UserRequestBody, models.User](ctx, requestBody)
+	ctxu := utils.GetModelFromContext[models.User](ctx, utils.CtxUserKey)
+	if ctxu == nil {
+		return nil, fmt.Errorf("invalid user context")
+	}
+
+	userIDOpt := request.UserIDOption[models.UserRequestBody, models.User](*ctxu.ID)
+
+	req := request.New(
+		ctx,
+		requestBody,
+		userIDOpt,
+	)
 
 	singleMsg := models.UserMsg{Single: &req}
 

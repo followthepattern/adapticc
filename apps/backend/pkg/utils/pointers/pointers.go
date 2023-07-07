@@ -2,6 +2,10 @@ package pointers
 
 import "time"
 
+func ToPtr[T any](v T) *T {
+	return &v
+}
+
 func String(s string) *string {
 	return &s
 }

@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"context"
 	"crypto/sha512"
 	"encoding/hex"
 	"reflect"
@@ -13,6 +14,8 @@ import (
 type ContextKey struct {
 	Name string
 }
+
+var CtxUserKey = ContextKey{Name: "ctx-user"}
 
 func GetUnderlyingPtrValue(vvalue reflect.Value) interface{} {
 	if vvalue.Kind() == reflect.Ptr || vvalue.Kind() == reflect.Interface {
@@ -54,4 +57,15 @@ func TimeToGraphqlTime(t *time.Time) *graphql.Time {
 		return &graphql.Time{Time: *t}
 	}
 	return nil
+}
+
+func GetModelFromContext[T any](ctx context.Context, ctxKey ContextKey) *T {
+	obj := ctx.Value(ctxKey)
+
+	model, ok := obj.(*T)
+	if !ok {
+		return nil
+	}
+
+	return model
 }

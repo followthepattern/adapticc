@@ -1,5 +1,10 @@
 package models
 
+const (
+	DefaultPageSize = 20
+	DefaultPage     = 1
+)
+
 type ListFilter struct {
 	PageSize *uint
 	Page     *uint

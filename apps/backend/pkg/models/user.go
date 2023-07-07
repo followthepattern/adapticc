@@ -33,6 +33,14 @@ func (u User) IsNil() bool {
 	return u.ID == nil
 }
 
+func (u User) IsDefault() bool {
+	if u.IsNil() {
+		return true
+	}
+
+	return len(*u.ID) < 1
+}
+
 var Guest User = User{
 	ID: pointers.String(""),
 }

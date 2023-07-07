@@ -28,7 +28,13 @@ type UserListResponse {
 }
 
 type Product {
-	productID: String
+	id: String
+	title: String
+	description: String
+}
+
+input ProductInput {
+	id: String
 	title: String
 	description: String
 }
@@ -36,7 +42,7 @@ type Product {
 input ProductListFilter {
 	pageSize: Uint
 	page: Uint
-	productID: String
+	id: String
 }
 
 type ProductListResponse {
@@ -84,18 +90,20 @@ type UserQuery {
 }
 
 type ProductQuery {
-	single(productID: String!): Product
+	single(id: String!): Product
 	list(filter: ProductListFilter!): ProductListResponse
 }
 
 type UserMutation {
 	update(id: String!, firstName: String, lastName: String): ResponseStatus
+	delete(id: String!): ResponseStatus
+
 }
 
 type ProductMutation {
-	create(title: String, description: String): ResponseStatus
-	update(productID: String!, title: String, description: String): ResponseStatus
-	delete(productID: String!): ResponseStatus
+	create(model: ProductInput!): ResponseStatus
+	update(model: ProductInput!): ResponseStatus
+	delete(id: String!): ResponseStatus
 }
 
 type AuthMutation {

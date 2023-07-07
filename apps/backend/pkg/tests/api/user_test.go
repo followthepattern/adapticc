@@ -18,6 +18,7 @@ import (
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/tests/datagenerator"
 	"github.com/followthepattern/adapticc/pkg/tests/sqlexpectations"
+	"github.com/followthepattern/adapticc/pkg/utils/pointers"
 	"github.com/golang-jwt/jwt/v4"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -41,9 +42,10 @@ type users struct {
 	Profile resolvers.User                      `json:"profile,omitempty"`
 	List    models.ListResponse[resolvers.User] `json:"list,omitempty"`
 	Update  resolvers.ResponseStatus            `json:"update,omitempty"`
+	Delete  resolvers.ResponseStatus            `json:"delete,omitempty"`
 }
 
-var _ = Describe("Users", func() {
+var _ = Describe("User graphql queries", func() {
 	var (
 		mdb     *sql.DB
 		mock    sqlmock.Sqlmock
@@ -70,8 +72,8 @@ var _ = Describe("Users", func() {
 		Expect(err).To(BeNil())
 	})
 
-	Context("Queries", func() {
-		It("Single", func() {
+	Context("Single", func() {
+		It("Success", func() {
 			queryTemplate := `
 			query {
 				users {
@@ -105,12 +107,22 @@ var _ = Describe("Users", func() {
 			Expect(code).To(Equal(http.StatusOK))
 			Expect(*testResponse.Data.Users.Single.ID).To(Equal(*user.ID))
 		})
+	})
 
-		It("List", func() {
+	Context("List", func() {
+		It("Success default query", func() {
 			handler, err := api.GetRouter(cont)
 			Expect(err).To(BeNil())
 
-			searchText := "email@email.com"
+			listRequestBody := models.UserListRequestBody{
+				ListFilter: models.ListFilter{
+					PageSize: pointers.ToPtr[uint](5),
+					Page:     pointers.ToPtr[uint](1),
+				},
+				UserRequestBody: models.UserRequestBody{
+					Search: pointers.ToPtr("email@email.com"),
+				},
+			}
 
 			queryTemplate := `
 			query {
@@ -118,7 +130,7 @@ var _ = Describe("Users", func() {
 					list (filter: {
 						pageSize: 5,
 						page: 1,
-						search: "%v",
+						search: "%s",
 					}) {
 						page
 						pageSize
@@ -133,7 +145,7 @@ var _ = Describe("Users", func() {
 				}
 			}`
 
-			query := fmt.Sprintf(queryTemplate, searchText)
+			query := fmt.Sprintf(queryTemplate, *listRequestBody.Search)
 
 			graphRequest := graphqlRequest{
 				Query: query,
@@ -143,7 +155,66 @@ var _ = Describe("Users", func() {
 
 			users := []models.User{datagenerator.NewRandomUser(), datagenerator.NewRandomUser(), datagenerator.NewRandomUser()}
 
-			sqlexpectations.ExpectUsers(mock, users, searchText)
+			sqlexpectations.ExpectUsers(mock, "", users, listRequestBody)
+
+			testResponse := &graphqlUserResponse{}
+
+			code, err := runRequest(handler, httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request)), testResponse)
+			Expect(err).To(BeNil())
+			Expect(code).To(Equal(http.StatusOK))
+
+			Expect(testResponse.Errors).To(BeEmpty())
+			Expect(testResponse.Data.Users.List.Data).To(HaveLen(len(users)))
+			for i := range testResponse.Data.Users.List.Data {
+				Expect(*testResponse.Data.Users.List.Data[i].ID).To(Equal(*users[i].ID))
+				Expect(*testResponse.Data.Users.List.Data[i].Email).To(Equal(*users[i].Email))
+				Expect(*testResponse.Data.Users.List.Data[i].FirstName).To(Equal(*users[i].FirstName))
+				Expect(*testResponse.Data.Users.List.Data[i].LastName).To(Equal(*users[i].LastName))
+			}
+
+			Expect(mock.ExpectationsWereMet()).To(BeNil())
+		})
+
+		It("Success withouth page and pageSize params", func() {
+			handler, err := api.GetRouter(cont)
+			Expect(err).To(BeNil())
+
+			listRequestBody := models.UserListRequestBody{
+				UserRequestBody: models.UserRequestBody{
+					Search: pointers.ToPtr("email@email.com"),
+				},
+			}
+
+			queryTemplate := `
+			query {
+				users {
+					list (filter: {
+						search: "%s",
+					}) {
+						page
+						pageSize
+						count
+						data {
+							id
+							email
+							firstName
+							lastName
+						}
+					}
+				}
+			}`
+
+			query := fmt.Sprintf(queryTemplate, *listRequestBody.Search)
+
+			graphRequest := graphqlRequest{
+				Query: query,
+			}
+
+			request, _ := json.Marshal(graphRequest)
+
+			users := []models.User{datagenerator.NewRandomUser(), datagenerator.NewRandomUser(), datagenerator.NewRandomUser()}
+
+			sqlexpectations.ExpectUsersWithoutPaging(mock, "", users, listRequestBody)
 
 			testResponse := &graphqlUserResponse{}
 
@@ -203,7 +274,7 @@ var _ = Describe("Users", func() {
 			testResponse := &graphqlUserResponse{}
 
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
-			httpRequest.Header.Set(middlewares.AuthorizationHeader, tokenString)
+			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("Bearer %s", tokenString))
 
 			code, err := runRequest(handler, httpRequest, testResponse)
 			Expect(err).To(BeNil())
@@ -249,7 +320,7 @@ var _ = Describe("Users", func() {
 
 			request, _ := json.Marshal(graphRequest)
 
-			sqlexpectations.ExpectUpdateUser(mock, user)
+			sqlexpectations.ExpectUpdateUser(mock, "", user)
 
 			testResponse := &graphqlUserResponse{}
 
@@ -264,6 +335,57 @@ var _ = Describe("Users", func() {
 			Expect(code).To(Equal(http.StatusOK))
 			Expect(mock.ExpectationsWereMet()).To(BeNil())
 			Expect(testResponse.Data.Users.Update.Code).To(Equal(resolvers.NewUint(200)))
+		})
+	})
+
+	Context("Delete", func() {
+		var graphql string = `mutation {
+			users {
+				delete (id: "%v") {
+					code
+				}
+			}
+		}`
+
+		It("Success", func() {
+			contextUser := datagenerator.NewRandomUser()
+			user := datagenerator.NewRandomUser()
+
+			expiresAt := time.Now().Add(time.Hour * 24)
+			token := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
+				"ID":        *contextUser.ID,
+				"email":     *contextUser.Email,
+				"firstName": *contextUser.FirstName,
+				"lastName":  *contextUser.LastName,
+				"expiresAt": expiresAt,
+			})
+
+			tokenString, err := token.SignedString([]byte(cfg.Server.HmacSecret))
+			if err != nil {
+				panic(err)
+			}
+
+			graphRequest := graphqlRequest{
+				Query: fmt.Sprintf(graphql, *user.ID),
+			}
+
+			request, _ := json.Marshal(graphRequest)
+
+			sqlexpectations.ExpectDeleteUser(mock, "", user)
+
+			testResponse := &graphqlUserResponse{}
+
+			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
+			httpRequest.Header.Set(middlewares.AuthorizationHeader, tokenString)
+
+			code, err := runRequest(handler, httpRequest, testResponse)
+			Expect(err).To(BeNil())
+
+			Expect(testResponse.Errors).To(BeEmpty())
+
+			Expect(code).To(Equal(http.StatusOK))
+			Expect(mock.ExpectationsWereMet()).To(BeNil())
+			Expect(testResponse.Data.Users.Delete.Code).To(Equal(resolvers.NewUint(200)))
 		})
 	})
 })

@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/followthepattern/adapticc/pkg/api/middlewares"
 	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/request"
 	"github.com/followthepattern/adapticc/pkg/services"
+	"github.com/followthepattern/adapticc/pkg/utils"
 )
 
 type User struct {
@@ -31,7 +31,7 @@ func UserDependencyConstructor(cont *container.Container) (*User, error) {
 }
 
 func (ctrl User) GetByID(ctx context.Context, id string) (*models.User, error) {
-	ctxu := middlewares.GetUserFromContext(ctx)
+	ctxu := utils.GetModelFromContext[models.User](ctx, utils.CtxUserKey)
 	if ctxu == nil {
 		return nil, fmt.Errorf("invalid user context")
 	}
@@ -57,20 +57,24 @@ func (ctrl User) GetByID(ctx context.Context, id string) (*models.User, error) {
 		return nil, err
 	}
 
+	if result.IsNil() {
+		return nil, nil
+	}
+
 	return result, nil
 }
 
 func (ctrl User) Profile(ctx context.Context) (*models.User, error) {
-	user := middlewares.GetUserFromContext(ctx)
-	if user == nil {
+	ctxu := utils.GetModelFromContext[models.User](ctx, utils.CtxUserKey)
+	if ctxu.IsDefault() {
 		return nil, fmt.Errorf("invalid user context")
 	}
 
 	requestBody := models.UserRequestBody{
-		ID: user.ID,
+		ID: ctxu.ID,
 	}
 
-	userIDOpt := request.UserIDOption[models.UserRequestBody, models.User](*user.ID)
+	userIDOpt := request.UserIDOption[models.UserRequestBody, models.User](*ctxu.ID)
 
 	req := request.New(
 		ctx,
@@ -93,7 +97,7 @@ func (ctrl User) Profile(ctx context.Context) (*models.User, error) {
 }
 
 func (ctrl User) Get(ctx context.Context, filter models.UserListRequestBody) (*models.UserListResponse, error) {
-	ctxu := middlewares.GetUserFromContext(ctx)
+	ctxu := utils.GetModelFromContext[models.User](ctx, utils.CtxUserKey)
 	if ctxu == nil {
 		return nil, fmt.Errorf("invalid user context")
 	}
@@ -123,7 +127,7 @@ func (ctrl User) Get(ctx context.Context, filter models.UserListRequestBody) (*m
 }
 
 func (ctrl User) Update(ctx context.Context, user models.User) error {
-	ctxu := middlewares.GetUserFromContext(ctx)
+	ctxu := utils.GetModelFromContext[models.User](ctx, utils.CtxUserKey)
 	if ctxu == nil {
 		return fmt.Errorf("invalid user context")
 	}
@@ -150,7 +154,7 @@ func (ctrl User) Update(ctx context.Context, user models.User) error {
 }
 
 func (ctrl User) Delete(ctx context.Context, id string) error {
-	ctxu := middlewares.GetUserFromContext(ctx)
+	ctxu := utils.GetModelFromContext[models.User](ctx, utils.CtxUserKey)
 	if ctxu == nil {
 		return fmt.Errorf("invalid user context")
 	}

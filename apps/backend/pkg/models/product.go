@@ -5,17 +5,17 @@ import (
 )
 
 type Product struct {
-	ProductID   *string `db:"product_id"`
+	ID          *string `db:"id"`
 	Title       *string `json:"title"`
 	Description *string `json:"description"`
 }
 
 func (m *Product) IsNil() bool {
-	return m == nil || m.ProductID == nil
+	return m == nil || m.ID == nil
 }
 
 type ProductRequestBody struct {
-	ProductID *string `json:"product_id"`
+	ID *string `json:"id"`
 }
 
 type ProductListRequestBody struct {

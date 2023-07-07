@@ -89,8 +89,8 @@ func (service Product) replyRequest(request models.ProductMsg) {
 func (service Product) replySingle(request request.RequestHandler[models.ProductRequestBody, models.Product]) {
 	requestBody := request.RequestBody()
 	userID := request.UserID()
-	if requestBody.ProductID != nil && userID != nil {
-		product, err := service.GetByID(*userID, *requestBody.ProductID)
+	if requestBody.ID != nil {
+		product, err := service.GetByID(userID, *requestBody.ID)
 		if err != nil {
 			request.ReplyError(err)
 			return
@@ -105,69 +105,53 @@ func (service Product) replySingle(request request.RequestHandler[models.Product
 func (service Product) replyList(request request.RequestHandler[models.ProductListRequestBody, models.ProductListResponse]) {
 	requestBody := request.RequestBody()
 	userID := request.UserID()
-	if userID != nil {
-		product, err := service.Get(*userID, requestBody)
-		if err != nil {
-			request.ReplyError(err)
-			return
-		}
-		request.Reply(*product)
+	product, err := service.Get(userID, requestBody)
+	if err != nil {
+		request.ReplyError(err)
 		return
 	}
-
-	request.ReplyError(errors.New("missing userID"))
+	request.Reply(*product)
+	return
 }
 
 func (service Product) replyCreate(req request.RequestHandler[[]models.Product, request.Signal]) {
 	requestBody := req.RequestBody()
 	userID := req.UserID()
-	if userID != nil {
-		err := service.Create(*userID, requestBody)
-		if err != nil {
-			req.ReplyError(err)
-			return
-		}
-		req.Reply(request.Success())
+	err := service.Create(userID, requestBody)
+	if err != nil {
+		req.ReplyError(err)
 		return
 	}
-
-	req.ReplyError(errors.New("missing userID"))
+	req.Reply(request.Success())
+	return
 }
 
 func (service Product) replyUpdate(req request.RequestHandler[models.Product, request.Signal]) {
 	requestBody := req.RequestBody()
 	userID := req.UserID()
-	if userID != nil {
-		err := service.Update(*userID, requestBody)
-		if err != nil {
-			req.ReplyError(err)
-			return
-		}
-		req.Reply(request.Success())
+	err := service.Update(userID, requestBody)
+	if err != nil {
+		req.ReplyError(err)
 		return
 	}
-
-	req.ReplyError(errors.New("missing userID or productID"))
+	req.Reply(request.Success())
+	return
 }
 
 func (service Product) replyDelete(req request.RequestHandler[string, request.Signal]) {
 	requestBody := req.RequestBody()
 	userID := req.UserID()
-	if userID != nil {
-		err := service.Delete(*userID, requestBody)
-		if err != nil {
-			req.ReplyError(err)
-			return
-		}
-		req.Reply(request.Success())
+	err := service.Delete(userID, requestBody)
+	if err != nil {
+		req.ReplyError(err)
 		return
 	}
-
-	req.ReplyError(errors.New("missing userID or productID"))
+	req.Reply(request.Success())
+	return
 }
 
 func (repo Product) Create(userID string, products []models.Product) (err error) {
-	count, err := sqlbuilder.GetInsertWithPermissions(repo.db, "product", userID)
+	count, err := sqlbuilder.GetInsertWithPermissions(repo.db, "PRODUCT", userID)
 	if err != nil {
 		return err
 	}
@@ -187,17 +171,17 @@ func (repo Product) Create(userID string, products []models.Product) (err error)
 	return
 }
 
-func (repo Product) GetByID(userID string, productID string) (*models.Product, error) {
+func (repo Product) GetByID(userID string, id string) (*models.Product, error) {
 	product := models.Product{}
 
 	query := repo.db.From(repo.tableName()).
 		Where(Ex{
-			"product_id": productID})
+			"id": id})
 
 	query = sqlbuilder.GetSelectWithPermissions(
 		query,
-		"product",
-		I("products.product_id"),
+		"PRODUCT",
+		I("products.id"),
 		userID,
 	)
 
@@ -205,35 +189,31 @@ func (repo Product) GetByID(userID string, productID string) (*models.Product, e
 	if err != nil {
 		return nil, err
 	}
-	return &product, err
+
+	return &product, nil
 }
 
 func (repo Product) Get(userID string, request models.ProductListRequestBody) (*models.ProductListResponse, error) {
-	entities := []models.Product{}
+	data := []models.Product{}
 
 	query := repo.db.From(repo.tableName())
 
 	query = sqlbuilder.GetSelectWithPermissions(
 		query,
-		"product",
-		I("products.product_id"),
+		"PRODUCT",
+		I("products.id"),
 		userID,
 	)
 
 	var count int64
 
-	_, err := sqlbuilder.DistinctCount(query, I("products.product_id")).ScanVal(&count)
+	_, err := sqlbuilder.DistinctCount(query, I("products.id")).ScanVal(&count)
 	if err != nil {
 		return nil, err
 	}
 
-	result := models.ProductListResponse{
-		Count:    count,
-		PageSize: request.PageSize,
-	}
-
 	if request.Page == nil {
-		result.Page = pointers.UInt(1)
+		request.Page = pointers.ToPtr[uint](models.DefaultPage)
 	}
 
 	if request.PageSize != nil {
@@ -246,12 +226,17 @@ func (repo Product) Get(userID string, request models.ProductListRequestBody) (*
 		query = query.Limit(*request.PageSize)
 	}
 
-	err = query.Distinct().ScanStructs(&entities)
+	err = query.Distinct().ScanStructs(&data)
 	if err != nil {
 		return nil, err
 	}
 
-	result.Data = entities
+	result := models.ProductListResponse{
+		Count:    count,
+		PageSize: request.PageSize,
+		Page:     request.Page,
+		Data:     data,
+	}
 
 	return &result, nil
 }
@@ -262,12 +247,12 @@ func (repo Product) Update(userID string, request models.Product) error {
 
 	query = sqlbuilder.GetUpdateWithPermissions(
 		query,
-		"product",
-		I("products.product_id"),
+		"PRODUCT",
+		I("products.id"),
 		userID,
 	)
 
-	query = query.Where(I("product_id").Eq(*request.ProductID))
+	query = query.Where(I("id").Eq(*request.ID))
 
 	_, err := query.
 		Executor().
@@ -275,17 +260,17 @@ func (repo Product) Update(userID string, request models.Product) error {
 	return err
 }
 
-func (repo Product) Delete(userID, productID string) error {
+func (repo Product) Delete(userID, id string) error {
 	query := repo.db.Delete(repo.tableName())
 
 	query = sqlbuilder.GetDeleteWithPermissions(
 		query,
-		"product",
-		I("products.product_id"),
+		"PRODUCT",
+		I("usr.products.id"),
 		userID,
 	)
 
-	query = query.Where(C("product_id").Eq(productID))
+	query = query.Where(C("id").Eq(id))
 
 	_, err := query.
 		Executor().

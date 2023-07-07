@@ -7,45 +7,44 @@ services:
     hostname: adapticc_db
     container_name: adapticc_db
     ports:
-      - 5432:5432
+      - 5433:5432
     environment:
       POSTGRES_DB: adapticc
       POSTGRES_USER: dbuser
       POSTGRES_PASSWORD: dbpass
     volumes:
-      - ./db/dump/testdata.sql:/docker-entrypoint-initdb.d/testdata.sql
+      - ${BACKEND_APP_PATH}/db/dump/testdata.sql:/docker-entrypoint-initdb.d/testdata.sql
 
-  adapticc_backend:
+  backend:
+    image: golang:1.20.5
+    env_file:
+      - ./dev.env
     hostname: adapticc_backend
     container_name: adapticc_backend
+    command: bash -c "go run ./cmd/adapticc"
     working_dir: /backend
-    build:
-      context: ./
-      dockerfile: ./build/images/backend/Dockerfile.hotrun
     depends_on:
       - adapticc_db
-    expose:
-      - 3011
     ports:
-      - 3011:3011
+      - 8080:8080
     volumes:
       - ${BACKEND_APP_PATH}:/backend:rw
 
-  adapticc_frontend_app:
-    image: node:16.13.2-buster-slim
-    hostname: adapticc_frontend_app
-    container_name: adapticc_frontend_app
-    command: bash -c "npm run start"
-    environment:
-      - NODE_ENV=dev
-    expose:
-      - 3000
-    ports:
-      - 3000:3000
-    user: node
-    working_dir: /usr/src/app
-    volumes:
-      - ${FRONTEND_APP_PATH}:/usr/src/app:rw
+  # adapticc_frontend_app:
+  #   image: node:16.13.2-buster-slim
+  #   hostname: adapticc_frontend_app
+  #   container_name: adapticc_frontend_app
+  #   command: bash -c "npm run start"
+  #   environment:
+  #     - NODE_ENV=dev
+  #   expose:
+  #     - 3000
+  #   ports:
+  #     - 3000:3000
+  #   user: node
+  #   working_dir: /usr/src/app
+  #   volumes:
+  #     - ${FRONTEND_APP_PATH}:/usr/src/app:rw
 
   # adapticc_nginx:
   #   hostname: adapticc_nginx
