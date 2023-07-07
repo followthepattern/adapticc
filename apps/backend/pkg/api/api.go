@@ -28,8 +28,9 @@ func GetRouter(cont *container.Container) (*chi.Mux, error) {
 	r.Use(middlewares.SessionContextID)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Recoverer)
-	r.Use(middleware.Logger)
 	r.Use(middlewares.Heartbeat("/healthcheck", cfg.Version))
+
+	middlewares.AddMiddlewareLogger(r, cont.GetLogger())
 
 	graphqlHandler, err := graphql.NewHandler(cont)
 	if err != nil {

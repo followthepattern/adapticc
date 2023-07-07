@@ -1,12 +1,10 @@
 package middlewares
 
 import (
-	"context"
 	"errors"
 	"time"
 
 	"github.com/followthepattern/adapticc/pkg/models"
-	"github.com/followthepattern/adapticc/pkg/utils"
 	"github.com/golang-jwt/jwt/v4"
 )
 
@@ -14,9 +12,6 @@ const (
 	AuthorizationHeader = "Authorization"
 	BearerPrefix        = "Bearer"
 )
-
-var CtxUserKey = &utils.ContextKey{Name: "ctx-user"}
-var MachineUserKey = &utils.ContextKey{Name: "ctx-machine"}
 
 func getUserContextFromClaims(claims jwt.MapClaims) (*models.User, error) {
 	id, ok := claims["ID"].(string)
@@ -56,15 +51,4 @@ func getUserContextFromClaims(claims jwt.MapClaims) (*models.User, error) {
 		LastName:  &lastName,
 	}
 	return &user, nil
-}
-
-func GetUserFromContext(ctx context.Context) *models.User {
-	obj := ctx.Value(CtxUserKey)
-
-	user, ok := obj.(*models.User)
-	if !ok {
-		return nil
-	}
-
-	return user
 }

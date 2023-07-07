@@ -4,11 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/followthepattern/adapticc/pkg/api/middlewares"
 	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/request"
 	"github.com/followthepattern/adapticc/pkg/services"
+	"github.com/followthepattern/adapticc/pkg/utils"
+	"github.com/followthepattern/adapticc/pkg/utils/pointers"
+	"github.com/google/uuid"
 )
 
 type Product struct {
@@ -31,14 +33,14 @@ func ProductDependencyConstructor(cont *container.Container) (*Product, error) {
 }
 
 func (ctrl Product) GetByID(ctx context.Context, id string) (*models.Product, error) {
-	ctxu := middlewares.GetUserFromContext(ctx)
+	ctxu := utils.GetModelFromContext[models.User](ctx, utils.CtxUserKey)
 	if ctxu == nil {
 		return nil, fmt.Errorf("invalid user context")
 	}
 
 	userIDOpt := request.UserIDOption[models.ProductRequestBody, models.Product](*ctxu.ID)
 
-	requestBody := models.ProductRequestBody{ProductID: &id}
+	requestBody := models.ProductRequestBody{ID: &id}
 
 	req := request.New(
 		ctx,
@@ -57,11 +59,15 @@ func (ctrl Product) GetByID(ctx context.Context, id string) (*models.Product, er
 		return nil, err
 	}
 
+	if result.IsNil() {
+		return nil, nil
+	}
+
 	return result, nil
 }
 
 func (ctrl Product) Get(ctx context.Context, filter models.ProductListRequestBody) (*models.ProductListResponse, error) {
-	ctxu := middlewares.GetUserFromContext(ctx)
+	ctxu := utils.GetModelFromContext[models.User](ctx, utils.CtxUserKey)
 	if ctxu == nil {
 		return nil, fmt.Errorf("invalid user context")
 	}
@@ -91,12 +97,14 @@ func (ctrl Product) Get(ctx context.Context, filter models.ProductListRequestBod
 }
 
 func (ctrl Product) Create(ctx context.Context, value models.Product) error {
-	ctxu := middlewares.GetUserFromContext(ctx)
+	ctxu := utils.GetModelFromContext[models.User](ctx, utils.CtxUserKey)
 	if ctxu == nil {
 		return fmt.Errorf("invalid user context")
 	}
 
 	userIDOpt := request.UserIDOption[[]models.Product, request.Signal](*ctxu.ID)
+
+	value.ID = pointers.ToPtr(uuid.New().String())
 
 	req := request.New(
 		ctx,
@@ -118,7 +126,7 @@ func (ctrl Product) Create(ctx context.Context, value models.Product) error {
 }
 
 func (ctrl Product) Update(ctx context.Context, value models.Product) error {
-	ctxu := middlewares.GetUserFromContext(ctx)
+	ctxu := utils.GetModelFromContext[models.User](ctx, utils.CtxUserKey)
 	if ctxu == nil {
 		return fmt.Errorf("invalid user context")
 	}
@@ -145,7 +153,7 @@ func (ctrl Product) Update(ctx context.Context, value models.Product) error {
 }
 
 func (ctrl Product) Delete(ctx context.Context, id string) error {
-	ctxu := middlewares.GetUserFromContext(ctx)
+	ctxu := utils.GetModelFromContext[models.User](ctx, utils.CtxUserKey)
 	if ctxu == nil {
 		return fmt.Errorf("invalid user context")
 	}

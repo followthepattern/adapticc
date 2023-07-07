@@ -1,6 +1,8 @@
 package sqlbuilder
 
 import (
+	"fmt"
+
 	. "github.com/doug-martin/goqu/v9"
 	"github.com/doug-martin/goqu/v9/exp"
 )
@@ -10,8 +12,10 @@ func GetDeleteWithPermissions(ds *DeleteDataset, resourceName string, joinKey ex
 
 	colStr := col.(string)
 
+	schema, table := joinKey.GetSchema(), joinKey.GetTable()
+
 	ds = ds.Where(
-		Ex{colStr: From(joinKey.GetTable()).Select(joinKey).
+		Ex{colStr: From(fmt.Sprintf("%s.%s", schema, table)).Select(joinKey).
 			Join(
 				getMergedResourcePermissions(userID).As("merged_resource_permissions"),
 				On(

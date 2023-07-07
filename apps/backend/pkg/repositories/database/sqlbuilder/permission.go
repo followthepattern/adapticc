@@ -12,7 +12,7 @@ func getRoleResourcePermissions(userID string) *SelectDataset {
 			On(Ex{"ur.role_id": I("r.id")}),
 		).
 		LeftJoin(
-			S("usr").Table("role_resource_permission").As("rrp"),
+			S("usr").Table("role_resource_permissions").As("rrp"),
 			On(Ex{"rrp.role_id": I("ur.role_id")}),
 		).
 		Select("rrp.resource_id", "rrp.permission").
@@ -23,7 +23,7 @@ func getRoleResourcePermissions(userID string) *SelectDataset {
 }
 
 func getUserResourcePermissions(userID string) *SelectDataset {
-	return From(S("usr").Table("user_resource_permission").As("urp")).
+	return From(S("usr").Table("user_resource_permissions").As("urp")).
 		Select("urp.resource_id", "urp.permission").
 		Where(
 			T("urp").Col("permission").IsNotNull(),

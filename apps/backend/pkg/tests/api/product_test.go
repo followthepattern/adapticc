@@ -79,8 +79,8 @@ var _ = Describe("Product Test", func() {
 		var query string = `
 		{
 			products {
-				single (productID: "%s") {
-					productID
+				single (id: "%s") {
+					id
 					title
 					description
 				}
@@ -106,7 +106,7 @@ var _ = Describe("Product Test", func() {
 			Expect(err).To(BeNil())
 
 			graphRequest := graphqlRequest{
-				Query: fmt.Sprintf(query, *product.ProductID),
+				Query: fmt.Sprintf(query, *product.ID),
 			}
 
 			request, _ := json.Marshal(graphRequest)
@@ -114,7 +114,7 @@ var _ = Describe("Product Test", func() {
 			testResponse := &graphqlProductResponse{}
 
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
-			httpRequest.Header.Set(middlewares.AuthorizationHeader, tokenString)
+			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("Bearer %s", tokenString))
 
 			code, err := runRequest(handler, httpRequest, testResponse)
 			Expect(err).To(BeNil())
@@ -123,7 +123,7 @@ var _ = Describe("Product Test", func() {
 
 			Expect(code).To(Equal(http.StatusOK))
 			Expect(mock.ExpectationsWereMet()).To(BeNil())
-			Expect(*testResponse.Data.Products.Single.ProductID).To(Equal(*product.ProductID))
+			Expect(*testResponse.Data.Products.Single.ID).To(Equal(*product.ID))
 			Expect(*testResponse.Data.Products.Single.Title).To(Equal(*product.Title))
 			Expect(*testResponse.Data.Products.Single.Description).To(Equal(*product.Description))
 		})
@@ -134,14 +134,14 @@ var _ = Describe("Product Test", func() {
 		query {
 			products {
 				list (filter:{
-					productID: "%v",
+					id: "%v",
 					pageSize: %v,
 					page: %v,
 				}
 				) {
 					count
 					data {
-						productID
+						id
 						title
 						description
 					}
@@ -173,7 +173,7 @@ var _ = Describe("Product Test", func() {
 			Expect(err).To(BeNil())
 
 			graphRequest := graphqlRequest{
-				Query: fmt.Sprintf(query, *product.ProductID, pageSize, page),
+				Query: fmt.Sprintf(query, *product.ID, pageSize, page),
 			}
 
 			request, _ := json.Marshal(graphRequest)
@@ -181,7 +181,7 @@ var _ = Describe("Product Test", func() {
 			testResponse := &graphqlProductResponse{}
 
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
-			httpRequest.Header.Set(middlewares.AuthorizationHeader, tokenString)
+			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("Bearer %s", tokenString))
 
 			code, err := runRequest(handler, httpRequest, testResponse)
 			Expect(err).To(BeNil())
@@ -190,7 +190,7 @@ var _ = Describe("Product Test", func() {
 
 			Expect(code).To(Equal(http.StatusOK))
 			Expect(mock.ExpectationsWereMet()).To(BeNil())
-			Expect(*testResponse.Data.Products.List.Data[0].ProductID).To(Equal(*product.ProductID))
+			Expect(*testResponse.Data.Products.List.Data[0].ID).To(Equal(*product.ID))
 			Expect(*testResponse.Data.Products.List.Data[0].Title).To(Equal(*product.Title))
 			Expect(*testResponse.Data.Products.List.Data[0].Description).To(Equal(*product.Description))
 		})
@@ -200,7 +200,10 @@ var _ = Describe("Product Test", func() {
 		var query string = `
 		mutation {
 			products {
-				create (title: "%v", description: "%v") {
+				create(model: {
+					title: "%s",
+					description: "%s"
+				}) {
 					code
 				}
 			}
@@ -234,7 +237,7 @@ var _ = Describe("Product Test", func() {
 			testResponse := &graphqlProductResponse{}
 
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
-			httpRequest.Header.Set(middlewares.AuthorizationHeader, tokenString)
+			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("Bearer %s", tokenString))
 
 			code, err := runRequest(handler, httpRequest, testResponse)
 			Expect(err).To(BeNil())
@@ -251,7 +254,11 @@ var _ = Describe("Product Test", func() {
 		var query string = `
 		mutation {
 			products {
-				update (productID: "%v", title: "%v", description: "%v") {
+				update(model: {
+					id: "%s",
+					title: "%s",
+					description: "%s"
+				}) {
 					code
 				}
 			}
@@ -276,7 +283,7 @@ var _ = Describe("Product Test", func() {
 			Expect(err).To(BeNil())
 
 			graphRequest := graphqlRequest{
-				Query: fmt.Sprintf(query, *product.ProductID, *product.Title, *product.Description),
+				Query: fmt.Sprintf(query, *product.ID, *product.Title, *product.Description),
 			}
 
 			request, _ := json.Marshal(graphRequest)
@@ -284,7 +291,7 @@ var _ = Describe("Product Test", func() {
 			testResponse := &graphqlProductResponse{}
 
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
-			httpRequest.Header.Set(middlewares.AuthorizationHeader, tokenString)
+			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("Bearer %s", tokenString))
 
 			code, err := runRequest(handler, httpRequest, testResponse)
 			Expect(err).To(BeNil())
@@ -301,7 +308,7 @@ var _ = Describe("Product Test", func() {
 		var query string = `
 		mutation {
 			products {
-				delete (productID: "%v") {
+				delete (id: "%v") {
 					code
 				}
 			}
@@ -326,7 +333,7 @@ var _ = Describe("Product Test", func() {
 			Expect(err).To(BeNil())
 
 			graphRequest := graphqlRequest{
-				Query: fmt.Sprintf(query, *product.ProductID),
+				Query: fmt.Sprintf(query, *product.ID),
 			}
 
 			request, _ := json.Marshal(graphRequest)
@@ -334,7 +341,7 @@ var _ = Describe("Product Test", func() {
 			testResponse := &graphqlProductResponse{}
 
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
-			httpRequest.Header.Set(middlewares.AuthorizationHeader, tokenString)
+			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("Bearer %s", tokenString))
 
 			code, err := runRequest(handler, httpRequest, testResponse)
 			Expect(err).To(BeNil())

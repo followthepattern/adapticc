@@ -149,7 +149,7 @@ var _ = Describe("Authentication", func() {
 			request, _ := json.Marshal(graphRequest)
 
 			sqlexpectations.ExpectGetUserByEmail(mock, models.User{}, *generatedUser.Email)
-			sqlexpectations.ExpectCreateUser(mock, generatedUser)
+			sqlexpectations.ExpectCreateUser(mock, "", generatedUser)
 
 			code, err := runRequest(handler, httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request)), testResponse)
 			Expect(err).To(BeNil())

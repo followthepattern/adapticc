@@ -26,7 +26,7 @@ func (cfg *Config) Validate() error {
 func Parse() (result *Config, err error) {
 	viper.SetConfigName("config")
 	viper.AddConfigPath("configs")
-	viper.SetEnvPrefix("FP")
+	viper.SetEnvPrefix("ADAPTICC")
 	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	viper.SetConfigType("yml")

@@ -81,8 +81,8 @@ func (resolver UserResolver) Single(ctx context.Context, args struct{ Id string 
 func (resolver UserResolver) List(ctx context.Context, args struct{ Filter userListFilter }) (*ListResponse[*User], error) {
 	filter := models.UserListRequestBody{
 		ListFilter: models.ListFilter{
-			PageSize: &args.Filter.PageSize.uint,
-			Page:     &args.Filter.Page.uint,
+			PageSize: args.Filter.PageSize.ValuePtr(),
+			Page:     args.Filter.Page.ValuePtr(),
 		},
 		UserRequestBody: models.UserRequestBody{
 			Search: args.Filter.Search,
@@ -120,6 +120,18 @@ func (resolver UserResolver) Update(ctx context.Context, args struct {
 	}
 
 	err := resolver.ctrl.Update(ctx, user)
+	if err != nil {
+		return nil, err
+	}
+	return &ResponseStatus{
+		Code: NewUint(200),
+	}, nil
+}
+
+func (resolver UserResolver) Delete(ctx context.Context, args struct {
+	Id string
+}) (*ResponseStatus, error) {
+	err := resolver.ctrl.Delete(ctx, args.Id)
 	if err != nil {
 		return nil, err
 	}

@@ -16,7 +16,7 @@ type RequestHandlerOption[RequestT any, RespT any] func(*RequestHandler[RequestT
 
 type RequestHandler[RequestT any, RespT any] struct {
 	ctx         context.Context
-	userID      *string
+	userID      string
 	response    response[RespT]
 	requestBody RequestT
 
@@ -44,7 +44,7 @@ func (r RequestHandler[RequestT, RespT]) Context() context.Context {
 	return r.ctx
 }
 
-func (r RequestHandler[RequestT, RespT]) UserID() *string {
+func (r RequestHandler[RequestT, RespT]) UserID() string {
 	return r.userID
 }
 
@@ -106,7 +106,7 @@ func TimeoutOption[RequestT any, RespT any](timeout time.Duration) RequestHandle
 
 func UserIDOption[RequestT any, RespT any](userID string) RequestHandlerOption[RequestT, RespT] {
 	return func(r *RequestHandler[RequestT, RespT]) {
-		r.userID = &userID
+		r.userID = userID
 	}
 }
 

@@ -1,6 +1,9 @@
 package resolvers
 
-import "github.com/followthepattern/adapticc/pkg/models"
+import (
+	"github.com/followthepattern/adapticc/pkg/models"
+	"github.com/followthepattern/adapticc/pkg/utils/pointers"
+)
 
 type ResponseStatus struct {
 	Code Uint `json:"code"`
@@ -19,13 +22,11 @@ func fromListReponseModel[In any, Out any](m models.ListResponse[In]) ListRespon
 	}
 
 	if m.PageSize != nil {
-		pageSize := NewUint(*m.PageSize)
-		lr.PageSize = &pageSize
+		lr.PageSize = pointers.ToPtr(NewUint(*m.PageSize))
 	}
 
 	if m.Page != nil {
-		page := NewUint(*m.Page)
-		lr.Page = &page
+		lr.Page = pointers.ToPtr(NewUint(*m.Page))
 	}
 
 	return lr

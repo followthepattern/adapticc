@@ -7,6 +7,7 @@ import (
 
 	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
+	"github.com/followthepattern/adapticc/pkg/repositories/database/sqlbuilder"
 	"github.com/followthepattern/adapticc/pkg/request"
 	"github.com/followthepattern/adapticc/pkg/utils/pointers"
 
@@ -100,7 +101,8 @@ func (service User) replyRequest(req models.UserMsg) {
 		}
 	case req.List != nil:
 		requestBody := req.List.RequestBody()
-		resp, err := service.Get(requestBody)
+		userID := req.List.UserID()
+		resp, err := service.Get(userID, requestBody)
 		if err != nil {
 			req.List.ReplyError(err)
 			return
@@ -108,7 +110,10 @@ func (service User) replyRequest(req models.UserMsg) {
 		req.List.Reply(*resp)
 	case req.Create != nil:
 		requestBody := req.Create.RequestBody()
-		err := service.Create(requestBody)
+
+		userID := req.Create.UserID()
+
+		err := service.Create(userID, requestBody)
 		if err != nil {
 			req.Create.ReplyError(err)
 			return
@@ -116,7 +121,8 @@ func (service User) replyRequest(req models.UserMsg) {
 		req.Create.Reply(request.Success())
 	case req.Update != nil:
 		requestBody := req.Update.RequestBody()
-		err := service.Update(requestBody)
+		userID := req.Update.UserID()
+		err := service.Update(userID, requestBody)
 		if err != nil {
 			req.Update.ReplyError(err)
 			return
@@ -124,7 +130,8 @@ func (service User) replyRequest(req models.UserMsg) {
 		req.Update.Reply(request.Success())
 	case req.Delete != nil:
 		requestBody := req.Delete.RequestBody()
-		err := service.Delete(requestBody)
+		userID := req.Delete.UserID()
+		err := service.Delete(userID, requestBody)
 		if err != nil {
 			req.Delete.ReplyError(err)
 			return
@@ -133,7 +140,16 @@ func (service User) replyRequest(req models.UserMsg) {
 	}
 }
 
-func (repo User) Create(users []models.User) (err error) {
+func (repo User) Create(userID string, users []models.User) (err error) {
+	count, err := sqlbuilder.GetInsertWithPermissions(repo.db, "USER", userID)
+	if err != nil {
+		return err
+	}
+
+	if count == 0 {
+		return errors.New("there is no effective permission to create this resource")
+	}
+
 	// for _, user := range users {
 	// 	user.CreatedAt = pointers.Time(time.Now())
 	// }
@@ -165,8 +181,8 @@ func (repo User) GetByEmail(email string) (*models.User, error) {
 	return &user, err
 }
 
-func (repo User) Get(request models.UserListRequestBody) (*models.UserListResponse, error) {
-	users := []models.User{}
+func (repo User) Get(userID string, request models.UserListRequestBody) (*models.UserListResponse, error) {
+	data := []models.User{}
 
 	query := repo.db.From(repo.tableName())
 
@@ -180,18 +196,20 @@ func (repo User) Get(request models.UserListRequestBody) (*models.UserListRespon
 			))
 	}
 
+	query = sqlbuilder.GetSelectWithPermissions(
+		query,
+		"USER",
+		I("users.id"),
+		userID,
+	)
+
 	count, err := query.Count()
 	if err != nil {
 		return nil, err
 	}
 
-	result := models.UserListResponse{
-		Count:    count,
-		PageSize: request.PageSize,
-	}
-
 	if request.Page == nil {
-		result.Page = pointers.UInt(1)
+		request.Page = pointers.UInt(models.DefaultPage)
 	}
 
 	if request.PageSize != nil {
@@ -204,26 +222,62 @@ func (repo User) Get(request models.UserListRequestBody) (*models.UserListRespon
 		query = query.Limit(*request.PageSize)
 	}
 
-	err = query.ScanStructs(&users)
+	err = query.ScanStructs(&data)
 	if err != nil {
 		return nil, err
 	}
 
-	result.Data = users
+	result := models.UserListResponse{
+		Count:    count,
+		PageSize: request.PageSize,
+		Page:     request.Page,
+		Data:     data,
+	}
 
 	return &result, nil
 }
 
-func (repo User) Update(user models.User) error {
+func (repo User) Update(userID string, user models.User) error {
 	// user.UpdatedAt = pointers.Time(time.Now())
-	_, err := repo.db.Update(repo.tableName()).
+	query := repo.db.Update(repo.tableName()).
 		Set(user).
-		Where(C("id").Eq(*user.ID)).
-		Executor().Exec()
+		Where(C("id").Eq(*user.ID))
+
+	query = sqlbuilder.GetUpdateWithPermissions(
+		query,
+		"USER",
+		I("users.id"),
+		userID,
+	)
+
+	_, err := query.Executor().Exec()
 	return err
 }
 
-func (repo User) Delete(id string) error {
-	_, err := repo.db.Delete(repo.tableName()).Executor().Exec()
+func (repo User) Delete(userID, id string) error {
+	query := repo.db.Delete(repo.tableName()).
+		Where(C("id").Eq(id))
+
+	query = sqlbuilder.GetDeleteWithPermissions(
+		query,
+		"USER",
+		I("users.id"),
+		userID,
+	)
+
+	result, err := query.Executor().Exec()
+	if err != nil {
+		return err
+	}
+
+	effectedRows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if effectedRows == 0 {
+		return errors.New("no rows have been effected")
+	}
+
 	return err
 }

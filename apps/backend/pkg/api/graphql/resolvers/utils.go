@@ -68,6 +68,13 @@ func (u Uint) Value() uint {
 	return u.uint
 }
 
+func (u *Uint) ValuePtr() *uint {
+	if u == nil {
+		return nil
+	}
+	return &u.uint
+}
+
 // ImplementsGraphQLType maps this custom Go type
 // to the graphql scalar type in the schema.
 func (Uint) ImplementsGraphQLType(name string) bool {
