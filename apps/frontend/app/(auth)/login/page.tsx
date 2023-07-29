@@ -4,7 +4,7 @@ import { login } from "@/graphql/auth/login";
 import { ACCOUNT_HOME } from "@/lib/constants";
 import { useTokenStore } from "@/lib/store";
 import { gql, useMutation } from "@apollo/client";
-import { redirect } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
@@ -14,8 +14,10 @@ type FormValues = {
 };
 
 
-export default function Page() {
+export default function Login() {
     const { register, handleSubmit } = useForm<FormValues>();
+
+    const navigate = useNavigate();
 
     const [executeLogin, { data, loading, error }] = useMutation(gql(login));
 
@@ -34,7 +36,7 @@ export default function Page() {
         if (data?.authentication?.login?.jwt?.length > 0) {
             let newToken = data?.authentication?.login?.jwt;
             setToken(newToken);
-            redirect(ACCOUNT_HOME);
+            navigate(ACCOUNT_HOME);
         }
     }, [data, setToken]);
 

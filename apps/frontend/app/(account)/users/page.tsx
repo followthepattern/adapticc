@@ -4,22 +4,22 @@ import { ListPageProperties } from "@/components/listPage";
 import { QueryResponse } from "@/graphql/query";
 import { getUsers } from "@/graphql/users/query";
 import { gql, useLazyQuery } from "@apollo/client";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { useEffect } from "react";
 
-export default function Page({searchParams}: ListPageProperties) {
+export default function Users() {
   const [executeGetUsers, { data, called, loading, error }] = useLazyQuery<QueryResponse>(gql(getUsers))
 
   useEffect(() => {
     if (!called) {
       executeGetUsers({
         variables: {
-          page: searchParams.page,
-          pageSize: searchParams.pageSize,
+          page: 1,
+          pageSize: 10,
         }
       });
     }
-  }, [called, executeGetUsers, searchParams]);
+  }, [called, executeGetUsers]);
 
   if (error) {
     return <div>{JSON.stringify(error)}</div>
@@ -40,7 +40,7 @@ export default function Page({searchParams}: ListPageProperties) {
       <div>
         {JSON.stringify(list)}
       </div>
-      <Link href="/products">Products</Link>
+      <Link to="/products">Products</Link>
     </>
   )
 }

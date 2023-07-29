@@ -14,7 +14,7 @@ RUN go mod download
 COPY . .
 
 # Build the application with CGO_ENABLED=0 to create a static binary
-RUN CGO_ENABLED=0 go build -o app
+RUN CGO_ENABLED=0 go build -o app ./cmd/adapticc
 
 # Start with a minimal image to reduce the attack surface
 FROM alpine:3.17.3

@@ -1,16 +1,12 @@
-'use client';
-
 import WithGraphQL from "@/components/withGraphQL";
 import { ACCOUNT_HOME } from "@/lib/constants";
 import { useTokenStore } from "@/lib/store";
 import useHasMounted from "@/lib/useMounted";
-import { redirect } from "next/navigation";
+import { Outlet, redirect } from "react-router-dom";
 
-interface AuthLayoutProperties {
-    children: React.ReactNode,
-}
+interface AuthLayoutProperties {}
 
-export default function AuthLayout({ children }: AuthLayoutProperties) {
+export default function AuthLayout(props: AuthLayoutProperties) {
     const { token } = useTokenStore();
     const hasMounted = useHasMounted();
 
@@ -24,7 +20,7 @@ export default function AuthLayout({ children }: AuthLayoutProperties) {
 
     return (
         <WithGraphQL>
-            {children}
+            <Outlet />
         </WithGraphQL>
     )
 }

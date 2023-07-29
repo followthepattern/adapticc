@@ -4,14 +4,13 @@ import {
 
 import classNames from 'classnames'
 import { IsSelected, NavigationItem } from './navigation'
-import { usePathname } from 'next/navigation'
-import Link from 'next/link'
+import {Link, useLocation} from 'react-router-dom'
 interface StaticSidebarPorperties {
     navigationItems: NavigationItem[]
 }
 
 export default function StaticSidebar(props: StaticSidebarPorperties) {
-    const pathname = usePathname();
+    const pathname = useLocation().pathname;
     return (
         <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
             {/* Sidebar component, swap this element with another sidebar if you like */}
@@ -27,7 +26,7 @@ export default function StaticSidebar(props: StaticSidebarPorperties) {
                                     return (
                                         <li key={item.name}>
                                             <Link
-                                                href={item.href}
+                                                to={item.href}
                                                 className={classNames(
                                                     current
                                                         ? 'bg-indigo-700 text-white'
@@ -52,7 +51,7 @@ export default function StaticSidebar(props: StaticSidebarPorperties) {
                         </li>
                         <li className="mt-auto">
                             <Link
-                                href="/settings"
+                                to="/settings"
                                 className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-indigo-200 hover:bg-indigo-700 hover:text-white"
                             >
                                 <Cog6ToothIcon

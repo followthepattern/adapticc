@@ -12,9 +12,8 @@ import {
     XMarkIcon,
 } from '@heroicons/react/24/outline'
 import classNames from 'classnames'
-import Link from 'next/link'
+import {Link, useLocation} from "react-router-dom"
 import { IsSelected, NavigationItem } from './navigation'
-import { usePathname } from 'next/navigation'
 
 interface MobileSidebarProperties {
     sidebarOpen: boolean,
@@ -23,7 +22,7 @@ interface MobileSidebarProperties {
 }
 
 export default function MobileSidebar(props: MobileSidebarProperties) {
-    const pathname = usePathname();
+    const pathname = useLocation().pathname;
 
     return (
         <Transition.Root show={props.sidebarOpen} as={Fragment}>
@@ -80,7 +79,7 @@ export default function MobileSidebar(props: MobileSidebarProperties) {
                                                     return (
                                                         <li key={item.name}>
                                                             <Link
-                                                                href={item.href}
+                                                                to={item.href}
                                                                 className={classNames(
                                                                     current
                                                                         ? 'bg-indigo-700 text-white'

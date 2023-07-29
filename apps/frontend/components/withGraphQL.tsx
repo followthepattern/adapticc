@@ -2,7 +2,7 @@
 
 import { ApolloClient, ApolloProvider, InMemoryCache, createHttpLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-import { BACKEND_URL } from "@/lib/constants";
+import { API_GRAPHQL } from "@/lib/config";
 
 interface WithGraphQLProperties {
     children?: any;
@@ -11,7 +11,7 @@ interface WithGraphQLProperties {
 
 const WithGraphQL = ({children, token}: WithGraphQLProperties) => {
     const httpLink = createHttpLink({
-        uri: BACKEND_URL,
+        uri: API_GRAPHQL,
     });
 
     const authorizationHeaderText = token ? `Bearer ${token}` : "";
