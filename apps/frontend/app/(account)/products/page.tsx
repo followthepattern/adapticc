@@ -1,31 +1,30 @@
 'use client';
 
 import { ListPageProperties } from "@/components/listPage";
-import Link from "next/link";
+import { Link, useLocation, useSearchParams, useNavigate } from 'react-router-dom'
 
 import Pagination from "../components/pagination";
-import { notFound, usePathname, useRouter } from "next/navigation";
 import { CalculateMaxPage, GetPageFromSearchParams, GetPageSizeFromSearchParams } from "@/lib/pagination";
 import { stringify } from "querystring";
 import SectionHeading from "../components/sectionHeading/sectionHeading";
 import useListProduct from "./components/listProduct";
 
-function getTargetUrl(path: string, searchParams: string, page: string) {
-  const params = new URLSearchParams(searchParams);
-
+function getTargetUrl(path: string, params: URLSearchParams, page: string) {
   params.set("page", page);
 
   return `${path}?${params.toString()}`
 }
 
-export default function Page({ searchParams }: ListPageProperties) {
+export default function Products(props: ListPageProperties) {
   const resourceName = "Products";
+
+  const navigate = useNavigate()
+
+  const [searchParams] = useSearchParams();
 
   const [executeQuery, { data, called, error, loading, itemNotFound }] = useListProduct();
 
-  const pathName = usePathname();
-
-  const router = useRouter();
+  const pathName = useLocation().pathname;
 
   const page = GetPageFromSearchParams(searchParams);
   const pageSize = GetPageSizeFromSearchParams(searchParams);
@@ -44,7 +43,7 @@ export default function Page({ searchParams }: ListPageProperties) {
   }
 
   if (itemNotFound) {
-    notFound();
+    // notFound();
   }
 
   const entities = data?.data ?? [];
@@ -80,7 +79,7 @@ export default function Page({ searchParams }: ListPageProperties) {
               {entities.map((product) => (
                 <tr key={product.id}>
                   <td className="relative py-4 pr-3 text-sm font-medium text-gray-900">
-                    <Link href={`/products/${product.id}`} className="hover:text-indigo-900">
+                    <Link to={`/products/${product.id}`} className="hover:text-indigo-900">
                       {product.title}
                     </Link>
                     <div className="absolute bottom-0 right-full h-px w-screen bg-gray-100" />
@@ -88,7 +87,7 @@ export default function Page({ searchParams }: ListPageProperties) {
                   </td>
                   <td className="hidden px-3 py-4 text-sm text-gray-500 md:table-cell">{product.description}</td>
                   <td className="relative py-4 pl-3 text-right text-sm font-medium">
-                    <Link href={`/products/${product.id}/edit`} className="text-indigo-600 hover:text-indigo-900">
+                    <Link to={`/products/${product.id}/edit`} className="text-indigo-600 hover:text-indigo-900">
                       Edit<span className="sr-only">, {product.title}</span>
                     </Link>
                   </td>
@@ -101,7 +100,7 @@ export default function Page({ searchParams }: ListPageProperties) {
       {maxPage > 1 && <Pagination
         currentPage={page}
         maxPage={maxPage}
-        onClick={(t: number) => { router.push(getTargetUrl(pathName, stringify(searchParams), t.toString())) }}
+        onClick={(t: number) => { navigate(getTargetUrl(pathName, searchParams, t.toString())) }}
       />}
     </div>
   )

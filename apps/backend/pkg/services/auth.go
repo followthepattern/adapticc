@@ -183,7 +183,9 @@ func (a Auth) Register(ctx context.Context, email string, firstName string, last
 		Active:    pointers.Bool(true),
 	}
 
-	creationRequest := request.New[[]models.User, request.Signal](ctx, []models.User{creationUser})
+	createUserIDOpt := request.UserIDOption[[]models.User, request.Signal](*ctxu.ID)
+
+	creationRequest := request.New(ctx, []models.User{creationUser}, createUserIDOpt)
 
 	createMsg := models.UserMsg{
 		Create: &creationRequest,

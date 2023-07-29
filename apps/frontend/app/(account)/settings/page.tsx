@@ -1,8 +1,4 @@
-'use client';
-
-import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
-
-export default function Page() {
+export default function Settings() {
   return (
     <form>
       <div className="space-y-12">

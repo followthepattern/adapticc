@@ -3,7 +3,7 @@
 import UserContext from "@/components/userContext";
 import { useContext } from "react";
 
-export default function Page() {
+export default function Profile() {
   const userProfile = useContext(UserContext);
 
   return (

@@ -3,7 +3,7 @@
 import { Fragment } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import { EllipsisVerticalIcon } from '@heroicons/react/20/solid'
-import Link from 'next/link'
+import { Link } from 'react-router-dom'
 
 interface SectionHeadingMenu {
     resourceUrl: string;
@@ -33,7 +33,7 @@ export default function SectionHeadingMenu({resourceUrl}: SectionHeadingMenu) {
                     <div className="py-1">
                         <Menu.Item>
                             <Link
-                                href={`${resourceUrl}/new`}
+                                to={`${resourceUrl}/new`}
                                 className="text-gray-700 flex justify-between px-4 py-2 text-sm hover:bg-gray-100 hover:text-gray-900"
                             >
                                 <span>Create</span>
@@ -41,7 +41,7 @@ export default function SectionHeadingMenu({resourceUrl}: SectionHeadingMenu) {
                         </Menu.Item>
                         <Menu.Item>
                             <Link
-                                href="#"
+                                to="#"
                                 className="text-gray-700 flex justify-between px-4 py-2 text-sm hover:bg-gray-100 hover:text-gray-900"
                             >
                                 <span>Export</span>
@@ -49,7 +49,7 @@ export default function SectionHeadingMenu({resourceUrl}: SectionHeadingMenu) {
                         </Menu.Item>
                         <Menu.Item>
                             <Link
-                                href="#"
+                                to="#"
                                 className="text-gray-700 flex justify-between px-4 py-2 text-sm hover:bg-gray-100 hover:text-gray-900"
                             >
                                 <span>Delete</span>

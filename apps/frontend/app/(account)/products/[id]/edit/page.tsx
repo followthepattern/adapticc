@@ -1,10 +1,10 @@
 'use client';
 
-import { notFound } from "next/navigation";
 import useSingleProduct from "../../components/singleProduct";
 import useUpdateProduct from "../../components/updateProduct";
 import { useForm } from "react-hook-form";
 import useDeleteProduct from "../../components/deleteProduct";
+import { useParams } from "react-router-dom";
 
 interface PageProperties {
     params: {
@@ -18,8 +18,10 @@ type ProductValues = {
 }
 
 
-export default function Page({ params: { id } }: PageProperties) {
-    const { loading, data, error, itemNotFound } = useSingleProduct(id);
+export default function ProductEdit() {
+    const { id } = useParams();
+
+    const { loading, data, error, itemNotFound } = useSingleProduct(id ?? "");
 
     const [executeUpdateMutation, { updateLoading, updateError, updateResult }] = useUpdateProduct();
 
@@ -33,7 +35,7 @@ export default function Page({ params: { id } }: PageProperties) {
     }
 
     if (itemNotFound) {
-        notFound();
+        // notFound();
     }
 
     if (error) {
@@ -44,7 +46,7 @@ export default function Page({ params: { id } }: PageProperties) {
         const values = getValues();
 
         executeUpdateMutation({
-            id: id,
+            id: id ?? "",
             title: values.title,
             description: values.description,
         })
@@ -52,7 +54,7 @@ export default function Page({ params: { id } }: PageProperties) {
     }
 
     const onDelete = () => {
-        executeDeleteMutation(id)
+        executeDeleteMutation(id ?? "")
     }
 
     return (

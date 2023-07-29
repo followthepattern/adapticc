@@ -1,11 +1,6 @@
 'use client';
 
-import { MutationResponse } from "@/graphql/mutation";
-import { getSingleProduct } from "@/graphql/products/query";
-import { QueryResponse } from "@/graphql/query";
-import { useLazyQuery, useMutation } from "@apollo/client";
-import { notFound } from "next/navigation";
-import { useEffect } from "react";
+import { useParams, useSearchParams } from "react-router-dom";
 import useSingleProduct from "../components/singleProduct";
 
 interface PageProperties {
@@ -21,8 +16,10 @@ interface UpdateItemButtonProperties {
 }
 
 
-export default function Page({ params: { id } }: PageProperties) {
-    const { loading, data, error, itemNotFound } = useSingleProduct(id);
+export default function Product() {
+    const { id } = useParams()
+
+    const { loading, data, error, itemNotFound } = useSingleProduct(id ?? "");
 
     if (loading) {
         return (
@@ -37,7 +34,7 @@ export default function Page({ params: { id } }: PageProperties) {
     }
 
     if (itemNotFound) {
-        notFound();
+        // notFound();
     }
 
     return (

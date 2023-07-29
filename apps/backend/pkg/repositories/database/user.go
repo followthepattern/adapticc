@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
@@ -150,9 +151,9 @@ func (repo User) Create(userID string, users []models.User) (err error) {
 		return errors.New("there is no effective permission to create this resource")
 	}
 
-	// for _, user := range users {
-	// 	user.CreatedAt = pointers.Time(time.Now())
-	// }
+	for i := range users {
+		users[i].RegisteredAt = pointers.Time(time.Now())
+	}
 	_, err = repo.db.Insert(repo.tableName()).Rows(users).Executor().Exec()
 	return
 }

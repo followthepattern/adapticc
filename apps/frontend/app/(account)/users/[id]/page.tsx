@@ -5,7 +5,6 @@ import { QueryResponse } from "@/graphql/query";
 import { deleteUser, updateUser } from "@/graphql/users/mutation";
 import { getSingleUser } from "@/graphql/users/query";
 import { gql, useLazyQuery, useMutation } from "@apollo/client";
-import { notFound } from "next/navigation";
 import { useEffect } from "react";
 
 interface PageProperties {
@@ -63,7 +62,7 @@ export default function Page({ params: { id } }: PageProperties) {
     }
 
     if (called && !loading && !user) {
-        notFound();
+        // notFound();
     }
 
     return (

@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Link } from 'react-router-dom'
  
 export default function NotFound() {
   return (
@@ -6,7 +6,7 @@ export default function NotFound() {
       <h2>Not Found</h2>
       <p>Could not find requested resource</p>
       <p>
-        View <Link href="/users">all posts</Link>
+        View <Link to="/users">all posts</Link>
       </p>
     </div>
   )
