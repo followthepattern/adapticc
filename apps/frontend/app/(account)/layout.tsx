@@ -4,7 +4,6 @@ import WithGraphQL from "@/components/withGraphQL"
 import WithUserContext from "@/components/withUserContext"
 import { LOGIN_URL } from "@/lib/constants";
 import { useTokenStore } from "@/lib/store"
-import useHasMounted from "@/lib/useMounted";
 import { useState } from "react";
 import MobileSidebar from "./components/mobileSidebar";
 import StaticSidebar from "./components/staticSidebar";
@@ -24,12 +23,6 @@ export default function AccountLayout(props: AccountLayoutProperties) {
   // const segments = [];
 
   const { token } = useTokenStore();
-
-  const hasMounted = useHasMounted();
-
-  if (!hasMounted) {
-    return null;
-  }
 
   if (token == "") {
     navigate(LOGIN_URL);

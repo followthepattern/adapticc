@@ -1,40 +1,13 @@
-import { BarsArrowUpIcon, ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
+import { BarsArrowUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid'
 import SectionHeadingMenu from "./sectionHeadingMenu";
-import classNames from 'classnames';
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
-
-interface SectionHeadingProperties {
-    resourceName: string;
-    resourceUrl: string;
-}
+import SearchInput from './components/searchInput';
 
 function Header({ children }: { children?: any }) {
     return <div className="sm:flex-auto">
         <h1 className="text-base font-semibold leading-6 text-gray-900">{children}</h1>
     </div>
-}
-
-function SearchInput() {
-    const commonClasses = "w-full rounded-none rounded-l-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600";
-
-    return (
-        <div className="relative flex-grow focus-within:z-10">
-            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-            </div>
-            <input
-                type="text"
-                className={classNames("block ring-inset sm:hidden", commonClasses)}
-                placeholder="Search"
-            />
-            <input
-                type="text"
-                className={classNames("hidden sm:block text-sm leading-6", commonClasses)}
-                placeholder="Search"
-            />
-        </div>
-    )
 }
 
 function SearchButton() {
@@ -76,19 +49,25 @@ function SearchButton() {
 
 interface SearchBarProperties {
     resourceUrl: string
+    searchInputOnChange: (s: string) => void
+    searchInput?: string
 }
 
-function SearchBar({resourceUrl}: SearchBarProperties) {
+function SearchBar({ resourceUrl, searchInputOnChange, searchInput }: SearchBarProperties) {
     return <div className="mt-3 sm:ml-4 sm:mt-0">
         <label htmlFor="desktop-search-candidate" className="sr-only">
             Search
         </label>
         <div className="flex rounded-md shadow-sm">
-            <SearchInput />
+            <SearchInput onChange={searchInputOnChange} search={searchInput} />
             <SearchButton />
             <SectionHeadingMenu resourceUrl={resourceUrl} />
         </div>
     </div>
+}
+
+interface SectionHeadingProperties extends SearchBarProperties {
+    resourceName: string;
 }
 
 export default function SectionHeading(props: SectionHeadingProperties) {
@@ -96,7 +75,10 @@ export default function SectionHeading(props: SectionHeadingProperties) {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="sm:flex sm:items-center">
                 <Header>{props.resourceName}</Header>
-                <SearchBar resourceUrl={props.resourceUrl} />
+                <SearchBar
+                    resourceUrl={props.resourceUrl}
+                    searchInputOnChange={props.searchInputOnChange}
+                    searchInput={props.searchInput} />
             </div>
         </div>
     )

@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
@@ -197,6 +198,15 @@ func (repo Product) Get(userID string, request models.ProductListRequestBody) (*
 	data := []models.Product{}
 
 	query := repo.db.From(repo.tableName())
+
+	if request.Search != nil {
+		pattern := fmt.Sprintf("%%%v%%", *request.Search)
+		query = query.Where(
+			Or(
+				I("id").Like(pattern),
+				I("title").Like(pattern),
+			))
+	}
 
 	query = sqlbuilder.GetSelectWithPermissions(
 		query,

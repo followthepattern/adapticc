@@ -56,6 +56,20 @@ export function GetPageSizeFromSearchParams(searchParams: URLSearchParams): numb
     return getNumberFromURLSearchParams("pageSize", searchParams, PAGESIZE_DEFAULT);
 }
 
+export function GetSearch(searchParams: URLSearchParams): string {
+    const strValue = searchParams.get("search")
+
+    if (typeof (strValue) !== "string") {
+        return "";
+    }
+
+    if (strValue.length == 0) {
+        return "";
+    }
+
+    return strValue
+}
+
 export function CalculateMaxPage(count: number, pageSize: number): number {
     return Math.ceil(count / pageSize);
 }

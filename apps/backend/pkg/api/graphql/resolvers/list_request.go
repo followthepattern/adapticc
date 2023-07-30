@@ -5,6 +5,7 @@ import (
 )
 
 type ListRequest struct {
+	Search   *string
 	PageSize *Uint
 	Page     *Uint
 }

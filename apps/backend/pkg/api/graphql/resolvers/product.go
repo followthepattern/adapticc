@@ -45,6 +45,7 @@ func (resolver ProductResolver) Single(ctx context.Context, args struct{ Id stri
 func (resolver ProductResolver) List(ctx context.Context, args struct{ Filter ProductListFilter }) (*ListResponse[models.Product], error) {
 	filter := models.ProductListRequestBody{
 		ListFilter: models.ListFilter{
+			Search:   args.Filter.Search,
 			PageSize: args.Filter.PageSize.ValuePtr(),
 			Page:     args.Filter.Page.ValuePtr(),
 		},

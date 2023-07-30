@@ -42,6 +42,7 @@ input ProductInput {
 input ProductListFilter {
 	pageSize: Uint
 	page: Uint
+	search: String
 	id: String
 }
 

@@ -1,11 +1,9 @@
 'use client';
 
-import { ListPageProperties } from "@/components/listPage";
 import { Link, useLocation, useSearchParams, useNavigate } from 'react-router-dom'
 
 import Pagination from "../components/pagination";
-import { CalculateMaxPage, GetPageFromSearchParams, GetPageSizeFromSearchParams } from "@/lib/pagination";
-import { stringify } from "querystring";
+import { CalculateMaxPage, GetPageFromSearchParams, GetPageSizeFromSearchParams, GetSearch } from "@/lib/pagination";
 import SectionHeading from "../components/sectionHeading/sectionHeading";
 import useListProduct from "./components/listProduct";
 
@@ -15,12 +13,12 @@ function getTargetUrl(path: string, params: URLSearchParams, page: string) {
   return `${path}?${params.toString()}`
 }
 
-export default function Products(props: ListPageProperties) {
+export default function Products() {
   const resourceName = "Products";
 
   const navigate = useNavigate()
 
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [executeQuery, { data, called, error, loading, itemNotFound }] = useListProduct();
 
@@ -28,10 +26,11 @@ export default function Products(props: ListPageProperties) {
 
   const page = GetPageFromSearchParams(searchParams);
   const pageSize = GetPageSizeFromSearchParams(searchParams);
+  const search = GetSearch(searchParams);
 
 
   if (!called) {
-    executeQuery(page, pageSize);
+    executeQuery({page, pageSize, search});
   }
 
   if (loading) {
@@ -53,7 +52,13 @@ export default function Products(props: ListPageProperties) {
 
   return (
     <div>
-      <SectionHeading resourceName={resourceName} resourceUrl={pathName}/>
+      <SectionHeading resourceName={resourceName} resourceUrl={pathName}
+        searchInputOnChange={(search) => {
+          searchParams.set("search", search);
+          setSearchParams(searchParams);
+        }}
+        searchInput={search}
+      />
       <div className="mt-8 flow-root overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <table className="w-full text-left">

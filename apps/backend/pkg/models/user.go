@@ -8,9 +8,8 @@ import (
 )
 
 type UserRequestBody struct {
-	ID     *string
-	Email  *string
-	Search *string
+	ID    *string
+	Email *string
 }
 
 type UserListRequestBody struct {

@@ -83,9 +83,7 @@ func (resolver UserResolver) List(ctx context.Context, args struct{ Filter userL
 		ListFilter: models.ListFilter{
 			PageSize: args.Filter.PageSize.ValuePtr(),
 			Page:     args.Filter.Page.ValuePtr(),
-		},
-		UserRequestBody: models.UserRequestBody{
-			Search: args.Filter.Search,
+			Search:   args.Filter.Search,
 		},
 	}
 
