@@ -2,7 +2,7 @@ import WithGraphQL from "@/components/withGraphQL";
 import { ACCOUNT_HOME } from "@/lib/constants";
 import { useTokenStore } from "@/lib/store";
 import useHasMounted from "@/lib/useMounted";
-import { Outlet, redirect, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 
 interface AuthLayoutProperties {}
 
