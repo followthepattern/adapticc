@@ -17,7 +17,7 @@ import (
 	"github.com/google/uuid"
 )
 
-const INCORRECT_EMAIL_OR_PASSWORD = "incorrect email address or password, please try again"
+const WRONG_EMAIL_OR_PASSWORD = "WRONG_EMAIL_OR_PASSWORD"
 const EMAIL_IS_ALREADY_IN_USE_PATTERN = "%v is already in use, please try a different email address"
 
 type Auth struct {
@@ -111,13 +111,13 @@ func (a Auth) Login(ctx context.Context, email string, password string) (*models
 	}
 
 	if user == nil || user.ID == nil {
-		return nil, errors.New(INCORRECT_EMAIL_OR_PASSWORD)
+		return nil, errors.New(WRONG_EMAIL_OR_PASSWORD)
 	}
 
 	requestPasswordHash := utils.GeneratePasswordHash(password, *user.Salt)
 
 	if requestPasswordHash != *user.Password {
-		return nil, errors.New(INCORRECT_EMAIL_OR_PASSWORD)
+		return nil, errors.New(WRONG_EMAIL_OR_PASSWORD)
 	}
 
 	expiresAt := time.Now().Add(time.Hour * 24)

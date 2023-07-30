@@ -7,6 +7,7 @@ import { gql, useMutation } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { ErrorParser } from "@/lib/errorParser";
 
 type FormValues = {
     email: string;
@@ -19,7 +20,7 @@ export default function Login() {
 
     const navigate = useNavigate();
 
-    const [executeLogin, { data, loading, error }] = useMutation(gql(login));
+    const [executeLogin, { data, loading, error }] = useMutation(gql(login), { errorPolicy: "all" });
 
     const { setToken } = useTokenStore();
 
@@ -39,10 +40,6 @@ export default function Login() {
             navigate(ACCOUNT_HOME);
         }
     }, [data, setToken]);
-
-    if (error) {
-        return <div>{JSON.stringify(error)}</div>;
-    }
 
     return (
         <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
@@ -102,6 +99,9 @@ export default function Login() {
                         </button>
                     </div>
                 </form>
+                {error && <p className="mt-10 text-center text-sm text-red-600 font-bold">
+                    {ErrorParser(error.message)}
+                </p>}
             </div>
         </div>
     )

@@ -123,7 +123,7 @@ var _ = Describe("Authentication", func() {
 			Expect(err).To(BeNil())
 
 			Expect(testResponse.Errors).To(HaveLen(1))
-			Expect(testResponse.Errors[0].Message).To(Equal(services.INCORRECT_EMAIL_OR_PASSWORD))
+			Expect(testResponse.Errors[0].Message).To(Equal(services.WRONG_EMAIL_OR_PASSWORD))
 
 			Expect(mock.ExpectationsWereMet()).To(BeNil())
 			Expect(code).To(Equal(http.StatusOK))
