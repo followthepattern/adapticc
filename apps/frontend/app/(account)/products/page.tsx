@@ -6,6 +6,7 @@ import Pagination from "../components/pagination";
 import { CalculateMaxPage, GetPageFromSearchParams, GetPageSizeFromSearchParams, GetSearch } from "@/lib/pagination";
 import SectionHeading from "../components/sectionHeading/sectionHeading";
 import useListProduct from "./components/listProduct";
+import { useEffect } from 'react';
 
 function getTargetUrl(path: string, params: URLSearchParams, page: string) {
   params.set("page", page);
@@ -28,10 +29,9 @@ export default function Products() {
   const pageSize = GetPageSizeFromSearchParams(searchParams);
   const search = GetSearch(searchParams);
 
-
-  if (!called) {
-    executeQuery({page, pageSize, search});
-  }
+  useEffect(() => {
+    executeQuery({ page, pageSize, search });
+  }, [page, pageSize, search])
 
   if (loading) {
     return <div>Loading...</div>
@@ -55,6 +55,7 @@ export default function Products() {
       <SectionHeading resourceName={resourceName} resourceUrl={pathName}
         searchInputOnChange={(search) => {
           searchParams.set("search", search);
+          searchParams.set("page", "1");
           setSearchParams(searchParams);
         }}
         searchInput={search}

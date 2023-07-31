@@ -2,30 +2,28 @@
 
 import WithGraphQL from "@/components/withGraphQL"
 import WithUserContext from "@/components/withUserContext"
-import { LOGIN_URL } from "@/lib/constants";
 import { useTokenStore } from "@/lib/store"
 import { useState } from "react";
 import MobileSidebar from "./components/mobileSidebar";
 import StaticSidebar from "./components/staticSidebar";
 import Header from "./components/header";
 import { navigationItems } from "./components/navigation";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
+import LoginExpired from "@/app/(auth)/login/components/loginLoggedOut";
 
-interface AccountLayoutProperties {
-  // children: React.ReactNode,
-}
-
-export default function AccountLayout(props: AccountLayoutProperties) {
+export default function AccountLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const navigate = useNavigate();
-
 
   // const segments = [];
 
   const { token } = useTokenStore();
 
   if (token == "") {
-    navigate(LOGIN_URL);
+    return (
+      <WithGraphQL>
+        <LoginExpired />
+      </WithGraphQL>
+    )
   }
 
   return (
