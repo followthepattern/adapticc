@@ -1,33 +1,27 @@
-import { Dispatch, Fragment, SetStateAction, useState } from 'react'
+import { Dispatch, Fragment, SetStateAction } from 'react'
 
 import { Transition, Dialog } from "@headlessui/react"
 import {
-    CalendarIcon,
-    ChartPieIcon,
     Cog6ToothIcon,
-    DocumentDuplicateIcon,
-    FolderIcon,
-    HomeIcon,
-    UsersIcon,
     XMarkIcon,
 } from '@heroicons/react/24/outline'
 import classNames from 'classnames'
 import {Link, useLocation} from "react-router-dom"
 import { IsSelected, NavigationItem } from './navigation'
-import { useMobileNavbarStore } from '@/lib/store'
 
 interface MobileSidebarProperties {
+    sidebarOpen: boolean
+    setSidebarOpen: Dispatch<SetStateAction<boolean>>
     navigationItems: NavigationItem[]
 }
 
 export default function MobileSidebar(props: MobileSidebarProperties) {
     const pathname = useLocation().pathname;
 
-    const {sidebarOpen, setSidebarOpen} = useMobileNavbarStore();
 
     return (
-        <Transition.Root show={sidebarOpen} as={Fragment}>
-            <Dialog as="div" className="relative z-50 lg:hidden" onClose={setSidebarOpen}>
+        <Transition.Root show={props.sidebarOpen} as={Fragment}>
+            <Dialog as="div" className="relative z-50 lg:hidden" onClose={props.setSidebarOpen}>
                 <Transition.Child
                     as={Fragment}
                     enter="transition-opacity ease-linear duration-300"
@@ -61,7 +55,7 @@ export default function MobileSidebar(props: MobileSidebarProperties) {
                                 leaveTo="opacity-0"
                             >
                                 <div className="absolute left-full top-0 flex w-16 justify-center pt-5">
-                                    <button type="button" className="-m-2.5 p-2.5" onClick={() => setSidebarOpen(false)}>
+                                    <button type="button" className="-m-2.5 p-2.5" onClick={() => props.setSidebarOpen(false)}>
                                         <span className="sr-only">Close sidebar</span>
                                         <XMarkIcon className="h-6 w-6 text-white" aria-hidden="true" />
                                     </button>
@@ -103,8 +97,8 @@ export default function MobileSidebar(props: MobileSidebarProperties) {
                                             </ul>
                                         </li>
                                         <li className="mt-auto">
-                                            <a
-                                                href="/settings"
+                                            <Link
+                                                to="/settings"
                                                 className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-indigo-200 hover:bg-indigo-700 hover:text-white"
                                             >
                                                 <Cog6ToothIcon
@@ -112,7 +106,7 @@ export default function MobileSidebar(props: MobileSidebarProperties) {
                                                     aria-hidden="true"
                                                 />
                                                 Settings
-                                            </a>
+                                            </Link>
                                         </li>
                                     </ul>
                                 </nav>

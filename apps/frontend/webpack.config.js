@@ -3,8 +3,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { TailwindCSSWebpackPlugin } = require('tailwindcss-webpack-plugin')
 const Dotenv = require('dotenv-webpack');
 
-module.exports = (_, argv) => {
-  console.info("env", argv.env);
+module.exports = (env, argv) => {
+  console.info("env", env);
   console.info("argv", argv);
   return {
     entry: './app/index.tsx',
