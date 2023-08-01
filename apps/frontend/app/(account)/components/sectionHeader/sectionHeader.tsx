@@ -1,8 +1,8 @@
 import { BarsArrowUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid'
-import SectionHeadingMenu from "./sectionHeadingMenu";
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import SearchInput from './components/searchInput';
+import SectionHeadererMenu from './sectionHeadMenu';
 
 function Header({ children }: { children?: any }) {
     return <div className="sm:flex-auto">
@@ -61,16 +61,16 @@ function SearchBar({ resourceUrl, searchInputOnChange, searchInput }: SearchBarP
         <div className="flex rounded-md shadow-sm">
             <SearchInput onChange={searchInputOnChange} search={searchInput} />
             <SearchButton />
-            <SectionHeadingMenu resourceUrl={resourceUrl} />
+            <SectionHeadererMenu resourceUrl={resourceUrl} />
         </div>
     </div>
 }
 
-interface SectionHeadingProperties extends SearchBarProperties {
+interface SectionHeaderProperties extends SearchBarProperties {
     resourceName: string;
 }
 
-export default function SectionHeading(props: SectionHeadingProperties) {
+export default function SectionHeader(props: SectionHeaderProperties) {
     return (
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="sm:flex sm:items-center">
