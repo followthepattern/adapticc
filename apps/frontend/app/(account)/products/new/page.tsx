@@ -2,11 +2,12 @@
 
 import { useForm } from "react-hook-form";
 import useCreateProduct from "../components/createProduct";
+import { useParams } from "react-router-dom";
 
 interface PageProperties {
-    params: {
-        id: string
-    }
+//     params: {
+//         id: string
+//     }
 }
 
 type ProductValues = {
@@ -15,17 +16,16 @@ type ProductValues = {
 }
 
 
-export default function Page({ params: { id } }: PageProperties) {
+export default function ProductNew({}: PageProperties) {
     const [executeMutation, { createLoading, createError, createResult }] = useCreateProduct();
 
     const { register, getValues } = useForm<ProductValues>();
-
 
     const onCreate = () => {
         const values = getValues();
 
         executeMutation({
-            id: id,
+            id: "",
             title: values.title,
             description: values.description,
         })

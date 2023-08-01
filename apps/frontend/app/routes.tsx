@@ -9,6 +9,7 @@ import Settings from "./(account)/settings/page"
 import Profile from "./(account)/profile/page"
 import Product from "./(account)/products/[id]/page"
 import ProductEdit from "./(account)/products/[id]/edit/page"
+import ProductNew from "./(account)/products/new/page"
 
 export const Routes: RouteObject[] = [
     {
@@ -40,6 +41,10 @@ export const Routes: RouteObject[] = [
             {
                 path: "products/:id",
                 element: <Product />
+            },
+            {
+                path: "products/new",
+                element: <ProductNew />
             },
             {
                 path: "products/:id/edit",
