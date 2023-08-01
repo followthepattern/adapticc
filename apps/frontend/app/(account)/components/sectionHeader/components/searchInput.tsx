@@ -36,7 +36,7 @@ export default function SearchInput(props: SearchInputProperties) {
                         type="text"
                         className={classNames("block ring-inset", commonClasses)}
                         placeholder="Search"
-                        onBlur={(e) => {
+                        onChange={(e) => {
                             onChange(e);
                             handleInputChange(e);
                         }}
