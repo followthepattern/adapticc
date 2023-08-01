@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction } from 'react'
 import {
     Bars3Icon,
 } from '@heroicons/react/24/outline'
-import Searchbar from '../../(account)/components/searchbar';
+import Searchbar from './searchbar';
 import ProfileMenu from './profileMenu';
 
 interface HeaderProperties {

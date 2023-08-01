@@ -3,7 +3,7 @@
 import { useLocation, useSearchParams } from 'react-router-dom'
 
 import { GetSearch } from "@/lib/pagination";
-import SectionHeader from '../components/headerSidebar/sectionHeader/sectionHeader';
+import SectionHeader from '../components/sectionHeader/sectionHeader';
 import List from '../components/list/list';
 import { PAGE_DEFAULT } from '@/lib/constants';
 

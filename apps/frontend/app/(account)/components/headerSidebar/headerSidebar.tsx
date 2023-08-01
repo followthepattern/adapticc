@@ -1,8 +1,8 @@
 import { useState } from "react";
-import Header from "../header";
-import MobileSidebar from "../mobileSidebar";
-import { navigationItems } from "../navigation";
-import StaticSidebar from "../staticSidebar";
+import Header from "./header";
+import MobileSidebar from "./mobileSidebar";
+import { navigationItems } from "./navigation";
+import StaticSidebar from "./staticSidebar";
 
 
 export default function HeaderSidebar() {
