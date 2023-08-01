@@ -12,8 +12,6 @@ import { Outlet } from "react-router-dom";
 import LoginExpired from "@/app/(auth)/login/components/loginLoggedOut";
 
 export default function AccountLayout() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
   // const segments = [];
 
   const { token } = useTokenStore();
@@ -29,10 +27,10 @@ export default function AccountLayout() {
   return (
     <WithGraphQL token={token}>
       <WithUserContext>
-        <MobileSidebar navigationItems={navigationItems} sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+        <MobileSidebar navigationItems={navigationItems} />
         <StaticSidebar navigationItems={navigationItems} />
         <div className="lg:pl-72">
-          <Header setSidebarOpen={setSidebarOpen} />
+          <Header />
           {/* <Breadcrumbs pages={segments.map(segment => ({name: segment, href: segment}))}/> */}
           <main className="py-10">
             <div className="px-4 sm:px-6 lg:px-8">

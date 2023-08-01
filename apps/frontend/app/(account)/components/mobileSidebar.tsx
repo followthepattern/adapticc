@@ -14,19 +14,20 @@ import {
 import classNames from 'classnames'
 import {Link, useLocation} from "react-router-dom"
 import { IsSelected, NavigationItem } from './navigation'
+import { useMobileNavbarStore } from '@/lib/store'
 
 interface MobileSidebarProperties {
-    sidebarOpen: boolean,
-    setSidebarOpen: Dispatch<SetStateAction<boolean>>,
     navigationItems: NavigationItem[]
 }
 
 export default function MobileSidebar(props: MobileSidebarProperties) {
     const pathname = useLocation().pathname;
 
+    const {sidebarOpen, setSidebarOpen} = useMobileNavbarStore();
+
     return (
-        <Transition.Root show={props.sidebarOpen} as={Fragment}>
-            <Dialog as="div" className="relative z-50 lg:hidden" onClose={props.setSidebarOpen}>
+        <Transition.Root show={sidebarOpen} as={Fragment}>
+            <Dialog as="div" className="relative z-50 lg:hidden" onClose={setSidebarOpen}>
                 <Transition.Child
                     as={Fragment}
                     enter="transition-opacity ease-linear duration-300"
@@ -60,7 +61,7 @@ export default function MobileSidebar(props: MobileSidebarProperties) {
                                 leaveTo="opacity-0"
                             >
                                 <div className="absolute left-full top-0 flex w-16 justify-center pt-5">
-                                    <button type="button" className="-m-2.5 p-2.5" onClick={() => props.setSidebarOpen(false)}>
+                                    <button type="button" className="-m-2.5 p-2.5" onClick={() => setSidebarOpen(false)}>
                                         <span className="sr-only">Close sidebar</span>
                                         <XMarkIcon className="h-6 w-6 text-white" aria-hidden="true" />
                                     </button>

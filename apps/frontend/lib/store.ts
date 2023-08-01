@@ -28,7 +28,7 @@ export const useTokenStore = create<TokenState>()(
         (set) => ({
             token: "",
             setToken: (newToken) => set(() => ({ token: newToken })),
-            removeToken: () => set(() => ({token: ""})),
+            removeToken: () => set(() => ({ token: "" })),
         }),
         {
             name: 'token-storage',
@@ -37,3 +37,14 @@ export const useTokenStore = create<TokenState>()(
     )
 )
 
+interface MobileNavbarState {
+    sidebarOpen: boolean
+    setSidebarOpen: (sidebarOpen: boolean) => void
+}
+
+export const useMobileNavbarStore = create<MobileNavbarState>()(
+    (set) => ({
+        sidebarOpen: false,
+        setSidebarOpen: (value) => set(() => ({ sidebarOpen: value })),
+    })
+)
