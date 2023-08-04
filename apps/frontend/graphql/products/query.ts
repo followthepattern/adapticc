@@ -24,10 +24,22 @@ query GetSingleProduct($id: String!) {
 }`)
 
 export const getProducts = gql(`
-query GetProducts($id: String, $pageSize: Uint, $page: Uint, $search: String) {
+query GetProducts(
+	$id: String
+	$pageSize: Uint
+	$page: Uint
+	$search: String
+	$orderBy: [OrderBy!]
+) {
 	products {
 		list(
-			filter: { id: $id, pageSize: $pageSize, page: $page, search: $search }
+			filter: {
+				id: $id
+				pageSize: $pageSize
+				page: $page
+				search: $search
+				orderBy: $orderBy
+			}
 		) {
 			count
 			data {
@@ -39,5 +51,4 @@ query GetProducts($id: String, $pageSize: Uint, $page: Uint, $search: String) {
 			pageSize
 		}
 	}
-}
-`)
+}`)

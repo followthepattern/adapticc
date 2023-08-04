@@ -5,6 +5,11 @@ scalar Time
 scalar Int64
 scalar Uint
 
+input OrderBy {
+	name: String!
+	desc: Boolean
+}
+
 type User {
 	id: String
 	email: String
@@ -44,6 +49,7 @@ input ProductListFilter {
 	page: Uint
 	search: String
 	id: String
+	orderBy: [OrderBy!]
 }
 
 type ProductListResponse {

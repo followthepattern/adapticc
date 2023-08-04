@@ -11,7 +11,8 @@ import (
 
 type ProductListFilter struct {
 	ListRequest
-	ID *string
+	ID      *string
+	OrderBy *[]models.OrderBy
 }
 
 func getFromProductListResponseModel(response models.ProductListResponse) ListResponse[models.Product] {
@@ -52,6 +53,10 @@ func (resolver ProductResolver) List(ctx context.Context, args struct{ Filter Pr
 		ProductRequestBody: models.ProductRequestBody{
 			ID: args.Filter.ID,
 		},
+	}
+
+	if args.Filter.OrderBy != nil {
+		filter.Order = *args.Filter.OrderBy
 	}
 
 	products, err := resolver.ctrl.Get(ctx, filter)

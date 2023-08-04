@@ -2,16 +2,31 @@
 
 import { useLocation, useSearchParams } from 'react-router-dom'
 
-import { GetSearch } from "@/lib/pagination";
+import { GetSearch, GetSort } from "@/lib/pagination";
 import SectionHeader from '../components/sectionHeader/sectionHeader';
 import List from '../components/list/list';
 import { PAGE_DEFAULT } from '@/lib/constants';
+import { SortLabel } from '../components/sectionHeader/components/sortButton';
+
+const sortByLables: SortLabel[] = [
+  {
+      code: "id",
+      name: "ID",
+      asc: true,
+  },
+  {
+      code: "title",
+      name: "Title",
+      asc: true,
+  }
+];
 
 export default function Products() {
   const resourceName = "Products";
 
   const [searchParams, setSearchParams] = useSearchParams();
   const searchString = GetSearch(searchParams);
+  const initSort = GetSort(searchParams);
 
   const resourceUrl = useLocation().pathname;
 
@@ -21,13 +36,24 @@ export default function Products() {
     setSearchParams(searchParams);
   }
 
+  const sortOnChange = (sortLabel: SortLabel) => {
+    const url = `${sortLabel.code}_${sortLabel.asc? "asc": "desc"}`
+
+    searchParams.set("sort", url)
+
+    setSearchParams(searchParams);
+  }
+
   return (
     <div>
       <SectionHeader
         resourceName={resourceName}
         resourceUrl={resourceUrl}
         searchInputOnChange={searchInputFieldOnChange}
+        sortOnChange={sortOnChange}
         searchInput={searchString}
+        sortByLables={sortByLables}
+        selectedSortLabel={initSort}
       />
       <div className="mt-8 flow-root overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

@@ -17,12 +17,13 @@ type ListProductQueryResult<Data = any> = [
 export default function useListProduct(): ListProductQueryResult<List<Product>> {
     const [executeQuery, { data, called, loading, error }] = useLazyQuery<QueryResponse>(getProducts);
 
-    const execute = ({page, pageSize, search}:ListFilter) => {
+    const execute = ({page, pageSize, search, orderBy}:ListFilter) => {
         executeQuery({
             variables: {
                 page: page,
                 pageSize: pageSize,
                 search: search,
+                orderBy: orderBy,
             }
         });
     };

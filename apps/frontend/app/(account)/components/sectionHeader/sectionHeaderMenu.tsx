@@ -5,11 +5,11 @@ import { Menu, Transition } from '@headlessui/react'
 import { EllipsisVerticalIcon } from '@heroicons/react/20/solid'
 import { Link } from 'react-router-dom'
 
-interface SectionHeadererMenu {
+interface SectionHeaderMenuProperties {
     resourceUrl: string;
 }
 
-export default function SectionHeadererMenu({resourceUrl}: SectionHeadererMenu) {
+export default function SectionHeaderMenu({resourceUrl}: SectionHeaderMenuProperties) {
 
     return (
         <Menu as="div" className="relative sm:ml-3 px-3 py-2 inline-block text-left">

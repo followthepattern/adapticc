@@ -3,8 +3,9 @@ import Table from "./table";
 
 import { useEffect } from "react";
 import useListProduct from "../../products/components/listProduct";
-import { CalculateMaxPage, GetPageFromSearchParams, GetPageSizeFromSearchParams, GetSearch } from "@/lib/pagination";
+import { CalculateMaxPage, GetPageFromSearchParams, GetPageSizeFromSearchParams, GetSearch, GetSort } from "@/lib/pagination";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { OrderBy } from "@/graphql/utils/list";
 
 function getTargetUrl(path: string, params: URLSearchParams, page: string) {
     params.set("page", page);
@@ -21,10 +22,20 @@ export default function List() {
     const page = GetPageFromSearchParams(searchParams);
     const pageSize = GetPageSizeFromSearchParams(searchParams);
     const search = GetSearch(searchParams);
+    const sort = GetSort(searchParams);
+
+    const orderBy: OrderBy[] = [];
+
+    if (sort) {
+        orderBy.push({
+            name: sort.code,
+            desc: !sort.asc,
+        })
+    }
 
     useEffect(() => {
-        executeQuery({ page, pageSize, search });
-    }, [page, pageSize, search])
+        executeQuery({ page, pageSize, search, orderBy });
+    }, [searchParams])
 
     if (loading) {
         return <div>Loading...</div>

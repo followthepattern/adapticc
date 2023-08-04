@@ -12,6 +12,7 @@ import (
 	"github.com/followthepattern/adapticc/pkg/utils/pointers"
 
 	. "github.com/doug-martin/goqu/v9"
+	"github.com/doug-martin/goqu/v9/exp"
 )
 
 type ProductMsgChannel chan models.ProductMsg
@@ -234,6 +235,18 @@ func (repo Product) Get(userID string, request models.ProductListRequestBody) (*
 
 		query = query.Offset(page * *request.PageSize)
 		query = query.Limit(*request.PageSize)
+	}
+
+	orderLength := len(request.Order)
+	if orderLength > 0 {
+		orderExpressions := make([]exp.OrderedExpression, orderLength)
+		for i, order := range request.Order {
+			orderExpressions[i] = I(order.Name).Asc()
+			if order.Desc != nil && *order.Desc {
+				orderExpressions[i] = I(order.Name).Desc()
+			}
+		}
+		query = query.Order(orderExpressions...)
 	}
 
 	err = query.Distinct().ScanStructs(&data)

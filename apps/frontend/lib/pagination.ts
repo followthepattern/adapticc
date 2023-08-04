@@ -1,3 +1,4 @@
+import { SortLabel } from "@/app/(account)/components/sectionHeader/components/sortButton";
 import { PAGESIZE_DEFAULT, PAGE_DEFAULT } from "./constants";
 
 function getNumberFromSearchParams(key: string, searchParams: { [key: string]: string | string[] | undefined }, defaultValue: number): number {
@@ -68,6 +69,32 @@ export function GetSearch(searchParams: URLSearchParams): string {
     }
 
     return strValue
+}
+
+export function GetSort(searchParams: URLSearchParams): SortLabel | undefined {
+    const strValue = searchParams.get("sort")
+
+    if (typeof (strValue) !== "string") {
+        return undefined;
+    }
+
+    if (strValue.length < 1) {
+        return undefined;
+    }
+
+    const tags = strValue.split("_");
+
+    if (tags.length < 1) {
+        return undefined;
+    }
+
+    const result: SortLabel = {
+        code: tags[0],
+        asc: tags[1] == "asc",
+        name: ""
+    }
+
+    return result
 }
 
 export function CalculateMaxPage(count: number, pageSize: number): number {
