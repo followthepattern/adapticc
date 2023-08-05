@@ -2,13 +2,11 @@
 
 import { useForm } from "react-hook-form";
 import useCreateProduct from "../components/createProduct";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { RESOURCE_URL } from "../page";
+import { useEffect } from "react";
 
-interface PageProperties {
-//     params: {
-//         id: string
-//     }
-}
+interface PageProperties { }
 
 type ProductValues = {
     title: string;
@@ -16,8 +14,17 @@ type ProductValues = {
 }
 
 
-export default function ProductNew({}: PageProperties) {
+export default function ProductNew({ }: PageProperties) {
     const [executeMutation, { createLoading, createError, createResult }] = useCreateProduct();
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (createResult && createResult > 0) {
+            navigate(RESOURCE_URL);
+        }
+
+    }, [createResult])
 
     const { register, getValues } = useForm<ProductValues>();
 
@@ -29,7 +36,10 @@ export default function ProductNew({}: PageProperties) {
             title: values.title,
             description: values.description,
         })
+    }
 
+    const onCancel = () => {
+        navigate(RESOURCE_URL)
     }
 
     return (
@@ -72,7 +82,7 @@ export default function ProductNew({}: PageProperties) {
             </div>
 
             <div className="mt-6 flex items-center justify-end gap-x-6">
-                <button type="button" className="text-sm font-semibold leading-6 text-gray-900">
+                <button type="button" className="text-sm font-semibold leading-6 text-gray-900" onClick={onCancel}>
                     Cancel
                 </button>
                 <button

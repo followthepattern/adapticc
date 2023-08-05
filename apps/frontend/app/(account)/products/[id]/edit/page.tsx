@@ -4,7 +4,9 @@ import useSingleProduct from "../../components/singleProduct";
 import useUpdateProduct from "../../components/updateProduct";
 import { useForm } from "react-hook-form";
 import useDeleteProduct from "../../components/deleteProduct";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { RESOURCE_URL } from "../../page";
+import { useEffect } from "react";
 
 interface PageProperties {
     params: {
@@ -27,6 +29,19 @@ export default function ProductEdit() {
 
     const [executeDeleteMutation, { deleteLoading, deleteError, deleteResult }] = useDeleteProduct();
 
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (updateResult && updateResult > 0) {
+            navigate(RESOURCE_URL);
+        }
+    }, [updateResult])
+
+    useEffect(() => {
+        if (deleteResult && deleteResult > 0) {
+            navigate(RESOURCE_URL);
+        }
+    }, [deleteResult])
 
     const { register, getValues } = useForm<ProductValues>();
 
@@ -55,6 +70,10 @@ export default function ProductEdit() {
 
     const onDelete = () => {
         executeDeleteMutation(id ?? "")
+    }
+
+    const onCancel = () => {
+        navigate(RESOURCE_URL)
     }
 
     return (
@@ -106,7 +125,11 @@ export default function ProductEdit() {
                         Delete
                     </button>
                     <div className="flex gap-x-6">
-                        <button type="button" className="text-sm font-semibold leading-6 text-gray-900">
+                        <button
+                            type="button"
+                            className="text-sm font-semibold leading-6 text-gray-900"
+                            onClick={onCancel}
+                        >
                             Cancel
                         </button>
                         <button

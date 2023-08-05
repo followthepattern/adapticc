@@ -1,5 +1,6 @@
 import { MutationResult, useMutation } from "@apollo/client";
 import { ProductMutation, createProduct } from "@/graphql/products/mutation";
+import { MutationResponse } from "@/graphql/mutation";
 
 interface Product {
     id: string
@@ -17,7 +18,7 @@ type CreateProductMutationResult<Entity = any, TResult = any> = [
 ];
 
 export default function useCreateProduct(): CreateProductMutationResult<Product, number | undefined> {
-    const [executeMutation, { data, loading, error }] = useMutation<MutationResult<ProductMutation>>(createProduct);
+    const [executeMutation, { data, loading, error }] = useMutation<MutationResponse>(createProduct);
 
     const execute = (model: Product) => {
         executeMutation({
@@ -27,7 +28,8 @@ export default function useCreateProduct(): CreateProductMutationResult<Product,
         });
     };
 
-    const code = data?.data?.update?.code
+    
+    const code = data?.products?.create?.code
 
     return [execute, { createResult: code, createLoading: loading, createError: error }];
 }

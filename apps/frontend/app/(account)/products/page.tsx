@@ -8,6 +8,9 @@ import List from '../components/list/list';
 import { PAGE_DEFAULT } from '@/lib/constants';
 import { SortLabel } from '../components/sectionHeader/components/sortButton';
 
+export const RESOURCE_NAME = "Products"
+export const RESOURCE_URL = "/products"
+
 const sortByLables: SortLabel[] = [
   {
       code: "id",
@@ -22,8 +25,6 @@ const sortByLables: SortLabel[] = [
 ];
 
 export default function Products() {
-  const resourceName = "Products";
-
   const [searchParams, setSearchParams] = useSearchParams();
   const searchString = GetSearch(searchParams);
   const initSort = GetSort(searchParams);
@@ -47,7 +48,7 @@ export default function Products() {
   return (
     <div>
       <SectionHeader
-        resourceName={resourceName}
+        resourceName={RESOURCE_NAME}
         resourceUrl={resourceUrl}
         searchInputOnChange={searchInputFieldOnChange}
         sortOnChange={sortOnChange}
