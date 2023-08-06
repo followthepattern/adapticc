@@ -1,18 +1,4 @@
-import { gql } from "@apollo/client"
-import { List } from "../utils/list"
-
-export interface Product {
-	id?: string
-	title?: string
-	description?: string
-}
-
-export interface Products {
-	single?: Product
-	list?: List<Product>
-}
-
-export const getSingleProduct = gql(`
+export const getSingleProduct = `
 query GetSingleProduct($id: String!) {
 	products {
 		single (id: $id) {
@@ -21,11 +7,10 @@ query GetSingleProduct($id: String!) {
 			description
 		}
 	}
-}`)
+}`
 
-export const getProducts = gql(`
+export const getProducts = `
 query GetProducts(
-	$id: String
 	$pageSize: Uint
 	$page: Uint
 	$search: String
@@ -33,13 +18,9 @@ query GetProducts(
 ) {
 	products {
 		list(
-			filter: {
-				id: $id
-				pageSize: $pageSize
-				page: $page
-				search: $search
-				orderBy: $orderBy
-			}
+			pagination: { pageSize: $pageSize, page: $page }
+			filter: { search: $search }
+			orderBy: $orderBy
 		) {
 			count
 			data {
@@ -51,4 +32,4 @@ query GetProducts(
 			pageSize
 		}
 	}
-}`)
+}`

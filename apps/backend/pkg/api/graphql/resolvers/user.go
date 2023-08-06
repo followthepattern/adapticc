@@ -50,11 +50,6 @@ func getFromUserListResponseModel(response models.UserListResponse) ListResponse
 	return resp
 }
 
-type userListFilter struct {
-	ListRequest
-	Search *string
-}
-
 type UserResolver struct {
 	cont *container.Container
 	ctrl *controllers.User
@@ -78,16 +73,29 @@ func (resolver UserResolver) Single(ctx context.Context, args struct{ Id string 
 	return user, nil
 }
 
-func (resolver UserResolver) List(ctx context.Context, args struct{ Filter userListFilter }) (*ListResponse[*User], error) {
-	filter := models.UserListRequestBody{
-		ListFilter: models.ListFilter{
-			PageSize: args.Filter.PageSize.ValuePtr(),
-			Page:     args.Filter.Page.ValuePtr(),
-			Search:   args.Filter.Search,
+func (resolver UserResolver) List(ctx context.Context, args struct {
+	Pagination Pagination
+	Filter     *models.ListFilter
+	OrderBy    *[]models.OrderBy
+}) (*ListResponse[*User], error) {
+	request := models.UserListRequestBody{
+		Pagination: models.Pagination{
+			PageSize: args.Pagination.PageSize.ValuePtr(),
+			Page:     args.Pagination.Page.ValuePtr(),
 		},
 	}
 
-	users, err := resolver.ctrl.Get(ctx, filter)
+	if args.Filter != nil {
+		request.Filter = models.ListFilter{
+			Search: args.Filter.Search,
+		}
+	}
+
+	if args.OrderBy != nil {
+		request.OrderBy = *args.OrderBy
+	}
+
+	users, err := resolver.ctrl.Get(ctx, request)
 	if err != nil {
 		return nil, err
 	}

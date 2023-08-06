@@ -1,18 +1,3 @@
-import { List } from "../utils/list"
-
-export interface User {
-	id?: string
-	email?: string
-	firstName?: string
-	lastName?: string
-}
-
-export interface Users {
-	profile?: User
-	single?: User
-	list?: List<User>
-}
-
 export const getUserProfile = `
 query {
 	users {
@@ -38,13 +23,17 @@ query GetSingleUser($id: String!) {
 }`
 
 export const getUsers = `
-query GetUsers($search: String, $pageSize: Uint, $page: Uint) {
+query GetUsers(
+	$search: String
+	$pageSize: Uint
+	$page: Uint
+	$orderBy: [OrderBy!]
+) {
 	users {
-		list (filter:{
-			search: $search,
-			pageSize: $pageSize,
-			page: $page,
-		}
+		list(
+			pagination: { pageSize: $pageSize, page: $page }
+			filter: { search: $search }
+			orderBy: $orderBy
 		) {
 			count
 			data {
@@ -57,5 +46,4 @@ query GetUsers($search: String, $pageSize: Uint, $page: Uint) {
 			pageSize
 		}
 	}
-}
-`
+}`

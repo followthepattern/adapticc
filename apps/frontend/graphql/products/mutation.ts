@@ -1,36 +1,27 @@
-import { gql } from "@apollo/client"
-import { MutationResult } from "../utils/mutationResult"
-
-export interface ProductMutation {
-	update?: MutationResult
-	create?: MutationResult
-	delete?: MutationResult
-}
-
-export const updateProduct = gql(`
+export const updateProduct = `
 mutation UpdateProduct($model: ProductInput!) {
 	products {
 		update(model: $model) {
 			code
 		}
 	}
-}`)
+}`
 
-export const createProduct = gql(`
+export const createProduct = `
 mutation CreateProduct($model: ProductInput!) {
 	products {
 		create(model: $model) {
 			code
 		}
 	}
-}`)
+}`
 
 
-export const deleteProduct = gql(`
+export const deleteProduct = `
 mutation DeleteProduct($id: String!) {
 	products {
 		delete(id: $id) {
 			code
 		}
 	}
-}`)
+}`

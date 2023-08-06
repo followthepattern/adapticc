@@ -43,23 +43,29 @@ func (resolver ProductResolver) Single(ctx context.Context, args struct{ Id stri
 	return product, nil
 }
 
-func (resolver ProductResolver) List(ctx context.Context, args struct{ Filter ProductListFilter }) (*ListResponse[models.Product], error) {
-	filter := models.ProductListRequestBody{
-		ListFilter: models.ListFilter{
-			Search:   args.Filter.Search,
-			PageSize: args.Filter.PageSize.ValuePtr(),
-			Page:     args.Filter.Page.ValuePtr(),
-		},
-		ProductRequestBody: models.ProductRequestBody{
-			ID: args.Filter.ID,
+func (resolver ProductResolver) List(ctx context.Context, args struct {
+	Pagination Pagination
+	Filter     *models.ListFilter
+	OrderBy    *[]models.OrderBy
+}) (*ListResponse[models.Product], error) {
+	request := models.ProductListRequestBody{
+		Pagination: models.Pagination{
+			PageSize: args.Pagination.PageSize.ValuePtr(),
+			Page:     args.Pagination.Page.ValuePtr(),
 		},
 	}
 
-	if args.Filter.OrderBy != nil {
-		filter.Order = *args.Filter.OrderBy
+	if args.Filter != nil {
+		request.Filter = models.ListFilter{
+			Search: args.Filter.Search,
+		}
 	}
 
-	products, err := resolver.ctrl.Get(ctx, filter)
+	if args.OrderBy != nil {
+		request.OrderBy = *args.OrderBy
+	}
+
+	products, err := resolver.ctrl.Get(ctx, request)
 	if err != nil {
 		return nil, err
 	}

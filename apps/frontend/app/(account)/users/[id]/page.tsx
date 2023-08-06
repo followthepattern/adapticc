@@ -1,5 +1,3 @@
-'use client';
-
 import { MutationResponse } from "@/graphql/mutation";
 import { QueryResponse } from "@/graphql/query";
 import { deleteUser, updateUser } from "@/graphql/users/mutation";
@@ -7,7 +5,7 @@ import { getSingleUser } from "@/graphql/users/query";
 import { gql, useLazyQuery, useMutation } from "@apollo/client";
 import { useEffect } from "react";
 
-interface PageProperties {
+interface ListPageWrapperProperties {
     params: {
         id: string
     }
@@ -35,7 +33,7 @@ const UpdateItemButton = (props: UpdateItemButtonProperties) => {
     )
 }
 
-export default function Page({ params: { id } }: PageProperties) {
+export default function Page({ params: { id } }: ListPageWrapperProperties) {
     const [executeSingleUser, { data, called, loading, error }] = useLazyQuery<QueryResponse>(gql(getSingleUser))
 
     const [executeUpdateUser, { data: updateData, called: updateCalled, loading: updateLoading, error: updateError }] = useMutation<MutationResponse>(gql(updateUser));

@@ -1,5 +1,3 @@
-'use client';
-
 import WithGraphQL from "@/components/withGraphQL"
 import WithUserContext from "@/components/withUserContext"
 import { useTokenStore } from "@/lib/store"

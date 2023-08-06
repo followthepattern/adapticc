@@ -1,6 +1,3 @@
-'use client';
-
-import { ListPageProperties } from "@/components/listPage";
 import { QueryResponse } from "@/graphql/query";
 import { getUsers } from "@/graphql/users/query";
 import { gql, useLazyQuery } from "@apollo/client";

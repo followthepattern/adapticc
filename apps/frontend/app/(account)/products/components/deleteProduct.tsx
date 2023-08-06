@@ -1,28 +1,11 @@
-import { MutationResult, useMutation } from "@apollo/client";
-import { ProductMutation, deleteProduct, updateProduct } from "@/graphql/products/mutation";
-import { MutationResponse } from "@/graphql/mutation";
+import { deleteProduct as graphQL } from "@/graphql/products/mutation";
+import { DeleteMutationResult, MutationResponse } from "@/graphql/mutation";
+import useDelete from "@/graphql/components/deleteComponent";
 
-type DeleteProductMutationResult<Entity = any, TResult = any> = [
-    (id: Entity) => void,
-    {
-        deleteLoading: boolean;
-        deleteResult?: TResult;
-        deleteError?: any;
+export default function useDeleteProduct(): DeleteMutationResult<string,number | undefined> {
+    const parseResult = (data?: MutationResponse | null): number | undefined => {
+        return data?.products?.delete?.code
     }
-];
 
-export default function useDeleteProduct(): DeleteProductMutationResult<string,number | undefined> {
-    const [executeMutation, { data, loading, error }] = useMutation<MutationResponse>(deleteProduct);
-
-    const execute = (id: string) => {
-        executeMutation({
-            variables: {
-                id: id
-            }
-        });
-    };
-
-    const code = data?.products?.delete?.code
-
-    return [execute, { deleteResult: code, deleteLoading: loading, deleteError: error }];
+    return useDelete({graphQL, parseResult})
 }

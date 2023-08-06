@@ -1,35 +1,12 @@
-import { MutationResult, useMutation } from "@apollo/client";
-import { ProductMutation, createProduct } from "@/graphql/products/mutation";
-import { MutationResponse } from "@/graphql/mutation";
+import { CreateMutationResult, MutationResponse } from "@/graphql/mutation";
+import { Product } from "@/models/product";
+import useCreate from "@/graphql/components/createComponent";
+import { createProduct as graphQL } from "@/graphql/products/mutation";
 
-interface Product {
-    id: string
-    title: string
-    description: string
-}
-
-type CreateProductMutationResult<Entity = any, TResult = any> = [
-    (model: Entity) => void,
-    {
-        createLoading: boolean;
-        createResult?: TResult;
-        createError?: any;
+export default function useCreateProduct(): CreateMutationResult<Product, number> {
+    const parseResult = (data?: MutationResponse | null) : number | undefined  => {
+        return data?.products?.create?.code;
     }
-];
 
-export default function useCreateProduct(): CreateProductMutationResult<Product, number | undefined> {
-    const [executeMutation, { data, loading, error }] = useMutation<MutationResponse>(createProduct);
-
-    const execute = (model: Product) => {
-        executeMutation({
-            variables: {
-                model: model
-            }
-        });
-    };
-
-    
-    const code = data?.products?.create?.code
-
-    return [execute, { createResult: code, createLoading: loading, createError: error }];
+    return useCreate<Product>({parseResult, graphQL})
 }

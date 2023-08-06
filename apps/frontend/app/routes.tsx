@@ -10,6 +10,7 @@ import Profile from "./(account)/profile/page"
 import Product from "./(account)/products/[id]/page"
 import ProductEdit from "./(account)/products/[id]/edit/page"
 import ProductNew from "./(account)/products/new/page"
+import { ListPageWrapper } from "./(account)/components/listPageWrapper/listPageWrapper"
 
 export const Routes: RouteObject[] = [
     {
@@ -36,7 +37,7 @@ export const Routes: RouteObject[] = [
             },
             {
                 path: "products",
-                element: <Products />,
+                element: <ListPageWrapper Component={Products}/>,
             },
             {
                 path: "products/:id",

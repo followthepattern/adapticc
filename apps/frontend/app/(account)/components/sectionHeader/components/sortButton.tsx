@@ -1,13 +1,8 @@
 import { BarsArrowUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid'
 import { Listbox, Transition } from '@headlessui/react';
-import { Fragment, useState } from 'react';
+import { Fragment } from 'react';
 import { CheckIcon } from '@heroicons/react/24/outline';
-
-export interface SortLabel {
-    name: string
-    asc: boolean
-    code: string
-}
+import { SortLabel } from '../../listPageWrapper/listingFunctions';
 
 export interface SortButtonProperties {
     sortByLables: SortLabel[]
@@ -15,27 +10,20 @@ export interface SortButtonProperties {
     sortOnChange: (v: SortLabel) => void
 }
 
-export default function SortButton({sortByLables, selectedSortLabel, sortOnChange}: SortButtonProperties) {
-    let selectedValue = null;
-
-    if (selectedSortLabel != null) {
-        let sort = sortByLables.find(l => l.code == selectedSortLabel.code);
-        if (sort) {
-            selectedValue = sort;
-        }
-    }
-
+export default function SortButton({ sortByLables, selectedSortLabel, sortOnChange }: SortButtonProperties) {
     const OnChange = (v: SortLabel) => {
         sortOnChange(v);
     }
 
+    const initValue: SortLabel | null = selectedSortLabel ? selectedSortLabel : null;
+
     return (
         <div className='relative'>
-            <Listbox value={selectedValue} onChange={OnChange}>
+            <Listbox value={initValue} onChange={OnChange}>
                 <Listbox.Button className="-ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                    <span className="sr-only">{selectedValue ? selectedValue.name : "Sort"}</span>
+                    <span className="sr-only">{initValue ? initValue.name : "Sort"}</span>
                     <BarsArrowUpIcon className="-ml-0.5 h-5 w-5 text-gray-400" aria-hidden="true" />
-                    {selectedValue ? selectedValue.name : "Sort"}
+                    {initValue ? initValue.name : "Sort"}
                     <ChevronDownIcon className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
                 </Listbox.Button>
                 <Transition

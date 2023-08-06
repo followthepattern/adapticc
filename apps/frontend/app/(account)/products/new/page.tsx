@@ -1,20 +1,11 @@
-'use client';
-
 import { useForm } from "react-hook-form";
 import useCreateProduct from "../components/createProduct";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { RESOURCE_URL } from "../page";
 import { useEffect } from "react";
+import { Product } from "@/models/product";
 
-interface PageProperties { }
-
-type ProductValues = {
-    title: string;
-    description: string;
-}
-
-
-export default function ProductNew({ }: PageProperties) {
+export default function ProductNew() {
     const [executeMutation, { createLoading, createError, createResult }] = useCreateProduct();
 
     const navigate = useNavigate();
@@ -26,7 +17,7 @@ export default function ProductNew({ }: PageProperties) {
 
     }, [createResult])
 
-    const { register, getValues } = useForm<ProductValues>();
+    const { register, getValues } = useForm<Product>();
 
     const onCreate = () => {
         const values = getValues();

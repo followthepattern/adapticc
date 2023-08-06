@@ -1,21 +1,6 @@
-'use client';
-
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useSingleProduct from "../components/singleProduct";
 import { RESOURCE_URL } from "../page";
-
-interface PageProperties {
-    params: {
-        id: string
-    }
-}
-
-interface UpdateItemButtonProperties {
-    id: string
-    firstName?: string
-    lastName?: string
-}
-
 
 export default function Product() {
     const { id } = useParams()

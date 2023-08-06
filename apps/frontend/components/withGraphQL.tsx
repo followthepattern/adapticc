@@ -1,5 +1,3 @@
-'use client';
-
 import { ApolloClient, ApolloProvider, InMemoryCache, createHttpLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { API_GRAPHQL } from "@/lib/config";

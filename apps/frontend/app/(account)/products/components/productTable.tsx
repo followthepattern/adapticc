@@ -1,11 +1,11 @@
+import { Product } from "@/models/product";
 import { Link } from "react-router-dom";
-import { Product } from "@/graphql/products/query";
 
-interface TableProperties {
+interface ProductTableProperties {
     entities: Product[]
 }
 
-export default function Table({entities}: TableProperties) {
+export default function ProductTable({ entities }: ProductTableProperties) {
     return (
         <table className="w-full text-left">
             <thead className="bg-white">

@@ -1,64 +1,60 @@
-'use client';
-
-import { useLocation, useSearchParams } from 'react-router-dom'
-
-import { GetSearch, GetSort } from "@/lib/pagination";
 import SectionHeader from '../components/sectionHeader/sectionHeader';
 import List from '../components/list/list';
-import { PAGE_DEFAULT } from '@/lib/constants';
-import { SortLabel } from '../components/sectionHeader/components/sortButton';
+import { ListPageComponentProperties } from '../components/listPageWrapper/listPageWrapper';
+import { SortLabel, SetPageParams, SetSearchPatternParams, SetSortPatternParrams } from '../components/listPageWrapper/listingFunctions';
+import useListProduct from './components/listProduct';
+import ProductTable from './components/productTable';
 
 export const RESOURCE_NAME = "Products"
 export const RESOURCE_URL = "/products"
 
 const sortByLables: SortLabel[] = [
   {
-      code: "id",
-      name: "ID",
-      asc: true,
+    code: "id",
+    name: "ID",
+    asc: true,
   },
   {
-      code: "title",
-      name: "Title",
-      asc: true,
+    code: "title",
+    name: "Title",
+    asc: true,
   }
 ];
 
-export default function Products() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const searchString = GetSearch(searchParams);
-  const initSort = GetSort(searchParams);
-
-  const resourceUrl = useLocation().pathname;
-
-  const searchInputFieldOnChange = (searchString: string) => {
-    searchParams.set("search", searchString);
-    searchParams.set("page", PAGE_DEFAULT.toString());
-    setSearchParams(searchParams);
-  }
-
+export default function Products(props: ListPageComponentProperties) {
   const sortOnChange = (sortLabel: SortLabel) => {
-    const url = `${sortLabel.code}_${sortLabel.asc? "asc": "desc"}`
-
-    searchParams.set("sort", url)
-
-    setSearchParams(searchParams);
+    SetSortPatternParrams(props.searchParams, props.setSearchParams, sortLabel);
   }
+
+  const searchInputOnChange = (searchString: string) => {
+    SetSearchPatternParams(props.searchParams, props.setSearchParams, searchString);
+  }
+
+  const pageOnChange = (page: number) => {
+    SetPageParams(props.searchParams, props.setSearchParams, page);
+  }
+
+  const selectedSortLabel = sortByLables.find(l => l.code == props.sortProps.sortLabel?.code);
 
   return (
     <div>
       <SectionHeader
         resourceName={RESOURCE_NAME}
-        resourceUrl={resourceUrl}
-        searchInputOnChange={searchInputFieldOnChange}
+        resourceUrl={RESOURCE_URL}
+        searchInputOnChange={searchInputOnChange}
         sortOnChange={sortOnChange}
-        searchInput={searchString}
+        searchInput={props.filterProps.searchString}
         sortByLables={sortByLables}
-        selectedSortLabel={initSort}
+        selectedSortLabel={selectedSortLabel}
       />
       <div className="mt-8 flow-root overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <List />
+          <List {...props}
+            sortProps={{ sortLabel: selectedSortLabel }}
+            onPageChange={pageOnChange}
+            useList={useListProduct}
+            tableComponent={ProductTable}
+          />
         </div>
       </div>
     </div>

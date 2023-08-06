@@ -1,5 +1,3 @@
-'use client';
-
 import UserContext from "@/components/userContext";
 import { useContext } from "react";
 
