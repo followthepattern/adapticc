@@ -1,7 +1,7 @@
 export const updateProduct = `
-mutation UpdateProduct($model: ProductInput!) {
+mutation UpdateProduct($id: String!, $model: ProductInput!) {
 	products {
-		update(model: $model) {
+		update(id: $id, model: $model) {
 			code
 		}
 	}

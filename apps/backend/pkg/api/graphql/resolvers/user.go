@@ -2,6 +2,7 @@ package resolvers
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/controllers"
@@ -114,15 +115,26 @@ func (resolver UserResolver) Profile(ctx context.Context) (*User, error) {
 	return user, nil
 }
 
+func (resolver UserResolver) Create(ctx context.Context, args struct {
+	Model models.User
+}) (*ResponseStatus, error) {
+	err := resolver.ctrl.Create(ctx, args.Model)
+	if err != nil {
+		return nil, err
+	}
+	return &ResponseStatus{
+		Code: NewUint(http.StatusOK),
+	}, nil
+}
+
 func (resolver UserResolver) Update(ctx context.Context, args struct {
-	Id        string
-	FirstName *string
-	LastName  *string
+	Id    string
+	Model models.User
 }) (*ResponseStatus, error) {
 	user := models.User{
 		ID:        &args.Id,
-		FirstName: args.FirstName,
-		LastName:  args.LastName,
+		FirstName: args.Model.FirstName,
+		LastName:  args.Model.LastName,
 	}
 
 	err := resolver.ctrl.Update(ctx, user)

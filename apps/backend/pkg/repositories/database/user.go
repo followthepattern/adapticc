@@ -153,6 +153,7 @@ func (repo User) Create(userID string, users []models.User) (err error) {
 
 	for i := range users {
 		users[i].RegisteredAt = pointers.Time(time.Now())
+		users[i].Active = pointers.ToPtr(false)
 	}
 	_, err = repo.db.Insert(repo.tableName()).Rows(users).Executor().Exec()
 	return
@@ -262,7 +263,7 @@ func (repo User) Delete(userID, id string) error {
 	query = sqlbuilder.GetDeleteWithPermissions(
 		query,
 		"USER",
-		I("users.id"),
+		I("usr.users.id"),
 		userID,
 	)
 

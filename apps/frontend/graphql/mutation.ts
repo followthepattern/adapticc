@@ -18,7 +18,7 @@ export type CreateMutationResult<Entity = any, TResult = any> = [
 ];
 
 export type UpdateMutationResult<Entity = any, TResult = any> = [
-    (model: Entity) => void,
+    (id: string, model: Entity) => void,
     {
         updateLoading: boolean;
         updateResult?: TResult;

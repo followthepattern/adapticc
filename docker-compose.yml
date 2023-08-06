@@ -10,7 +10,7 @@ services:
       - 5433:5432
     environment:
       POSTGRES_DB: adapticc
-      POSTGRES_USER: dbuser
+      POSTGRES_USER: adapticcuser
       POSTGRES_PASSWORD: dbpass
     volumes:
       - ${BACKEND_APP_PATH}/db/dump/testdata.sql:/docker-entrypoint-initdb.d/testdata.sql

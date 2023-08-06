@@ -5,6 +5,10 @@ scalar Time
 scalar Int64
 scalar Uint
 
+type ResponseStatus {
+	code: Uint!
+}
+
 input Pagination {
 	pageSize: Uint
 	page: Uint
@@ -28,6 +32,12 @@ type User {
 	registeredAt: Time
 }
 
+input UserInput {
+	email: String
+	firstName: String
+	lastName: String
+}
+
 type UserListResponse {
 	count: Int64!
 	pageSize: Uint
@@ -42,7 +52,6 @@ type Product {
 }
 
 input ProductInput {
-	id: String
 	title: String
 	description: String
 }
@@ -63,10 +72,6 @@ type RegisterResponse {
 	email: String
 	first_name: String
 	last_name: String
-}
-
-type ResponseStatus {
-	code: Uint!
 }
 
 schema {
@@ -97,14 +102,15 @@ type ProductQuery {
 }
 
 type UserMutation {
-	update(id: String!, firstName: String, lastName: String): ResponseStatus
+	create(model: UserInput!): ResponseStatus
+	update(id: String!, model: UserInput!): ResponseStatus
 	delete(id: String!): ResponseStatus
 
 }
 
 type ProductMutation {
 	create(model: ProductInput!): ResponseStatus
-	update(model: ProductInput!): ResponseStatus
+	update(id: String!, model: ProductInput!): ResponseStatus
 	delete(id: String!): ResponseStatus
 }
 

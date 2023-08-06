@@ -1,20 +1,20 @@
-import useSingleProduct from "../../components/singleProduct";
-import useUpdateProduct from "../../components/updateProduct";
+import useSingleUser from "../../components/singleUser";
+import useUpdateUser from "../../components/updateUser";
 import { useForm } from "react-hook-form";
-import useDeleteProduct from "../../components/deleteProduct";
 import { useNavigate, useParams } from "react-router-dom";
 import { RESOURCE_URL } from "../../page";
 import { useEffect } from "react";
-import { Product } from "@/models/product";
+import useDeleteUser from "../../components/deleteUser";
+import { User } from "@/models/user";
 
-export default function ProductEdit() {
+export default function UserEdit() {
     const { id } = useParams();
 
-    const { loading, data, error, itemNotFound } = useSingleProduct(id ?? "");
+    const { loading, data, error, itemNotFound } = useSingleUser(id ?? "");
 
-    const [executeUpdateMutation, { updateLoading, updateError, updateResult }] = useUpdateProduct();
+    const [executeUpdateMutation, { updateLoading, updateError, updateResult }] = useUpdateUser();
 
-    const [executeDeleteMutation, { deleteLoading, deleteError, deleteResult }] = useDeleteProduct();
+    const [executeDeleteMutation, { deleteLoading, deleteError, deleteResult }] = useDeleteUser();
 
     const navigate = useNavigate();
 
@@ -30,7 +30,7 @@ export default function ProductEdit() {
         }
     }, [deleteResult])
 
-    const { register, getValues } = useForm<Product>();
+    const { register, getValues } = useForm<User>();
 
     if (loading) {
         return (<div>Loading...</div>)
@@ -46,7 +46,9 @@ export default function ProductEdit() {
 
     const onSave = () => {
         const values = getValues();
+
         executeUpdateMutation(id ?? "", values)
+
     }
 
     const onDelete = () => {
@@ -66,30 +68,43 @@ export default function ProductEdit() {
 
                         <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                             <div className="sm:col-span-3">
-                                <label htmlFor="title" className="block text-sm font-medium leading-6 text-gray-900">
-                                    Title
+                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                                    Email
                                 </label>
                                 <div className="mt-2">
                                     <input
-                                        {...register("title")}
                                         type="text"
-                                        id="title"
-                                        defaultValue={data?.title}
-                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        id="email"
+                                        defaultValue={data?.email}
+                                        disabled
+                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 disabled:ring-gray-200"
                                     />
                                 </div>
                             </div>
 
                             <div className="col-span-full">
-                                <label htmlFor="description" className="block text-sm font-medium leading-6 text-gray-900">
-                                    Description
+                                <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900">
+                                    First Name
                                 </label>
                                 <div className="mt-2">
                                     <textarea
-                                        id="description"
-                                        {...register("description")}
+                                        id="first-name"
+                                        {...register("firstName")}
                                         className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                        defaultValue={data?.description}
+                                        defaultValue={data?.firstName}
+                                    />
+                                </div>
+                            </div>
+                            <div className="col-span-full">
+                                <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-gray-900">
+                                    Last Name
+                                </label>
+                                <div className="mt-2">
+                                    <textarea
+                                        id="last-name"
+                                        {...register("lastName")}
+                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        defaultValue={data?.lastName}
                                     />
                                 </div>
                             </div>
