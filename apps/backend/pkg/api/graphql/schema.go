@@ -5,9 +5,18 @@ scalar Time
 scalar Int64
 scalar Uint
 
+input Pagination {
+	pageSize: Uint
+	page: Uint
+}
+
 input OrderBy {
 	name: String!
 	desc: Boolean
+}
+
+input ListFilter {
+	search: String
 }
 
 type User {
@@ -17,12 +26,6 @@ type User {
 	lastName: String
 	active: Boolean
 	registeredAt: Time
-}
-
-input UserListFilter {
-	pageSize: Uint
-	page: Uint
-	search: String
 }
 
 type UserListResponse {
@@ -42,14 +45,6 @@ input ProductInput {
 	id: String
 	title: String
 	description: String
-}
-
-input ProductListFilter {
-	pageSize: Uint
-	page: Uint
-	search: String
-	id: String
-	orderBy: [OrderBy!]
 }
 
 type ProductListResponse {
@@ -92,13 +87,13 @@ type Mutation {
 
 type UserQuery {
 	single(id: String!): User
-	list(filter: UserListFilter!): UserListResponse
+	list(pagination: Pagination!, filter: ListFilter, orderBy: [OrderBy!]): UserListResponse
 	profile: User
 }
 
 type ProductQuery {
 	single(id: String!): Product
-	list(filter: ProductListFilter!): ProductListResponse
+	list(pagination: Pagination!, filter: ListFilter, orderBy: [OrderBy!]): ProductListResponse
 }
 
 type UserMutation {

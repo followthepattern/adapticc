@@ -187,8 +187,8 @@ func (repo User) Get(userID string, request models.UserListRequestBody) (*models
 
 	query := repo.db.From(repo.tableName())
 
-	if request.Search != nil {
-		pattern := fmt.Sprintf("%%%v%%", *request.Search)
+	if request.Filter.Search != nil {
+		pattern := fmt.Sprintf("%%%s%%", *request.Filter.Search)
 		query = query.Where(
 			Or(
 				I("first_name").Like(pattern),
@@ -209,18 +209,18 @@ func (repo User) Get(userID string, request models.UserListRequestBody) (*models
 		return nil, err
 	}
 
-	if request.Page == nil {
-		request.Page = pointers.UInt(models.DefaultPage)
+	if request.Pagination.Page == nil {
+		request.Pagination.Page = pointers.UInt(models.DefaultPage)
 	}
 
-	if request.PageSize != nil {
-		page := *request.Page
+	if request.Pagination.PageSize != nil {
+		page := *request.Pagination.Page
 		if page > 0 {
 			page--
 		}
 
-		query = query.Offset(page * *request.PageSize)
-		query = query.Limit(*request.PageSize)
+		query = query.Offset(page * *request.Pagination.PageSize)
+		query = query.Limit(*request.Pagination.PageSize)
 	}
 
 	err = query.ScanStructs(&data)
@@ -230,8 +230,8 @@ func (repo User) Get(userID string, request models.UserListRequestBody) (*models
 
 	result := models.UserListResponse{
 		Count:    count,
-		PageSize: request.PageSize,
-		Page:     request.Page,
+		PageSize: request.Pagination.PageSize,
+		Page:     request.Pagination.Page,
 		Data:     data,
 	}
 

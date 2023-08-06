@@ -1,5 +1,3 @@
-'use client';
-
 import { ACCOUNT_HOME } from "@/lib/constants";
 import { useTokenStore } from "@/lib/store";
 import { Navigate } from "react-router-dom";

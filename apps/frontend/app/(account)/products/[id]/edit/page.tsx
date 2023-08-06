@@ -1,5 +1,3 @@
-'use client';
-
 import useSingleProduct from "../../components/singleProduct";
 import useUpdateProduct from "../../components/updateProduct";
 import { useForm } from "react-hook-form";
@@ -7,18 +5,7 @@ import useDeleteProduct from "../../components/deleteProduct";
 import { useNavigate, useParams } from "react-router-dom";
 import { RESOURCE_URL } from "../../page";
 import { useEffect } from "react";
-
-interface PageProperties {
-    params: {
-        id: string
-    }
-}
-
-type ProductValues = {
-    title: string;
-    description: string;
-}
-
+import { Product } from "@/models/product";
 
 export default function ProductEdit() {
     const { id } = useParams();
@@ -43,7 +30,7 @@ export default function ProductEdit() {
         }
     }, [deleteResult])
 
-    const { register, getValues } = useForm<ProductValues>();
+    const { register, getValues } = useForm<Product>();
 
     if (loading) {
         return (<div>Loading...</div>)

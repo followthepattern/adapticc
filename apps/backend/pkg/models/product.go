@@ -19,9 +19,9 @@ type ProductRequestBody struct {
 }
 
 type ProductListRequestBody struct {
-	ListFilter
-	ProductRequestBody
-	Order []OrderBy
+	Filter     ListFilter
+	Pagination Pagination
+	OrderBy    []OrderBy
 }
 
 type ProductListResponse = ListResponse[Product]

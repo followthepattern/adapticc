@@ -1,41 +1,44 @@
 import Pagination from "./pagination";
-import Table from "./table";
 
 import { useEffect } from "react";
-import useListProduct from "../../products/components/listProduct";
-import { CalculateMaxPage, GetPageFromSearchParams, GetPageSizeFromSearchParams, GetSearch, GetSort } from "@/lib/pagination";
-import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import { OrderBy } from "@/graphql/utils/list";
+import { ListQueryParams, ListQueryResult, ListResponse, OrderBy } from "@/graphql/utils/list";
+import { ListPageComponentProperties } from "../listPageWrapper/listPageWrapper";
 
-function getTargetUrl(path: string, params: URLSearchParams, page: string) {
-    params.set("page", page);
-
-    return `${path}?${params.toString()}`
+interface TableProperties<T> {
+    entities: T[]
 }
 
-export default function List() {
-    const [executeQuery, { data, error, loading, itemNotFound }] = useListProduct();
-    const [searchParams] = useSearchParams();
-    const navigate = useNavigate();
-    const pathName = useLocation().pathname;
+interface ListProperties<T> extends ListPageComponentProperties {
+    onPageChange: (page: number) => void
+    useList: () => ListQueryResult<ListResponse<T>>
+    tableComponent: React.ComponentType<TableProperties<T>>
+}
 
-    const page = GetPageFromSearchParams(searchParams);
-    const pageSize = GetPageSizeFromSearchParams(searchParams);
-    const search = GetSearch(searchParams);
-    const sort = GetSort(searchParams);
+export function calculateMaxPage(count: number, pageSize: number): number {
+    return Math.ceil(count / pageSize);
+}
+
+export default function List<T>(props: ListProperties<T>) {
+    const [executeQuery, { data, error, loading, itemNotFound }] = props.useList();
 
     const orderBy: OrderBy[] = [];
 
-    if (sort) {
+    if (props.sortProps.sortLabel) {
         orderBy.push({
-            name: sort.code,
-            desc: !sort.asc,
+            name: props.sortProps.sortLabel.code,
+            desc: !props.sortProps.sortLabel.asc,
         })
     }
 
     useEffect(() => {
-        executeQuery({ page, pageSize, search, orderBy });
-    }, [searchParams])
+        const listQueryParams: ListQueryParams = {
+            page: props.paginationProperties.page,
+            pageSize: props.paginationProperties.pageSize,
+            search: props.filterProps.searchString,
+            orderBy: orderBy,
+        }
+        executeQuery(listQueryParams);
+    }, [props.searchParams])
 
     if (loading) {
         return <div>Loading...</div>
@@ -52,15 +55,17 @@ export default function List() {
     const entities = data?.data ?? [];
     const count = data?.count ?? 0;
 
-    const maxPage = CalculateMaxPage(count, pageSize);
+    const maxPage = calculateMaxPage(count, props.paginationProperties.pageSize);
+
+    const Table = props.tableComponent;
 
     return (
         <>
             <Table entities={entities}/>
             {maxPage > 1 && <Pagination
-                currentPage={page}
+                currentPage={props.paginationProperties.page}
                 maxPage={maxPage}
-                onClick={(t: number) => { navigate(getTargetUrl(pathName, searchParams, t.toString())) }}
+                onClick={props.onPageChange}
             />}
         </>
     )

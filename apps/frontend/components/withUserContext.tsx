@@ -1,5 +1,3 @@
-'use client';
-
 import { getUserProfile } from "@/graphql/users/query";
 import { gql, useLazyQuery } from "@apollo/client";
 import { useEffect } from "react";

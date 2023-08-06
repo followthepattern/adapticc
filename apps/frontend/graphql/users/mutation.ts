@@ -1,10 +1,4 @@
 import { gql } from "@apollo/client"
-import { MutationResult } from "../utils/mutationResult"
-
-export interface Users {
-	update?: MutationResult
-	delete?: MutationResult
-}
 
 export const updateUser = `
 mutation UpdateUser($id: String!, $firstName: String, $lastName: String){

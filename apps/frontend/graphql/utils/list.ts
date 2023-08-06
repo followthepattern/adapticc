@@ -3,17 +3,28 @@ export interface OrderBy {
 	desc?: boolean
 }
 
-export interface ListFilter {
+export interface ListQueryParams {
 	page?: number
 	pageSize?: number
 	search?: string
 	orderBy?: OrderBy[]
 }
 
-export interface List<T> {
+export interface ListResponse<T> {
 	count?: number
 	page?: number
 	pageSize?: number
 	search?: string
 	data?: T[]
 }
+
+export type ListQueryResult<Data = any> = [
+    (params: ListQueryParams) => void,
+    {
+        loading: boolean;
+        data?: Data;
+        error?: any;
+        itemNotFound?: boolean;
+        called: boolean;
+    }
+];

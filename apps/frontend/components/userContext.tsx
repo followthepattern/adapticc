@@ -1,4 +1,4 @@
-import { User } from "@/graphql/users/query";
+import { User } from "@/models/user";
 import { createContext } from "react";
 
 const UserContext = createContext<User>({});

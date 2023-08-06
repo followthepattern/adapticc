@@ -1,28 +1,41 @@
-import { SortLabel } from "@/app/(account)/components/sectionHeader/components/sortButton";
-import { PAGESIZE_DEFAULT, PAGE_DEFAULT } from "./constants";
+import { SetURLSearchParams } from "react-router-dom";
 
-function getNumberFromSearchParams(key: string, searchParams: { [key: string]: string | string[] | undefined }, defaultValue: number): number {
-    const strValue = searchParams[key];
+export const PAGE_DEFAULT = 1;
+export const PAGESIZE_DEFAULT = 10;
 
-    if (typeof (strValue) !== "string") {
-        return defaultValue;
-    }
+export interface SortLabel {
+    name: string
+    asc: boolean
+    code: string
+}
 
-    if (strValue.length == 0) {
-        return defaultValue;
-    }
+export const SetPageParams = (
+    searchParams: URLSearchParams,
+    setSearchParams: SetURLSearchParams,
+    page: number,
+) => {
+    searchParams.set("page", page.toString());
+    setSearchParams(searchParams);
+}
 
-    const intValue = parseInt(strValue);
+export const SetSearchPatternParams = (
+    searchParams: URLSearchParams,
+    setSearchParams: SetURLSearchParams,
+    searchString: string,
+) => {
+    searchParams.set("search", searchString);
+    searchParams.set("page", PAGE_DEFAULT.toString());
+    setSearchParams(searchParams);
+}
 
-    if (Number.isNaN(intValue)) {
-        return defaultValue;
-    }
-
-    if (intValue < 1) {
-        return defaultValue;
-    }
-
-    return intValue;
+export const SetSortPatternParrams = (
+    searchParams: URLSearchParams,
+    setSearchParams: SetURLSearchParams,
+    sortLabel: SortLabel,
+) => {
+    const url = `${sortLabel.code}_${sortLabel.asc ? "asc" : "desc"}`
+    searchParams.set("sort", url)
+    setSearchParams(searchParams);
 }
 
 function getNumberFromURLSearchParams(key: string, searchParams: URLSearchParams, defaultValue: number): number {
@@ -71,7 +84,7 @@ export function GetSearch(searchParams: URLSearchParams): string {
     return strValue
 }
 
-export function GetSort(searchParams: URLSearchParams): SortLabel | undefined {
+export function GetSortLabel(searchParams: URLSearchParams): SortLabel | undefined {
     const strValue = searchParams.get("sort")
 
     if (typeof (strValue) !== "string") {
@@ -95,8 +108,4 @@ export function GetSort(searchParams: URLSearchParams): SortLabel | undefined {
     }
 
     return result
-}
-
-export function CalculateMaxPage(count: number, pageSize: number): number {
-    return Math.ceil(count / pageSize);
 }

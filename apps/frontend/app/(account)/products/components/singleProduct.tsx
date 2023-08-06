@@ -1,22 +1,12 @@
-import { Product, getSingleProduct } from "@/graphql/products/query";
-import { QueryResponse } from "@/graphql/query";
-import { useQuery } from "@apollo/client";
+import useSingle from "@/graphql/components/singleComponent";
+import { getSingleProduct as graphQL } from "@/graphql/products/query";
+import { QueryResponse, SingleQueryResult } from "@/graphql/query";
+import { Product } from "@/models/product";
 
-interface SingleProductQueryResult<Data = any> {
-      loading: boolean;
-      data?: Data;
-      error?: any;
-      itemNotFound?: boolean;
-}
+export default function useSingleProduct(id: string): SingleQueryResult<Product> {
+    const parseResult = (data?: QueryResponse): Product | undefined => {
+        return data?.products?.single
+    }
 
-export default function useSingleProduct(id: string): SingleProductQueryResult<Product> {
-    const { data, loading, error } = useQuery<QueryResponse>(getSingleProduct, {variables: {
-        id: id,
-    }});
-
-    const single = data?.products?.single;
-
-    const itemNotFound = !loading && !single;
-
-    return { data: single, loading, error, itemNotFound };
+    return useSingle<Product>({id, parseResult, graphQL})
 }

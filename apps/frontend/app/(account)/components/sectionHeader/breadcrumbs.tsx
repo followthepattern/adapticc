@@ -1,6 +1,6 @@
 'use client'
 
-import { ChevronRightIcon, HomeIcon } from "@heroicons/react/24/outline"
+import { HomeIcon } from "@heroicons/react/24/outline"
 import { Link } from "react-router-dom"
 
 interface BreadcrumbsProperties {

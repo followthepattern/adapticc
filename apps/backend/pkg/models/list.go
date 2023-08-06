@@ -6,7 +6,10 @@ const (
 )
 
 type ListFilter struct {
-	Search   *string
+	Search *string
+}
+
+type Pagination struct {
 	PageSize *uint
 	Page     *uint
 }

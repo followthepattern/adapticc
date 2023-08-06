@@ -13,7 +13,9 @@ type UserRequestBody struct {
 }
 
 type UserListRequestBody struct {
-	ListFilter
+	Filter     ListFilter
+	Pagination Pagination
+	OrderBy    []OrderBy
 	UserRequestBody
 }
 
