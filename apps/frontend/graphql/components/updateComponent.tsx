@@ -9,9 +9,10 @@ interface UpdateProperties {
 export default function useUpdate<T>({parseResult, graphQL}: UpdateProperties): UpdateMutationResult<T,number | undefined> {
     const [executeMutation, { data, loading, error }] = useMutation<MutationResponse>(gql(graphQL));
 
-    const execute = (model: T) => {
+    const execute = (id: string, model: T) => {
         executeMutation({
             variables: {
+                id: id,
                 model: model
             }
         });

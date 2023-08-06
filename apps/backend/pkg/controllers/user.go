@@ -9,6 +9,8 @@ import (
 	"github.com/followthepattern/adapticc/pkg/request"
 	"github.com/followthepattern/adapticc/pkg/services"
 	"github.com/followthepattern/adapticc/pkg/utils"
+	"github.com/followthepattern/adapticc/pkg/utils/pointers"
+	"github.com/google/uuid"
 )
 
 type User struct {
@@ -124,6 +126,35 @@ func (ctrl User) Get(ctx context.Context, filter models.UserListRequestBody) (*m
 	response := models.UserListResponse(*result)
 
 	return &response, nil
+}
+
+func (ctrl User) Create(ctx context.Context, user models.User) error {
+	ctxu := utils.GetModelFromContext[models.User](ctx, utils.CtxUserKey)
+	if ctxu == nil {
+		return fmt.Errorf("invalid user context")
+	}
+
+	userIDOpt := request.UserIDOption[[]models.User, request.Signal](*ctxu.ID)
+
+	user.ID = pointers.ToPtr(uuid.New().String())
+
+	req := request.New(
+		ctx,
+		[]models.User{user},
+		userIDOpt,
+	)
+
+	msg := models.UserMsg{
+		Create: &req,
+	}
+
+	if err := ctrl.sendMsg(ctx, msg); err != nil {
+		return err
+	}
+
+	_, err := req.Wait()
+
+	return err
 }
 
 func (ctrl User) Update(ctx context.Context, user models.User) error {

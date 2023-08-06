@@ -22,16 +22,6 @@ SET row_security = off;
 -- TOC entry 4 (class 2615 OID 2200)
 -- Name: public; Type: SCHEMA; Schema: -; Owner: pg_database_owner
 --
-
-CREATE SCHEMA public;
-
-
-ALTER SCHEMA public OWNER TO pg_database_owner;
-
---
--- TOC entry 3358 (class 0 OID 0)
--- Dependencies: 4
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: pg_database_owner
 --
 
 COMMENT ON SCHEMA public IS 'standard public schema';
@@ -129,8 +119,8 @@ CREATE TABLE usr.users (
     email character varying NOT NULL,
     first_name character varying NOT NULL,
     last_name character varying NOT NULL,
-    password character varying NOT NULL,
-    salt character varying NOT NULL,
+    password character varying,
+    salt character varying,
     active boolean DEFAULT false NOT NULL,
     registered_at timestamp without time zone NOT NULL
 );

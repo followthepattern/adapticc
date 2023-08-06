@@ -4,13 +4,16 @@ import Login from "./(auth)/login/page"
 import AuthLayout from "./(auth)/layout"
 import AccountLayout from "./(account)/layout"
 import Products from "./(account)/products/page"
-import Users from "./(account)/users/page"
 import Settings from "./(account)/settings/page"
 import Profile from "./(account)/profile/page"
 import Product from "./(account)/products/[id]/page"
 import ProductEdit from "./(account)/products/[id]/edit/page"
 import ProductNew from "./(account)/products/new/page"
 import { ListPageWrapper } from "./(account)/components/listPageWrapper/listPageWrapper"
+import UserNew from "./(account)/users/new/page"
+import Users from "./(account)/users/page"
+import User from "./(account)/users/[id]/page"
+import UserEdit from "./(account)/users/[id]/edit/page"
 
 export const Routes: RouteObject[] = [
     {
@@ -33,11 +36,23 @@ export const Routes: RouteObject[] = [
         children: [
             {
                 path: "/users",
-                element: <Users />
+                element: <ListPageWrapper Component={Users} />
+            },
+            {
+                path: "/users/:id",
+                element: <ListPageWrapper Component={User} />
+            },
+            {
+                path: "/users/new",
+                element: <UserNew />
+            },
+            {
+                path: "/users/:id/edit",
+                element: <UserEdit />
             },
             {
                 path: "products",
-                element: <ListPageWrapper Component={Products}/>,
+                element: <ListPageWrapper Component={Products} />,
             },
             {
                 path: "products/:id",
