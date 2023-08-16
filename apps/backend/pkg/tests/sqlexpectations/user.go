@@ -67,9 +67,9 @@ func ExpectUsers(mock sqlmock.Sqlmock, userID string, result []models.User, list
 	LIMIT 1`,
 		userID,
 		userID,
-		*listRequestBody.Search,
-		*listRequestBody.Search,
-		*listRequestBody.Search)
+		*listRequestBody.Filter.Search,
+		*listRequestBody.Filter.Search,
+		*listRequestBody.Filter.Search)
 
 	mock.ExpectQuery(countQuery).
 		WillReturnRows(sqlmock.NewRows([]string{"count"}).
@@ -125,10 +125,10 @@ func ExpectUsers(mock sqlmock.Sqlmock, userID string, result []models.User, list
 	LIMIT %v`,
 		userID,
 		userID,
-		*listRequestBody.Search,
-		*listRequestBody.Search,
-		*listRequestBody.Search,
-		*listRequestBody.PageSize)
+		*listRequestBody.Filter.Search,
+		*listRequestBody.Filter.Search,
+		*listRequestBody.Filter.Search,
+		*listRequestBody.Pagination.PageSize)
 
 	SQLMockRows := ModelToSQLMockRows(result)
 	mock.ExpectQuery(sqlQuery).
@@ -179,9 +179,9 @@ func ExpectUsersWithoutPaging(mock sqlmock.Sqlmock, userID string, result []mode
 	LIMIT 1`,
 		userID,
 		userID,
-		*listRequestBody.Search,
-		*listRequestBody.Search,
-		*listRequestBody.Search)
+		*listRequestBody.Filter.Search,
+		*listRequestBody.Filter.Search,
+		*listRequestBody.Filter.Search)
 
 	mock.ExpectQuery(countQuery).
 		WillReturnRows(sqlmock.NewRows([]string{"count"}).
@@ -236,9 +236,9 @@ func ExpectUsersWithoutPaging(mock sqlmock.Sqlmock, userID string, result []mode
 			AND (merged_resource_permissions.permissions & 2 > 0))`,
 		userID,
 		userID,
-		*listRequestBody.Search,
-		*listRequestBody.Search,
-		*listRequestBody.Search)
+		*listRequestBody.Filter.Search,
+		*listRequestBody.Filter.Search,
+		*listRequestBody.Filter.Search)
 
 	SQLMockRows := ModelToSQLMockRows(result)
 	mock.ExpectQuery(sqlQuery).
@@ -285,7 +285,7 @@ func ExpectCreateUser(mock sqlmock.Sqlmock, userID string, insert models.User) {
 		WillReturnRows(sqlmock.NewRows([]string{"count"}).
 			AddRow(1))
 
-	sqlQuery := fmt.Sprintf(`INSERT INTO "usr"."users" ("active", "email", "first_name", "id", "last_name", "password", "registered_at", "salt") VALUES (TRUE, '%v', '%v', '.*', '%v', '.*', NULL, '.*')`,
+	sqlQuery := fmt.Sprintf(`INSERT INTO "usr"."users" ("active", "email", "first_name", "id", "last_name", "password", "registered_at", "salt") VALUES (FALSE, '%v', '%v', '.*', '%v', '.*', '.*', '.*')`,
 		*insert.Email,
 		*insert.FirstName,
 		*insert.LastName,
@@ -353,9 +353,9 @@ func ExpectDeleteUser(mock sqlmock.Sqlmock, userID string, user models.User) {
 	WHERE
 		(("id" = '%s') AND
 		("id" IN (SELECT
-			"users"."id"
+			"usr"."users"."id"
 		FROM
-			"users"
+			"usr"."users"
 		INNER JOIN (SELECT
 				COALESCE(rp.resource_id,
 				up.resource_id) AS "resource_id",
@@ -384,7 +384,7 @@ func ExpectDeleteUser(mock sqlmock.Sqlmock, userID string, user models.User) {
 					(("urp"."permission" IS NOT NULL)
 						AND ("urp"."user_id" = '%s'))) AS "up" ON
 				("rp"."resource_id" = "up"."resource_id")) AS "merged_resource_permissions" ON
-			(("merged_resource_permissions"."resource_id" = "users"."id")
+			(("merged_resource_permissions"."resource_id" = "usr"."users"."id")
 				OR ("merged_resource_permissions"."resource_id" = 'USER'))
 		WHERE
 			(merged_resource_permissions.permissions & 8 > 0))))`,

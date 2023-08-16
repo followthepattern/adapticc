@@ -115,11 +115,11 @@ var _ = Describe("User graphql queries", func() {
 			Expect(err).To(BeNil())
 
 			listRequestBody := models.UserListRequestBody{
-				ListFilter: models.ListFilter{
+				Pagination: models.Pagination{
 					PageSize: pointers.ToPtr[uint](5),
 					Page:     pointers.ToPtr[uint](1),
 				},
-				UserRequestBody: models.UserRequestBody{
+				Filter: models.ListFilter{
 					Search: pointers.ToPtr("email@email.com"),
 				},
 			}
@@ -127,11 +127,10 @@ var _ = Describe("User graphql queries", func() {
 			queryTemplate := `
 			query {
 				users {
-					list (filter: {
-						pageSize: 5,
-						page: 1,
-						search: "%s",
-					}) {
+					list (
+						pagination: { pageSize: 5, page: 1 }
+						filter: { search: "%s" }
+					) {
 						page
 						pageSize
 						count
@@ -145,7 +144,7 @@ var _ = Describe("User graphql queries", func() {
 				}
 			}`
 
-			query := fmt.Sprintf(queryTemplate, *listRequestBody.Search)
+			query := fmt.Sprintf(queryTemplate, *listRequestBody.Filter.Search)
 
 			graphRequest := graphqlRequest{
 				Query: query,
@@ -180,7 +179,7 @@ var _ = Describe("User graphql queries", func() {
 			Expect(err).To(BeNil())
 
 			listRequestBody := models.UserListRequestBody{
-				UserRequestBody: models.UserRequestBody{
+				Filter: models.ListFilter{
 					Search: pointers.ToPtr("email@email.com"),
 				},
 			}
@@ -188,9 +187,9 @@ var _ = Describe("User graphql queries", func() {
 			queryTemplate := `
 			query {
 				users {
-					list (filter: {
-						search: "%s",
-					}) {
+					list (
+						filter: { search: "%s" }
+					) {
 						page
 						pageSize
 						count
@@ -204,7 +203,7 @@ var _ = Describe("User graphql queries", func() {
 				}
 			}`
 
-			query := fmt.Sprintf(queryTemplate, *listRequestBody.Search)
+			query := fmt.Sprintf(queryTemplate, *listRequestBody.Filter.Search)
 
 			graphRequest := graphqlRequest{
 				Query: query,
@@ -290,7 +289,10 @@ var _ = Describe("User graphql queries", func() {
 	Context("Update", func() {
 		var graphql string = `mutation {
 			users {
-				update (id: "%v", firstName:"%v", lastName:"%v") {
+				update (id: "%v", model: {
+					firstName: "%s"
+					lastName: "%s"
+				}) {
 					code
 				}
 			}

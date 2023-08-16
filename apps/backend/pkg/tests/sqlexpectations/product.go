@@ -54,7 +54,7 @@ func ExpectProduct(mock sqlmock.Sqlmock, userID string, result models.Product) {
 		WillReturnRows(ModelToSQLMockRows(result))
 }
 
-func ExpectProducts(mock sqlmock.Sqlmock, userID string, page int, pageSize int, result []models.Product) {
+func ExpectProducts(mock sqlmock.Sqlmock, userID string, filter models.ListFilter, page int, pageSize int, result []models.Product) {
 	countQuery := fmt.Sprintf(`
 	SELECT
 		COUNT(DISTINCT "products"."id")
@@ -87,11 +87,15 @@ func ExpectProducts(mock sqlmock.Sqlmock, userID string, page int, pageSize int,
 			("rp"."resource_id" = "up"."resource_id")) AS "merged_resource_permissions" ON
 		(("merged_resource_permissions"."resource_id" = "products"."id")
 			OR ("merged_resource_permissions"."resource_id" = 'PRODUCT'))
-	WHERE
-		(merged_resource_permissions.permissions & 2 > 0)
+	WHERE ((("id" LIKE '%%%s%%') OR
+			("title" LIKE '%%%s%%')) AND
+		(merged_resource_permissions.permissions & 2 > 0))
 	LIMIT 1`,
 		userID,
-		userID)
+		userID,
+		*filter.Search,
+		*filter.Search,
+	)
 
 	mock.ExpectQuery(countQuery).
 		WillReturnRows(sqlmock.NewRows([]string{"count"}).
@@ -135,11 +139,15 @@ func ExpectProducts(mock sqlmock.Sqlmock, userID string, page int, pageSize int,
 			("rp"."resource_id" = "up"."resource_id")) AS "merged_resource_permissions" ON
 		(("merged_resource_permissions"."resource_id" = "products"."id")
 			OR ("merged_resource_permissions"."resource_id" = 'PRODUCT'))
-	WHERE
-		(merged_resource_permissions.permissions & 2 > 0)
+	WHERE 
+		((("id" LIKE '%%%s%%') OR
+			("title" LIKE '%%%s%%')) AND
+		(merged_resource_permissions.permissions & 2 > 0))
 	LIMIT %v OFFSET %v`,
 		userID,
 		userID,
+		*filter.Search,
+		*filter.Search,
 		page*pageSize,
 		pageSize,
 	)
