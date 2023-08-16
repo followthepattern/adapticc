@@ -130,14 +130,11 @@ var _ = Describe("Product Test", func() {
 	})
 
 	Context("List", func() {
-		var query string = `
-		query {
+		var query string = `query {
 			products {
-				list (filter:{
-					id: "%v",
-					pageSize: %v,
-					page: %v,
-				}
+				list (
+					pagination: { pageSize: %v, page: %v }
+					filter: { search: "%s" }
 				) {
 					count
 					data {
@@ -158,7 +155,11 @@ var _ = Describe("Product Test", func() {
 			page := 2
 			pageSize := 10
 
-			sqlexpectations.ExpectProducts(mock, *user.ID, page, pageSize, []models.Product{product})
+			filter := models.ListFilter{
+				Search: product.ID,
+			}
+
+			sqlexpectations.ExpectProducts(mock, *user.ID, filter, page, pageSize, []models.Product{product})
 
 			expiresAt := time.Now().Add(time.Hour * 24)
 			token := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
@@ -173,7 +174,7 @@ var _ = Describe("Product Test", func() {
 			Expect(err).To(BeNil())
 
 			graphRequest := graphqlRequest{
-				Query: fmt.Sprintf(query, *product.ID, pageSize, page),
+				Query: fmt.Sprintf(query, pageSize, page, *product.ID),
 			}
 
 			request, _ := json.Marshal(graphRequest)
@@ -254,8 +255,8 @@ var _ = Describe("Product Test", func() {
 		var query string = `
 		mutation {
 			products {
-				update(model: {
-					id: "%s",
+				update(id: "%s",
+					model: {
 					title: "%s",
 					description: "%s"
 				}) {

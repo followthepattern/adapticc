@@ -75,15 +75,17 @@ func (resolver UserResolver) Single(ctx context.Context, args struct{ Id string 
 }
 
 func (resolver UserResolver) List(ctx context.Context, args struct {
-	Pagination Pagination
+	Pagination *Pagination
 	Filter     *models.ListFilter
 	OrderBy    *[]models.OrderBy
 }) (*ListResponse[*User], error) {
-	request := models.UserListRequestBody{
-		Pagination: models.Pagination{
+	request := models.UserListRequestBody{}
+
+	if args.Pagination != nil {
+		request.Pagination = models.Pagination{
 			PageSize: args.Pagination.PageSize.ValuePtr(),
 			Page:     args.Pagination.Page.ValuePtr(),
-		},
+		}
 	}
 
 	if args.Filter != nil {

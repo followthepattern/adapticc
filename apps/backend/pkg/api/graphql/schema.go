@@ -92,7 +92,7 @@ type Mutation {
 
 type UserQuery {
 	single(id: String!): User
-	list(pagination: Pagination!, filter: ListFilter, orderBy: [OrderBy!]): UserListResponse
+	list(pagination: Pagination, filter: ListFilter, orderBy: [OrderBy!]): UserListResponse
 	profile: User
 }
 
