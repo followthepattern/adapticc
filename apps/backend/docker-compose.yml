@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:latest
+    restart: unless-stopped
+    hostname: adapticc_db
+    container_name: adapticc_db
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_DB: adapticc
+      POSTGRES_USER: adapticcuser
+      POSTGRES_PASSWORD: dbpass
+    volumes:
+      - ./db/dump/testdata.sql:/docker-entrypoint-initdb.d/testdata.sql
+
+  backend:
+    image: golang:1.20.5
+    hostname: adapticc_backend
+    container_name: adapticc_backend
+    command: bash -c "go run ./cmd/adapticc"
+    working_dir: /backend
+    depends_on:
+      - adapticc_db
+    ports:
+      - 8080:8080
+    volumes:
+      - ./:/backend:rw
