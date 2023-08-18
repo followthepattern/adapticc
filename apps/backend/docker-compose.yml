@@ -22,7 +22,7 @@ services:
     command: bash -c "go run ./cmd/adapticc"
     working_dir: /backend
     depends_on:
-      - adapticc_db
+      - db
     ports:
       - 8080:8080
     volumes:
