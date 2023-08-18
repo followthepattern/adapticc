@@ -1,12 +1,3 @@
---
--- PostgreSQL database dump
---
-
--- Dumped from database version 15.2 (Debian 15.2-1.pgdg110+1)
--- Dumped by pg_dump version 15.3
-
--- Started on 2023-07-29 01:34:55 CEST
-
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
@@ -17,12 +8,6 @@ SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
-
---
--- TOC entry 4 (class 2615 OID 2200)
--- Name: public; Type: SCHEMA; Schema: -; Owner: pg_database_owner
---
---
 
 COMMENT ON SCHEMA public IS 'standard public schema';
 
@@ -211,8 +196,8 @@ INSERT INTO usr.user_role VALUES ('613254df-c779-479c-9d76-b8036e342979', 'f3de1
 -- Data for Name: users; Type: TABLE DATA; Schema: usr; Owner: adapticcuser
 --
 
-INSERT INTO usr.users VALUES ('613254df-c779-479c-9d76-b8036e342979', 'huszkacs@gmail.com', 'Csaba', 'Huszka', 'd77c5a2ebcb4a9b4ce10e4eb91e8c175cf38b947e4797632707edb241337c7fd', '33a329bc41a0655aa499f7777451fe126ee6b2d52218e96e38c65977b06912ed', true, '2023-07-28 13:23:03.273735');
-INSERT INTO usr.users VALUES ('8f9b1e8f-d496-4804-942b-5ea29050370b', 'test@test.com', 'Tester', 'Test', 'b8cb9c1697a3d5825eccf81c3a1cfc4fef822942802065b95af89dc577b5d98e', '918f6e2de06a09fa194495417ab5f8e02d4c5cbedade3667c7812419b1657573', true, '2023-07-28 22:15:07.79185');
+INSERT INTO usr.users VALUES ('613254df-c779-479c-9d76-b8036e342979', 'admin@admin.com', 'John', 'Jones', 'a2838983bb0afaaf39bffc1d7c573970b7f83d97d7ddab63c27d67a2bafcab48', '90dc4694f0ce80b60709f3189aede917ccc0f32020a78b3d90ec95e35992c211', true, '2023-07-28 13:23:03.273735');
+INSERT INTO usr.users VALUES ('8f9b1e8f-d496-4804-942b-5ea29050370b', 'test@test.com', 'Tester', 'Test', 'b5558d08bac85ee29394697b7665a350432cd0f976640d4d4d38b896bfe2139c', '0cf9a97133ea5106664194aed35b9d4134a3b12f168c3f7622b7a6b624209db2', true, '2023-07-28 22:15:07.79185');
 
 
 --
