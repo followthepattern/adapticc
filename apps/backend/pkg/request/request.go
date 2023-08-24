@@ -14,11 +14,11 @@ type Signal struct{}
 
 type RequestHandlerOption[RequestT any, RespT any] func(*RequestHandler[RequestT, RespT])
 
-type RequestHandler[RequestT any, RespT any] struct {
-	ctx         context.Context
-	userID      string
-	response    response[RespT]
-	requestBody RequestT
+type RequestHandler[RequestParamsT any, RespT any] struct {
+	ctx           context.Context
+	userID        string
+	response      response[RespT]
+	requestParams RequestParamsT
 
 	timeoutInterval         time.Duration
 	responseTimeoutInterval time.Duration
@@ -30,7 +30,7 @@ func New[RequestT any, RespT any](ctx context.Context, body RequestT, opts ...Re
 		response:                newResponse[RespT](),
 		timeoutInterval:         DefaultTimeOut,
 		responseTimeoutInterval: DefaultTimeOut,
-		requestBody:             body,
+		requestParams:           body,
 	}
 
 	for _, opt := range opts {
@@ -48,8 +48,8 @@ func (r RequestHandler[RequestT, RespT]) UserID() string {
 	return r.userID
 }
 
-func (r RequestHandler[RequestT, RespT]) RequestBody() RequestT {
-	return r.requestBody
+func (r RequestHandler[RequestT, RespT]) RequestParams() RequestT {
+	return r.requestParams
 }
 
 func (r RequestHandler[RequestT, RespT]) Wait() (*RespT, error) {

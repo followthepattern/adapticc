@@ -12,9 +12,6 @@ func RegisterDependencies(cont *container.Container) error {
 	repositories.RegisterUserChannel(cont)
 	services.RegisterUserChannel(cont)
 
-	// auth plugin
-	services.RegisterAuthChannel(cont)
-
 	err := container.Register(cont, repositories.UserDependencyConstructor)
 	if err != nil {
 		return err
@@ -30,6 +27,15 @@ func RegisterDependencies(cont *container.Container) error {
 		return err
 	}
 
+	// auth plugin
+	repositories.RegisterAuthChannel(cont)
+	services.RegisterAuthChannel(cont)
+
+	err = container.Register(cont, repositories.AuthDependencyConstructor)
+	if err != nil {
+		return err
+	}
+
 	err = container.Register(cont, services.AuthDependencyConstructor)
 	if err != nil {
 		return err
@@ -41,19 +47,14 @@ func RegisterDependencies(cont *container.Container) error {
 	}
 
 	// mail plugin
-	services.RegisterMailChannel(cont)
+	// services.RegisterMailChannel(cont)
 
-	err = container.Register(cont, services.MailDependencyConstructor)
-	if err != nil {
-		return err
-	}
+	// err = container.Register(cont, services.MailDependencyConstructor)
+	// if err != nil {
+	// 	return err
+	// }
 
-	err = container.Register(cont, controllers.MailDependencyConstructor)
-	if err != nil {
-		return err
-	}
-
-	// machine plugin
+	// product plugin
 	repositories.RegisterProductChannel(cont)
 	services.RegisterProductChannel(cont)
 
@@ -63,6 +64,11 @@ func RegisterDependencies(cont *container.Container) error {
 	}
 
 	err = container.Register(cont, services.ProductDependencyConstructor)
+	if err != nil {
+		return err
+	}
+
+	err = container.Register(cont, controllers.ProductDependencyConstructor)
 	if err != nil {
 		return err
 	}

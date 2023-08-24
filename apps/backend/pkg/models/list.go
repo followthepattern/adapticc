@@ -5,6 +5,12 @@ const (
 	DefaultPage     = 1
 )
 
+type ListRequestParams[T any] struct {
+	Filter     T
+	Pagination Pagination
+	OrderBy    []OrderBy
+}
+
 type ListFilter struct {
 	Search *string
 }

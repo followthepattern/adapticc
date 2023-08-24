@@ -1,33 +1,17 @@
 package models
 
 import (
-	"time"
-
 	"github.com/followthepattern/adapticc/pkg/request"
 	"github.com/followthepattern/adapticc/pkg/utils/pointers"
 )
 
-type UserRequestBody struct {
-	ID    *string
-	Email *string
-}
-
-type UserListRequestBody struct {
-	Filter     ListFilter
-	Pagination Pagination
-	OrderBy    []OrderBy
-	UserRequestBody
-}
-
 type User struct {
-	ID           *string    `json:"id,omitempty" goqu:"skipupdate"`
-	Email        *string    `json:"email,omitempty" goqu:"skipupdate"`
-	FirstName    *string    `json:"first_name,omitempty" db:"first_name"`
-	LastName     *string    `json:"last_name,omitempty" db:"last_name"`
-	Password     *string    `db:"password" goqu:"skipupdate"`
-	Salt         *string    `json:"salt,omitempty" goqu:"skipupdate"`
-	Active       *bool      `json:"active,omitempty" goqu:"skipupdate"`
-	RegisteredAt *time.Time `json:"registered_at,omitempty" db:"registered_at" goqu:"skipupdate"`
+	ID        *string `json:"id,omitempty" goqu:"skipupdate"`
+	Email     *string `json:"email,omitempty" goqu:"skipupdate"`
+	FirstName *string `json:"first_name,omitempty" db:"first_name"`
+	LastName  *string `json:"last_name,omitempty" db:"last_name"`
+	Active    *bool   `json:"active,omitempty" goqu:"skipupdate"`
+	Userlog
 }
 
 func (u User) IsNil() bool {
@@ -42,15 +26,22 @@ func (u User) IsDefault() bool {
 	return len(*u.ID) < 1
 }
 
-var Guest User = User{
-	ID: pointers.String(""),
+var UnAuthorizedUser User = User{
+	ID: pointers.ToPtr(""),
 }
+
+type SingleUserRequestParams struct {
+	ID    *string
+	Email *string
+}
+
+type UserListRequestParams = ListRequestParams[ListFilter]
 
 type UserListResponse = ListResponse[User]
 
 type UserMsg struct {
-	Single *request.RequestHandler[UserRequestBody, User]
-	List   *request.RequestHandler[UserListRequestBody, UserListResponse]
+	Single *request.RequestHandler[SingleUserRequestParams, User]
+	List   *request.RequestHandler[UserListRequestParams, UserListResponse]
 	Create *request.RequestHandler[[]User, request.Signal]
 	Update *request.RequestHandler[User, request.Signal]
 	Delete *request.RequestHandler[string, request.Signal]

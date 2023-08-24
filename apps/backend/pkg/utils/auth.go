@@ -4,11 +4,8 @@ import (
 	"context"
 	"crypto/sha512"
 	"encoding/hex"
-	"reflect"
-	"time"
 
 	"github.com/google/uuid"
-	"github.com/graph-gophers/graphql-go"
 )
 
 type ContextKey struct {
@@ -16,23 +13,6 @@ type ContextKey struct {
 }
 
 var CtxUserKey = ContextKey{Name: "ctx-user"}
-
-func GetUnderlyingPtrValue(vvalue reflect.Value) interface{} {
-	if vvalue.Kind() == reflect.Ptr || vvalue.Kind() == reflect.Interface {
-		if vvalue.IsNil() {
-			return nil
-		}
-		return vvalue.Elem().Interface()
-	}
-	return vvalue.Interface()
-}
-
-func GetUnderlyingTypeRecursively(ttype reflect.Type) reflect.Type {
-	if ttype.Kind() == reflect.Ptr || ttype.Kind() == reflect.Interface {
-		return GetUnderlyingTypeRecursively(ttype.Elem())
-	}
-	return ttype
-}
 
 func GenerateHash(bytes []byte) []byte {
 	hash := sha512.New512_256()
@@ -52,20 +32,13 @@ func GeneratePasswordHash(password string, salt string) string {
 	return hex.EncodeToString(GenerateHash([]byte(password + salt)))
 }
 
-func TimeToGraphqlTime(t *time.Time) *graphql.Time {
-	if t != nil {
-		return &graphql.Time{Time: *t}
-	}
-	return nil
-}
-
 func GetModelFromContext[T any](ctx context.Context, ctxKey ContextKey) *T {
 	obj := ctx.Value(ctxKey)
 
-	model, ok := obj.(*T)
+	model, ok := obj.(T)
 	if !ok {
 		return nil
 	}
 
-	return model
+	return &model
 }

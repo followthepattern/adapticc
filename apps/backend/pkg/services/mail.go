@@ -24,7 +24,7 @@ func RegisterMailChannel(cont *container.Container) {
 }
 
 type Mail struct {
-	cfg   config.Config
+	cfg   config.Mail
 	ctx   context.Context
 	email utils.Email
 
@@ -32,9 +32,14 @@ type Mail struct {
 }
 
 func MailDependencyConstructor(cont *container.Container) (*Mail, error) {
+	config := cont.GetConfig().Mail
+
+	if err := config.Validate(); err != nil {
+		return nil, err
+	}
+
 	dependency := Mail{
 		ctx:   cont.GetContext(),
-		cfg:   cont.GetConfig(),
 		email: utils.NewEmailWrapper(),
 	}
 
@@ -63,8 +68,8 @@ func (service Mail) MonitorChannels() {
 }
 
 func (service Mail) replyRequest(req request.RequestHandler[models.Mail, struct{}]) {
-	requestBody := req.RequestBody()
-	if err := service.sendMail(requestBody); err != nil {
+	requestParams := req.RequestParams()
+	if err := service.sendMail(requestParams); err != nil {
 		req.ReplyError(err)
 		return
 	}
@@ -72,7 +77,7 @@ func (service Mail) replyRequest(req request.RequestHandler[models.Mail, struct{
 }
 
 func (service Mail) sendMail(mail models.Mail) error {
-	config := service.cfg.Mail
+	config := service.cfg
 
 	service.email.SetFrom(mail.From)
 	service.email.SetTo(mail.To)

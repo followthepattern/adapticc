@@ -38,13 +38,11 @@ func (ctrl Product) GetByID(ctx context.Context, id string) (*models.Product, er
 		return nil, fmt.Errorf("invalid user context")
 	}
 
-	userIDOpt := request.UserIDOption[models.ProductRequestBody, models.Product](*ctxu.ID)
-
-	requestBody := models.ProductRequestBody{ID: &id}
+	userIDOpt := request.UserIDOption[string, models.Product](*ctxu.ID)
 
 	req := request.New(
 		ctx,
-		requestBody,
+		id,
 		userIDOpt,
 	)
 
@@ -66,13 +64,13 @@ func (ctrl Product) GetByID(ctx context.Context, id string) (*models.Product, er
 	return result, nil
 }
 
-func (ctrl Product) Get(ctx context.Context, filter models.ProductListRequestBody) (*models.ProductListResponse, error) {
+func (ctrl Product) Get(ctx context.Context, filter models.ProductListRequestParams) (*models.ProductListResponse, error) {
 	ctxu := utils.GetModelFromContext[models.User](ctx, utils.CtxUserKey)
 	if ctxu == nil {
 		return nil, fmt.Errorf("invalid user context")
 	}
 
-	userIDOpt := request.UserIDOption[models.ProductListRequestBody, models.ProductListResponse](*ctxu.ID)
+	userIDOpt := request.UserIDOption[models.ProductListRequestParams, models.ProductListResponse](*ctxu.ID)
 
 	req := request.New(
 		ctx,
@@ -96,7 +94,11 @@ func (ctrl Product) Get(ctx context.Context, filter models.ProductListRequestBod
 	return &response, nil
 }
 
-func (ctrl Product) Create(ctx context.Context, value models.Product) error {
+func (service Product) Create(ctx context.Context, value models.Product) error {
+	if err := value.CreateValidate(); err != nil {
+		return err
+	}
+
 	ctxu := utils.GetModelFromContext[models.User](ctx, utils.CtxUserKey)
 	if ctxu == nil {
 		return fmt.Errorf("invalid user context")
@@ -116,7 +118,7 @@ func (ctrl Product) Create(ctx context.Context, value models.Product) error {
 		Create: &req,
 	}
 
-	if err := ctrl.sendMsg(ctx, msg); err != nil {
+	if err := service.sendMsg(ctx, msg); err != nil {
 		return err
 	}
 
@@ -126,6 +128,10 @@ func (ctrl Product) Create(ctx context.Context, value models.Product) error {
 }
 
 func (ctrl Product) Update(ctx context.Context, value models.Product) error {
+	if err := value.UpdateValidate(); err != nil {
+		return err
+	}
+
 	ctxu := utils.GetModelFromContext[models.User](ctx, utils.CtxUserKey)
 	if ctxu == nil {
 		return fmt.Errorf("invalid user context")

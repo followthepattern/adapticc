@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/followthepattern/adapticc/pkg/utils"
+	"github.com/followthepattern/adapticc/pkg/utils/pointers"
 )
 
 func ModelToSQLMockRows[T any](value T) *sqlmock.Rows {
@@ -67,7 +67,7 @@ func valueToSQLRow(itemType reflect.Type, value reflect.Value) (row []driver.Val
 			continue
 		}
 
-		rowValue := utils.GetUnderlyingPtrValue(value.Field(i))
+		rowValue := pointers.GetUnderlyingPtrValue(value.Field(i))
 		row = append(row, rowValue)
 
 	}

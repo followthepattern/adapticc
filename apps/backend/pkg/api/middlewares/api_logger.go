@@ -18,7 +18,7 @@ func (f logPrinter) Print(v ...interface{}) {
 
 func AddMiddlewareLogger(r *chi.Mux, logger *zap.Logger) {
 	logFunc := logPrinter(func(values ...interface{}) {
-		logger.Info("HTTP", zap.Any("values", values))
+		logger.Debug("HTTP", zap.Any("values", values))
 	})
 
 	middleware.DefaultLogger = middleware.RequestLogger(&middleware.DefaultLogFormatter{

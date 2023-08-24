@@ -29,7 +29,7 @@ func (r AuthMutation) Login(ctx context.Context, args struct {
 	Email    string
 	Password string
 }) (*loginResponse, error) {
-	loginRequest := models.LoginRequest{
+	loginRequest := models.LoginRequestParams{
 		Email:    args.Email,
 		Password: args.Password,
 	}
@@ -48,7 +48,7 @@ func (r AuthMutation) Register(ctx context.Context, args struct {
 	LastName  string
 	Password  string
 }) (*models.RegisterResponse, error) {
-	registerRequest := models.RegisterRequest{
+	registerRequest := models.RegisterRequestParams{
 		Email:     args.Email,
 		FirstName: args.FirstName,
 		LastName:  args.LastName,

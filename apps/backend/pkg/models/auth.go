@@ -11,16 +11,38 @@ type LoginResponse struct {
 	ExpiresAt time.Time `json:"expires_at,omitempty"`
 }
 
-type LoginRequest struct {
+type LoginRequestParams struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
-type RegisterRequest struct {
+type RegisterRequestParams struct {
 	Email     string `json:"email"`
 	FirstName string `json:"first_name"`
 	LastName  string `json:"list_name"`
 	Password  string `json:"password"`
+}
+
+type Password struct {
+	PasswordHash string `db:"password_hash"`
+	Salt         string `db:"salt"`
+}
+
+func (p *Password) IsEmpty() bool {
+	if p == nil {
+		return true
+	}
+
+	if len(p.PasswordHash) < 1 {
+		return true
+	}
+
+	return false
+}
+
+type AuthUser struct {
+	User
+	Password
 }
 
 type RegisterResponse struct {
@@ -30,6 +52,9 @@ type RegisterResponse struct {
 }
 
 type AuthMsg struct {
-	Register *request.RequestHandler[RegisterRequest, RegisterResponse]
-	Login    *request.RequestHandler[LoginRequest, LoginResponse]
+	Register     *request.RequestHandler[RegisterRequestParams, RegisterResponse]
+	RegisterUser *request.RequestHandler[AuthUser, request.Signal]
+	Login        *request.RequestHandler[LoginRequestParams, LoginResponse]
+	VerifyEmail  *request.RequestHandler[string, bool]
+	VerifyLogin  *request.RequestHandler[string, AuthUser]
 }

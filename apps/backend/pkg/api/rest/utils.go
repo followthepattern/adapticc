@@ -5,6 +5,8 @@ import (
 	"net/http"
 )
 
+const FailedToDecodeRequestBody = "failed to decode request body"
+
 func Success(w http.ResponseWriter, T interface{}) {
 	Write(w, http.StatusOK, T)
 }

@@ -9,20 +9,20 @@ import (
 )
 
 func ExpectGetUserByEmail(mock sqlmock.Sqlmock, result models.User, email string) {
-	sqlQuery := fmt.Sprintf(`SELECT "active", "email", "first_name", "id", "last_name", "password", "registered_at", "salt" FROM "usr"."users" WHERE ("email" = '%v') LIMIT 1`, email)
+	sqlQuery := fmt.Sprintf(`SELECT "active", "created_at", "creation_user_id", "email", "first_name", "id", "last_name", "update_user_id", "updated_at" FROM "usr"."users" WHERE ("email" = '%v') LIMIT 1`, email)
 
 	mock.ExpectQuery(sqlQuery).
 		WillReturnRows(ModelToSQLMockRows(result))
 }
 
 func ExpectGetUserByID(mock sqlmock.Sqlmock, result models.User, id string) {
-	sqlQuery := fmt.Sprintf(`SELECT "active", "email", "first_name", "id", "last_name", "password", "registered_at", "salt" FROM "usr"."users" WHERE ("id" = '%v') LIMIT 1`, id)
+	sqlQuery := fmt.Sprintf(`SELECT "active", "created_at", "creation_user_id", "email", "first_name", "id", "last_name", "update_user_id", "updated_at" FROM "usr"."users" WHERE ("id" = '%v') LIMIT 1`, id)
 
 	mock.ExpectQuery(sqlQuery).
 		WillReturnRows(ModelToSQLMockRows(result))
 }
 
-func ExpectUsers(mock sqlmock.Sqlmock, userID string, result []models.User, listRequestBody models.UserListRequestBody) {
+func ExpectUsers(mock sqlmock.Sqlmock, userID string, result []models.User, listRequestParams models.UserListRequestParams) {
 	countQuery := fmt.Sprintf(`
 	SELECT
 		COUNT(\*) AS "count"
@@ -67,9 +67,9 @@ func ExpectUsers(mock sqlmock.Sqlmock, userID string, result []models.User, list
 	LIMIT 1`,
 		userID,
 		userID,
-		*listRequestBody.Filter.Search,
-		*listRequestBody.Filter.Search,
-		*listRequestBody.Filter.Search)
+		*listRequestParams.Filter.Search,
+		*listRequestParams.Filter.Search,
+		*listRequestParams.Filter.Search)
 
 	mock.ExpectQuery(countQuery).
 		WillReturnRows(sqlmock.NewRows([]string{"count"}).
@@ -78,13 +78,14 @@ func ExpectUsers(mock sqlmock.Sqlmock, userID string, result []models.User, list
 	sqlQuery := fmt.Sprintf(`
 	SELECT
 		"active",
+		"created_at",
+		"creation_user_id",
 		"email",
 		"first_name",
 		"id",
 		"last_name",
-		"password",
-		"registered_at",
-		"salt"
+		"update_user_id",
+		"updated_at"
 	FROM
 		"usr"."users"
 	INNER JOIN (SELECT
@@ -125,17 +126,17 @@ func ExpectUsers(mock sqlmock.Sqlmock, userID string, result []models.User, list
 	LIMIT %v`,
 		userID,
 		userID,
-		*listRequestBody.Filter.Search,
-		*listRequestBody.Filter.Search,
-		*listRequestBody.Filter.Search,
-		*listRequestBody.Pagination.PageSize)
+		*listRequestParams.Filter.Search,
+		*listRequestParams.Filter.Search,
+		*listRequestParams.Filter.Search,
+		*listRequestParams.Pagination.PageSize)
 
 	SQLMockRows := ModelToSQLMockRows(result)
 	mock.ExpectQuery(sqlQuery).
 		WillReturnRows(SQLMockRows)
 }
 
-func ExpectUsersWithoutPaging(mock sqlmock.Sqlmock, userID string, result []models.User, listRequestBody models.UserListRequestBody) {
+func ExpectUsersWithoutPaging(mock sqlmock.Sqlmock, userID string, result []models.User, listRequestParams models.UserListRequestParams) {
 	countQuery := fmt.Sprintf(`
 	SELECT
 		COUNT(\*) AS "count"
@@ -179,9 +180,9 @@ func ExpectUsersWithoutPaging(mock sqlmock.Sqlmock, userID string, result []mode
 	LIMIT 1`,
 		userID,
 		userID,
-		*listRequestBody.Filter.Search,
-		*listRequestBody.Filter.Search,
-		*listRequestBody.Filter.Search)
+		*listRequestParams.Filter.Search,
+		*listRequestParams.Filter.Search,
+		*listRequestParams.Filter.Search)
 
 	mock.ExpectQuery(countQuery).
 		WillReturnRows(sqlmock.NewRows([]string{"count"}).
@@ -190,13 +191,14 @@ func ExpectUsersWithoutPaging(mock sqlmock.Sqlmock, userID string, result []mode
 	sqlQuery := fmt.Sprintf(`
 	SELECT
 		"active",
+		"created_at",
+		"creation_user_id",
 		"email",
 		"first_name",
 		"id",
 		"last_name",
-		"password",
-		"registered_at",
-		"salt"
+		"update_user_id",
+		"updated_at"
 	FROM
 		"usr"."users"
 	INNER JOIN (SELECT
@@ -236,9 +238,9 @@ func ExpectUsersWithoutPaging(mock sqlmock.Sqlmock, userID string, result []mode
 			AND (merged_resource_permissions.permissions & 2 > 0))`,
 		userID,
 		userID,
-		*listRequestBody.Filter.Search,
-		*listRequestBody.Filter.Search,
-		*listRequestBody.Filter.Search)
+		*listRequestParams.Filter.Search,
+		*listRequestParams.Filter.Search,
+		*listRequestParams.Filter.Search)
 
 	SQLMockRows := ModelToSQLMockRows(result)
 	mock.ExpectQuery(sqlQuery).
@@ -285,7 +287,8 @@ func ExpectCreateUser(mock sqlmock.Sqlmock, userID string, insert models.User) {
 		WillReturnRows(sqlmock.NewRows([]string{"count"}).
 			AddRow(1))
 
-	sqlQuery := fmt.Sprintf(`INSERT INTO "usr"."users" ("active", "email", "first_name", "id", "last_name", "password", "registered_at", "salt") VALUES (FALSE, '%v', '%v', '.*', '%v', '.*', '.*', '.*')`,
+	sqlQuery := fmt.Sprintf(`INSERT INTO "usr"."users" ("active", "created_at", "creation_user_id", "email", "first_name", "id", "last_name", "update_user_id", "updated_at") VALUES (FALSE, '.*', '%v', '%v', '%v', '.*', '%v', NULL, NULL)`,
+		*insert.CreationUserID,
 		*insert.Email,
 		*insert.FirstName,
 		*insert.LastName,
@@ -300,7 +303,7 @@ func ExpectUpdateUser(mock sqlmock.Sqlmock, userID string, model models.User) {
 	UPDATE
 		"usr"."users"
 	SET
-		"first_name"='%s',"last_name"='%s'
+		"first_name"='%s',"last_name"='%s',"update_user_id"='%s',"updated_at"='.*'
 	FROM
 		(SELECT
 			COALESCE(rp.resource_id,
@@ -337,6 +340,7 @@ func ExpectUpdateUser(mock sqlmock.Sqlmock, userID string, model models.User) {
 					OR ("merged_resource_permissions"."resource_id" = 'USER')))`,
 		*model.FirstName,
 		*model.LastName,
+		userID,
 		userID,
 		userID,
 		*model.ID,

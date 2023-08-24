@@ -7,48 +7,21 @@ import (
 	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/controllers"
 	"github.com/followthepattern/adapticc/pkg/models"
-	"github.com/followthepattern/adapticc/pkg/utils"
-	"github.com/graph-gophers/graphql-go"
 )
 
 type User struct {
-	ID           *string
-	Email        *string
-	FirstName    *string
-	LastName     *string
-	Active       *bool
-	RegisteredAt *graphql.Time
+	ID        *string
+	Email     *string
+	FirstName *string
+	LastName  *string
+	Active    *bool
+	UserLog
 }
 
-func getFromModel(model *models.User) *User {
-	if model == nil || model.IsNil() {
-		return nil
-	}
-
-	result := User{
-		ID:           model.ID,
-		Email:        model.Email,
-		FirstName:    model.FirstName,
-		LastName:     model.LastName,
-		Active:       model.Active,
-		RegisteredAt: utils.TimeToGraphqlTime(model.RegisteredAt),
-	}
-
-	return &result
-}
-
-func getFromModels(ms []models.User) []*User {
-	result := make([]*User, len(ms))
-	for i := 0; i < len(ms); i++ {
-		result[i] = getFromModel(&ms[i])
-	}
-	return result
-}
-
-func getFromUserListResponseModel(response models.UserListResponse) ListResponse[*User] {
-	resp := fromListReponseModel[models.User, *User](models.ListResponse[models.User](response))
-	resp.Data = getFromModels(response.Data)
-	return resp
+func getFromUserListResponseModel(response models.UserListResponse) *ListResponse[models.User] {
+	resp := fromListReponseModel[models.User, models.User](models.ListResponse[models.User](response))
+	resp.Data = response.Data
+	return &resp
 }
 
 type UserResolver struct {
@@ -65,21 +38,16 @@ func NewUserQuery(cont *container.Container) (*UserResolver, error) {
 	return &UserResolver{cont: cont, ctrl: ctrl}, nil
 }
 
-func (resolver UserResolver) Single(ctx context.Context, args struct{ Id string }) (*User, error) {
-	u, err := resolver.ctrl.GetByID(ctx, args.Id)
-	if err != nil {
-		return nil, err
-	}
-	user := getFromModel(u)
-	return user, nil
+func (resolver UserResolver) Single(ctx context.Context, args struct{ Id string }) (*models.User, error) {
+	return resolver.ctrl.GetByID(ctx, args.Id)
 }
 
 func (resolver UserResolver) List(ctx context.Context, args struct {
 	Pagination *Pagination
 	Filter     *models.ListFilter
 	OrderBy    *[]models.OrderBy
-}) (*ListResponse[*User], error) {
-	request := models.UserListRequestBody{}
+}) (*ListResponse[models.User], error) {
+	request := models.UserListRequestParams{}
 
 	if args.Pagination != nil {
 		request.Pagination = models.Pagination{
@@ -103,18 +71,13 @@ func (resolver UserResolver) List(ctx context.Context, args struct {
 		return nil, err
 	}
 
-	result := getFromUserListResponseModel(*users)
+	result := getFromUserListResponseModel(users)
 
-	return &result, err
+	return result, err
 }
 
-func (resolver UserResolver) Profile(ctx context.Context) (*User, error) {
-	u, err := resolver.ctrl.Profile(ctx)
-	if err != nil {
-		return nil, err
-	}
-	user := getFromModel(u)
-	return user, nil
+func (resolver UserResolver) Profile(ctx context.Context) (*models.User, error) {
+	return resolver.ctrl.Profile(ctx)
 }
 
 func (resolver UserResolver) Create(ctx context.Context, args struct {

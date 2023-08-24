@@ -11,8 +11,8 @@ import (
 )
 
 type Product struct {
-	machineMsgChannelIn  <-chan models.ProductMsg
-	machineMsgChannelOut chan<- models.ProductMsg
+	productMsgChannelIn  <-chan models.ProductMsg
+	productMsgChannelOut chan<- models.ProductMsg
 	ctx                  context.Context
 	cfg                  config.Config
 	sendProductMsg       func(ctx context.Context, msg models.ProductMsg) error
@@ -24,19 +24,19 @@ func RegisterProductChannel(cont *container.Container) {
 	if cont == nil {
 		return
 	}
-	machineMsgChannel := make(ProductMsgChannel)
+	productMsgChannel := make(ProductMsgChannel)
 	container.Register(cont, func(cont *container.Container) (*ProductMsgChannel, error) {
-		return &machineMsgChannel, nil
+		return &productMsgChannel, nil
 	})
 }
 
 func ProductDependencyConstructor(cont *container.Container) (*Product, error) {
-	machineMsgChannelIn, err := container.Resolve[ProductMsgChannel](cont)
+	productMsgChannelIn, err := container.Resolve[ProductMsgChannel](cont)
 	if err != nil {
 		return nil, err
 	}
 
-	machineMsgChannelOut, err := container.Resolve[repositories.ProductMsgChannel](cont)
+	productMsgChannelOut, err := container.Resolve[repositories.ProductMsgChannel](cont)
 	if err != nil {
 		return nil, err
 	}
@@ -44,9 +44,9 @@ func ProductDependencyConstructor(cont *container.Container) (*Product, error) {
 	dependency := Product{
 		ctx:                  cont.GetContext(),
 		cfg:                  cont.GetConfig(),
-		machineMsgChannelIn:  *machineMsgChannelIn,
-		machineMsgChannelOut: *machineMsgChannelOut,
-		sendProductMsg:       request.CreateSenderFunc(*machineMsgChannelOut, request.DefaultTimeOut),
+		productMsgChannelIn:  *productMsgChannelIn,
+		productMsgChannelOut: *productMsgChannelOut,
+		sendProductMsg:       request.CreateSenderFunc(*productMsgChannelOut, request.DefaultTimeOut),
 	}
 
 	go func() {
@@ -59,7 +59,7 @@ func ProductDependencyConstructor(cont *container.Container) (*Product, error) {
 func (service Product) MonitorChannels() {
 	for {
 		select {
-		case msg := <-service.machineMsgChannelIn:
+		case msg := <-service.productMsgChannelIn:
 			switch {
 			case msg.Single != nil:
 				service.sendProductMsg(msg.Single.Context(), msg)

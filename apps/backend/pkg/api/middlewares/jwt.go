@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/followthepattern/adapticc/pkg/config"
 	"github.com/followthepattern/adapticc/pkg/container"
@@ -30,45 +29,46 @@ func NewJWT(cont *container.Container) JWT {
 
 func (a JWT) Authenticate(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
-		userContext := &models.Guest
-		tokenString := r.Header.Get(AuthorizationHeader)
+		var userContext models.User = models.UnAuthorizedUser
 
-		tokenString = getToken(tokenString)
+		defer func() {
+			ctx := context.WithValue(r.Context(), utils.CtxUserKey, userContext)
+			r = r.WithContext(ctx)
+			next.ServeHTTP(w, r)
+		}()
 
-		if tokenString != "" {
-			token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-					return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-				}
-				return []byte(a.cfg.Server.HmacSecret), nil
-			})
+		headerValue := r.Header.Get(AuthorizationHeader)
+		tokenString := getToken(headerValue)
 
-			if err == nil {
-				if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-					user, err := getUserContextFromClaims(claims)
-					if err == nil {
-						userContext = user
-					} else {
-						a.logger.Error(err.Error())
-					}
-				}
-			} else {
-				a.logger.Error(err.Error())
-			}
+		if tokenString == "" {
+			return
 		}
-		ctx := context.WithValue(r.Context(), utils.CtxUserKey, userContext)
-		r = r.WithContext(ctx)
-		next.ServeHTTP(w, r)
+
+		token, err := jwt.Parse(tokenString, a.keyFunc)
+		if err != nil {
+			a.logger.Error(err.Error())
+			return
+		}
+
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if ok && token.Valid {
+			a.logger.Error(InvalidToken)
+		}
+
+		user, err := getAuthorizedUserFromClaims(claims)
+		if err != nil {
+			a.logger.Error(err.Error())
+			return
+		}
+
+		userContext = *user
 	}
 	return http.HandlerFunc(fn)
 }
 
-func getToken(tokenString string) string {
-	tokens := strings.Split(tokenString, " ")
-
-	if len(tokens) < 2 {
-		return ""
+func (a JWT) keyFunc(token *jwt.Token) (interface{}, error) {
+	if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+		return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 	}
-
-	return tokens[1]
+	return []byte(a.cfg.Server.HmacSecret), nil
 }
