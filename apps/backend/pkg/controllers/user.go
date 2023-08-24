@@ -38,13 +38,13 @@ func (ctrl User) GetByID(ctx context.Context, id string) (*models.User, error) {
 		return nil, fmt.Errorf("invalid user context")
 	}
 
-	userIDOpt := request.UserIDOption[models.UserRequestBody, models.User](*ctxu.ID)
+	userIDOpt := request.UserIDOption[models.SingleUserRequestParams, models.User](*ctxu.ID)
 
-	requestBody := models.UserRequestBody{ID: &id}
+	requestParams := models.SingleUserRequestParams{ID: &id}
 
 	req := request.New(
 		ctx,
-		requestBody,
+		requestParams,
 		userIDOpt,
 	)
 
@@ -72,15 +72,15 @@ func (ctrl User) Profile(ctx context.Context) (*models.User, error) {
 		return nil, fmt.Errorf("invalid user context")
 	}
 
-	requestBody := models.UserRequestBody{
+	requestParams := models.SingleUserRequestParams{
 		ID: ctxu.ID,
 	}
 
-	userIDOpt := request.UserIDOption[models.UserRequestBody, models.User](*ctxu.ID)
+	userIDOpt := request.UserIDOption[models.SingleUserRequestParams, models.User](*ctxu.ID)
 
 	req := request.New(
 		ctx,
-		requestBody,
+		requestParams,
 		userIDOpt,
 	)
 
@@ -98,13 +98,13 @@ func (ctrl User) Profile(ctx context.Context) (*models.User, error) {
 	return user, nil
 }
 
-func (ctrl User) Get(ctx context.Context, filter models.UserListRequestBody) (*models.UserListResponse, error) {
+func (ctrl User) Get(ctx context.Context, filter models.UserListRequestParams) (models.UserListResponse, error) {
 	ctxu := utils.GetModelFromContext[models.User](ctx, utils.CtxUserKey)
 	if ctxu == nil {
-		return nil, fmt.Errorf("invalid user context")
+		return models.UserListResponse{}, fmt.Errorf("invalid user context")
 	}
 
-	userIDOpt := request.UserIDOption[models.UserListRequestBody, models.UserListResponse](*ctxu.ID)
+	userIDOpt := request.UserIDOption[models.UserListRequestParams, models.UserListResponse](*ctxu.ID)
 
 	req := request.New(
 		ctx,
@@ -115,17 +115,17 @@ func (ctrl User) Get(ctx context.Context, filter models.UserListRequestBody) (*m
 	msg := models.UserMsg{List: &req}
 
 	if err := ctrl.sendMsg(ctx, msg); err != nil {
-		return nil, err
+		return models.UserListResponse{}, err
 	}
 
 	result, err := req.Wait()
 	if err != nil {
-		return nil, err
+		return models.UserListResponse{}, err
 	}
 
 	response := models.UserListResponse(*result)
 
-	return &response, nil
+	return response, nil
 }
 
 func (ctrl User) Create(ctx context.Context, user models.User) error {

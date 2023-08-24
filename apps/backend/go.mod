@@ -3,6 +3,7 @@ module github.com/followthepattern/adapticc
 go 1.18
 
 require (
+	github.com/followthepattern/graphql-go v1.5.1
 	github.com/go-chi/chi v1.5.4
 	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
 	github.com/golang-jwt/jwt/v4 v4.5.0
@@ -19,13 +20,10 @@ require (
 require (
 	github.com/go-logr/logr v1.2.4 // indirect
 	github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572 // indirect
-	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/pprof v0.0.0-20210720184732-4bb14d4b1be1 // indirect
-	github.com/opentracing/opentracing-go v1.1.0 // indirect
 	golang.org/x/net v0.12.0 // indirect
 	golang.org/x/tools v0.9.3 // indirect
-	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
@@ -35,7 +33,6 @@ require (
 	github.com/doug-martin/goqu/v9 v9.18.0
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/go-chi/cors v1.2.0
-	github.com/graph-gophers/graphql-go v1.2.0
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
 	github.com/mitchellh/mapstructure v1.4.2 // indirect

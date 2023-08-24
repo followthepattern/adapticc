@@ -1,27 +1,24 @@
 package pointers
 
-import "time"
+import "reflect"
 
 func ToPtr[T any](v T) *T {
 	return &v
 }
 
-func String(s string) *string {
-	return &s
+func GetUnderlyingPtrValue(vvalue reflect.Value) interface{} {
+	if vvalue.Kind() == reflect.Ptr || vvalue.Kind() == reflect.Interface {
+		if vvalue.IsNil() {
+			return nil
+		}
+		return vvalue.Elem().Interface()
+	}
+	return vvalue.Interface()
 }
 
-func Time(t time.Time) *time.Time {
-	return &t
-}
-
-func Bool(b bool) *bool {
-	return &b
-}
-
-func Int(i int) *int {
-	return &i
-}
-
-func UInt(ui uint) *uint {
-	return &ui
+func GetUnderlyingTypeRecursively(ttype reflect.Type) reflect.Type {
+	if ttype.Kind() == reflect.Ptr || ttype.Kind() == reflect.Interface {
+		return GetUnderlyingTypeRecursively(ttype.Elem())
+	}
+	return ttype
 }

@@ -10,9 +10,13 @@ import (
 func ExpectProduct(mock sqlmock.Sqlmock, userID string, result models.Product) {
 	sqlQuery := fmt.Sprintf(
 		`SELECT
+			"created_at",
+			"creation_user_id",
 			"description",
 			"id",
-			"title"
+			"title",
+			"update_user_id",
+			"updated_at"
 		FROM
 			"usr"."products"
 		INNER JOIN (SELECT
@@ -107,9 +111,13 @@ func ExpectProducts(mock sqlmock.Sqlmock, userID string, filter models.ListFilte
 
 	sqlQuery := fmt.Sprintf(`
 	SELECT DISTINCT
+		"created_at",
+		"creation_user_id",
 		"description",
 		"id",
-		"title"
+		"title",
+		"update_user_id",
+		"updated_at"
 	FROM
 		"usr"."products"
 	INNER JOIN (SELECT
@@ -196,7 +204,8 @@ func CreateProduct(mock sqlmock.Sqlmock, userID string, product models.Product) 
 		WillReturnRows(sqlmock.NewRows([]string{"count"}).
 			AddRow(1))
 
-	sqlQuery := fmt.Sprintf(`INSERT INTO "usr"."products" ("description", "id", "title") VALUES ('%s', .*, '%s')`,
+	sqlQuery := fmt.Sprintf(`INSERT INTO "usr"."products" ("created_at", "creation_user_id", "description", "id", "title", "update_user_id", "updated_at") VALUES ('.*', '%s', '%s', '.*', '%s', NULL, NULL)`,
+		userID,
 		*product.Description,
 		*product.Title,
 	)
@@ -210,7 +219,7 @@ func UpdateProduct(mock sqlmock.Sqlmock, userID string, product models.Product) 
 	UPDATE
 		"usr"."products"
 	SET
-		"description"='%s',"id"='%s',"title"='%s'
+		"description"='%s',"id"='%s',"title"='%s',"update_user_id"='%s',"updated_at"='.*'
 	FROM
 		(SELECT
 			COALESCE(rp.resource_id,
@@ -248,6 +257,7 @@ func UpdateProduct(mock sqlmock.Sqlmock, userID string, product models.Product) 
 		*product.Description,
 		*product.ID,
 		*product.Title,
+		userID,
 		userID,
 		userID,
 		*product.ID)

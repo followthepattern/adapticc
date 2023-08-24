@@ -10,12 +10,6 @@ import (
 	"github.com/followthepattern/adapticc/pkg/utils/pointers"
 )
 
-type ProductListFilter struct {
-	ListRequest
-	ID      *string
-	OrderBy *[]models.OrderBy
-}
-
 func getFromProductListResponseModel(response models.ProductListResponse) ListResponse[models.Product] {
 	resp := fromListReponseModel[models.Product, models.Product](models.ListResponse[models.Product](response))
 	resp.Data = response.Data
@@ -45,15 +39,17 @@ func (resolver ProductResolver) Single(ctx context.Context, args struct{ Id stri
 }
 
 func (resolver ProductResolver) List(ctx context.Context, args struct {
-	Pagination Pagination
+	Pagination *Pagination
 	Filter     *models.ListFilter
 	OrderBy    *[]models.OrderBy
 }) (*ListResponse[models.Product], error) {
-	request := models.ProductListRequestBody{
-		Pagination: models.Pagination{
+	request := models.ProductListRequestParams{}
+
+	if args.Pagination != nil {
+		request.Pagination = models.Pagination{
 			PageSize: args.Pagination.PageSize.ValuePtr(),
 			Page:     args.Pagination.Page.ValuePtr(),
-		},
+		}
 	}
 
 	if args.Filter != nil {

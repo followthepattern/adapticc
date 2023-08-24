@@ -32,8 +32,8 @@ func AuthDependencyConstructor(cont *container.Container) (*Auth, error) {
 	return &dependency, nil
 }
 
-func (ctrl Auth) Login(ctx context.Context, login models.LoginRequest) (*models.LoginResponse, error) {
-	req := request.New[models.LoginRequest, models.LoginResponse](ctx, login)
+func (ctrl Auth) Login(ctx context.Context, login models.LoginRequestParams) (*models.LoginResponse, error) {
+	req := request.New[models.LoginRequestParams, models.LoginResponse](ctx, login)
 
 	msg := models.AuthMsg{
 		Login: &req,
@@ -51,8 +51,8 @@ func (ctrl Auth) Login(ctx context.Context, login models.LoginRequest) (*models.
 	return resp, nil
 }
 
-func (ctrl Auth) Register(ctx context.Context, register models.RegisterRequest) (*models.RegisterResponse, error) {
-	req := request.New[models.RegisterRequest, models.RegisterResponse](ctx, register)
+func (ctrl Auth) Register(ctx context.Context, register models.RegisterRequestParams) (*models.RegisterResponse, error) {
+	req := request.New[models.RegisterRequestParams, models.RegisterResponse](ctx, register)
 
 	msg := models.AuthMsg{
 		Register: &req,

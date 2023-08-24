@@ -34,7 +34,11 @@ SET default_table_access_method = heap;
 CREATE TABLE usr.products (
     id character varying NOT NULL,
     title character varying NOT NULL,
-    description character varying NOT NULL
+    description character varying NOT NULL,
+    creation_user_id character varying,
+    update_user_id character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp
 );
 
 
@@ -104,10 +108,13 @@ CREATE TABLE usr.users (
     email character varying NOT NULL,
     first_name character varying NOT NULL,
     last_name character varying NOT NULL,
-    password character varying,
+    password_hash character varying,
     salt character varying,
     active boolean DEFAULT false NOT NULL,
-    registered_at timestamp without time zone NOT NULL
+    creation_user_id character varying,
+    update_user_id character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp
 );
 
 
@@ -119,25 +126,25 @@ ALTER TABLE usr.users OWNER TO adapticcuser;
 -- Data for Name: products; Type: TABLE DATA; Schema: usr; Owner: adapticcuser
 --
 
-INSERT INTO usr.products VALUES ('b9bee884-0e54-4337-a410-d28865e2789b', 'Test Product', 'Product Description....');
-INSERT INTO usr.products VALUES ('2c852054-5468-410c-9cbb-5b7a012b58ed', 'Test Product 1', 'Product Description....');
-INSERT INTO usr.products VALUES ('96822a8f-7416-4a08-b00c-8f67421d9911', 'Test Product 2', 'Product Description....');
-INSERT INTO usr.products VALUES ('e3dbb5f5-fd9c-4e0f-b3f9-00bf7c758b34', 'Test Product 3', 'Product Description....');
-INSERT INTO usr.products VALUES ('a8ad7ef1-7664-46cc-883c-5e0ee002067a', 'Test Product 4', 'Product Description....');
-INSERT INTO usr.products VALUES ('9a73d8f1-1c01-439f-ab07-0c2858ba413a', 'Test Product 6', 'Product Description....');
-INSERT INTO usr.products VALUES ('7046148d-25b5-45a0-ab13-95206db1b540', 'Test Product 7', 'Product Description....');
-INSERT INTO usr.products VALUES ('6031f411-46ef-4b81-a744-26ce9ae73ee4', 'Test Product 8', 'Product Description....');
-INSERT INTO usr.products VALUES ('f5cb161b-0c16-49de-8a5b-8528e3906d0a', 'Test Product 9', 'Product Description....');
-INSERT INTO usr.products VALUES ('d6606d36-d358-4e7a-a420-0de355b1468b', 'Test Product 10', 'Product Description....');
-INSERT INTO usr.products VALUES ('b93ab7e4-3551-4a27-a60c-9163ac968208', 'Test Product 12', 'Product Description....');
-INSERT INTO usr.products VALUES ('e35de786-bd47-404b-b92d-636b5e553596', 'Test Product 13', 'Product Description....');
-INSERT INTO usr.products VALUES ('91227c6f-f5da-406e-ba7d-e19e0e92bb85', 'Test Product 14', 'Product Description....');
-INSERT INTO usr.products VALUES ('fcaa12c2-9ee3-47d7-8be0-1e42c0bb8f94', 'Test Product 15', 'Product Description....');
-INSERT INTO usr.products VALUES ('e1b4da09-ee9a-40ea-828a-8d461c9adf79', 'Test Product 16', 'Product Description....');
-INSERT INTO usr.products VALUES ('cfdfebf6-5db4-4f1f-84ed-00ffbc6d10fd', 'Test Product 17', 'Product Description....');
-INSERT INTO usr.products VALUES ('5b6f3413-0af0-4f8f-85b4-af02738e4da6', 'Test Product 19', 'Product Description....');
-INSERT INTO usr.products VALUES ('0ecdbc3f-ee4e-42f6-831a-217e54b65722', 'Test Product 33', 'Product Description test 1');
-INSERT INTO usr.products VALUES ('3d0cd537-2de1-4474-9ef2-a0d4581dd407', 'Test Product 36', 'Product Description test 3');
+INSERT INTO usr.products VALUES ('b9bee884-0e54-4337-a410-d28865e2789b', 'Test Product', 'Product Description....', '613254df-c779-479c-9d76-b8036e342979', NULL, '2023-07-28 13:23:03.273735', NULL);
+INSERT INTO usr.products VALUES ('2c852054-5468-410c-9cbb-5b7a012b58ed', 'Test Product 1', 'Product Description....', '613254df-c779-479c-9d76-b8036e342979', NULL, '2023-07-28 13:23:03.273735', NULL);
+INSERT INTO usr.products VALUES ('96822a8f-7416-4a08-b00c-8f67421d9911', 'Test Product 2', 'Product Description....', '613254df-c779-479c-9d76-b8036e342979', NULL, '2023-07-28 13:23:03.273735', NULL);
+INSERT INTO usr.products VALUES ('e3dbb5f5-fd9c-4e0f-b3f9-00bf7c758b34', 'Test Product 3', 'Product Description....', '613254df-c779-479c-9d76-b8036e342979', NULL, '2023-07-28 13:23:03.273735', NULL);
+INSERT INTO usr.products VALUES ('a8ad7ef1-7664-46cc-883c-5e0ee002067a', 'Test Product 4', 'Product Description....', '613254df-c779-479c-9d76-b8036e342979', NULL, '2023-07-28 13:23:03.273735', NULL);
+INSERT INTO usr.products VALUES ('9a73d8f1-1c01-439f-ab07-0c2858ba413a', 'Test Product 6', 'Product Description....', '613254df-c779-479c-9d76-b8036e342979', NULL, '2023-07-28 13:23:03.273735', NULL);
+INSERT INTO usr.products VALUES ('7046148d-25b5-45a0-ab13-95206db1b540', 'Test Product 7', 'Product Description....', '613254df-c779-479c-9d76-b8036e342979', NULL, '2023-07-28 13:23:03.273735', NULL);
+INSERT INTO usr.products VALUES ('6031f411-46ef-4b81-a744-26ce9ae73ee4', 'Test Product 8', 'Product Description....', '613254df-c779-479c-9d76-b8036e342979', NULL, '2023-07-28 13:23:03.273735', NULL);
+INSERT INTO usr.products VALUES ('f5cb161b-0c16-49de-8a5b-8528e3906d0a', 'Test Product 9', 'Product Description....', '613254df-c779-479c-9d76-b8036e342979', NULL, '2023-07-28 13:23:03.273735', NULL);
+INSERT INTO usr.products VALUES ('d6606d36-d358-4e7a-a420-0de355b1468b', 'Test Product 10', 'Product Description....', '613254df-c779-479c-9d76-b8036e342979', NULL, '2023-07-28 13:23:03.273735', NULL);
+INSERT INTO usr.products VALUES ('b93ab7e4-3551-4a27-a60c-9163ac968208', 'Test Product 12', 'Product Description....', '613254df-c779-479c-9d76-b8036e342979', NULL, '2023-07-28 13:23:03.273735', NULL);
+INSERT INTO usr.products VALUES ('e35de786-bd47-404b-b92d-636b5e553596', 'Test Product 13', 'Product Description....', '613254df-c779-479c-9d76-b8036e342979', NULL, '2023-07-28 13:23:03.273735', NULL);
+INSERT INTO usr.products VALUES ('91227c6f-f5da-406e-ba7d-e19e0e92bb85', 'Test Product 14', 'Product Description....', '613254df-c779-479c-9d76-b8036e342979', NULL, '2023-07-28 13:23:03.273735', NULL);
+INSERT INTO usr.products VALUES ('fcaa12c2-9ee3-47d7-8be0-1e42c0bb8f94', 'Test Product 15', 'Product Description....', '613254df-c779-479c-9d76-b8036e342979', NULL, '2023-07-28 13:23:03.273735', NULL);
+INSERT INTO usr.products VALUES ('e1b4da09-ee9a-40ea-828a-8d461c9adf79', 'Test Product 16', 'Product Description....', '613254df-c779-479c-9d76-b8036e342979', NULL, '2023-07-28 13:23:03.273735', NULL);
+INSERT INTO usr.products VALUES ('cfdfebf6-5db4-4f1f-84ed-00ffbc6d10fd', 'Test Product 17', 'Product Description....', '613254df-c779-479c-9d76-b8036e342979', NULL, '2023-07-28 13:23:03.273735', NULL);
+INSERT INTO usr.products VALUES ('5b6f3413-0af0-4f8f-85b4-af02738e4da6', 'Test Product 19', 'Product Description....', '613254df-c779-479c-9d76-b8036e342979', NULL, '2023-07-28 13:23:03.273735', NULL);
+INSERT INTO usr.products VALUES ('0ecdbc3f-ee4e-42f6-831a-217e54b65722', 'Test Product 33', 'Product Description test 1', '613254df-c779-479c-9d76-b8036e342979', NULL, '2023-07-28 13:23:03.273735', NULL);
+INSERT INTO usr.products VALUES ('3d0cd537-2de1-4474-9ef2-a0d4581dd407', 'Test Product 36', 'Product Description test 3', '613254df-c779-479c-9d76-b8036e342979', NULL, '2023-07-28 13:23:03.273735', NULL);
 
 
 --
@@ -196,8 +203,8 @@ INSERT INTO usr.user_role VALUES ('613254df-c779-479c-9d76-b8036e342979', 'f3de1
 -- Data for Name: users; Type: TABLE DATA; Schema: usr; Owner: adapticcuser
 --
 
-INSERT INTO usr.users VALUES ('613254df-c779-479c-9d76-b8036e342979', 'admin@admin.com', 'John', 'Jones', 'a2838983bb0afaaf39bffc1d7c573970b7f83d97d7ddab63c27d67a2bafcab48', '90dc4694f0ce80b60709f3189aede917ccc0f32020a78b3d90ec95e35992c211', true, '2023-07-28 13:23:03.273735');
-INSERT INTO usr.users VALUES ('8f9b1e8f-d496-4804-942b-5ea29050370b', 'test@test.com', 'Tester', 'Test', 'b5558d08bac85ee29394697b7665a350432cd0f976640d4d4d38b896bfe2139c', '0cf9a97133ea5106664194aed35b9d4134a3b12f168c3f7622b7a6b624209db2', true, '2023-07-28 22:15:07.79185');
+INSERT INTO usr.users VALUES ('613254df-c779-479c-9d76-b8036e342979', 'admin@admin.com', 'John', 'Jones', 'a2838983bb0afaaf39bffc1d7c573970b7f83d97d7ddab63c27d67a2bafcab48', '90dc4694f0ce80b60709f3189aede917ccc0f32020a78b3d90ec95e35992c211', true, NULL, NULL, '2023-07-28 13:23:03.273735', NULL);
+INSERT INTO usr.users VALUES ('8f9b1e8f-d496-4804-942b-5ea29050370b', 'test@test.com', 'Tester', 'Test', 'b5558d08bac85ee29394697b7665a350432cd0f976640d4d4d38b896bfe2139c', '0cf9a97133ea5106664194aed35b9d4134a3b12f168c3f7622b7a6b624209db2', true, NULL, NULL, '2023-07-28 22:15:07.79185', NULL);
 
 
 --

@@ -10,13 +10,14 @@ import (
 func NewHandler(cont *container.Container) (http.Handler, error) {
 	r := chi.NewMux()
 
-	mail, err := newMail(cont)
+	product, err := newProduct(cont)
 	if err != nil {
 		return nil, err
 	}
 
-	r.Route("/mail", func(r chi.Router) {
-		r.Post("/sendguestmessage", mail.SendGuestMessage)
+	r.Route("/products", func(r chi.Router) {
+		r.Post("/", product.Create)
 	})
+
 	return r, nil
 }

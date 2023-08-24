@@ -22,10 +22,10 @@ const EMAIL_IS_ALREADY_IN_USE_PATTERN = "%v is already in use, please try a diff
 
 type Auth struct {
 	authMsgChannelIn  <-chan models.AuthMsg
-	userMsgChannelOut chan<- models.UserMsg
+	authMsgChannelOut chan<- models.AuthMsg
 	ctx               context.Context
 	cfg               config.Config
-	sendMsg           func(ctx context.Context, msg models.UserMsg) error
+	sendMsg           func(ctx context.Context, msg models.AuthMsg) error
 }
 
 type AuthMsgChannel chan models.AuthMsg
@@ -46,7 +46,7 @@ func AuthDependencyConstructor(cont *container.Container) (*Auth, error) {
 		return nil, err
 	}
 
-	userMsgChannelOut, err := container.Resolve[repositories.UserMsgChannel](cont)
+	authMsgChannelOut, err := container.Resolve[repositories.AuthMsgChannel](cont)
 	if err != nil {
 		return nil, err
 	}
@@ -54,9 +54,9 @@ func AuthDependencyConstructor(cont *container.Container) (*Auth, error) {
 	dependency := Auth{
 		ctx:               cont.GetContext(),
 		cfg:               cont.GetConfig(),
-		userMsgChannelOut: *userMsgChannelOut,
 		authMsgChannelIn:  *authMsgChannelIn,
-		sendMsg:           request.CreateSenderFunc(*userMsgChannelOut, request.DefaultTimeOut),
+		authMsgChannelOut: *authMsgChannelOut,
+		sendMsg:           request.CreateSenderFunc(*authMsgChannelOut, request.DefaultTimeOut),
 	}
 
 	go func() {
@@ -71,15 +71,15 @@ func (service Auth) MonitorChannels() {
 		select {
 		case request := <-service.authMsgChannelIn:
 			if request.Login != nil {
-				result, err := service.Login(request.Login.Context(), request.Login.RequestBody().Email, request.Login.RequestBody().Password)
+				result, err := service.Login(request.Login.Context(), request.Login.RequestParams().Email, request.Login.RequestParams().Password)
 				if err != nil {
 					request.Login.ReplyError(err)
 					continue
 				}
 				request.Login.Reply(*result)
 			} else if request.Register != nil {
-				register := request.Register.RequestBody()
-				result, err := service.Register(request.Register.Context(), register.Email, register.FirstName, register.LastName, register.Password)
+				register := request.Register.RequestParams()
+				result, err := service.Register(request.Register.Context(), register)
 				if err != nil {
 					request.Register.ReplyError(err)
 					continue
@@ -93,39 +93,37 @@ func (service Auth) MonitorChannels() {
 }
 
 func (a Auth) Login(ctx context.Context, email string, password string) (*models.LoginResponse, error) {
-	requestBody := models.UserRequestBody{
-		Email: pointers.String(email),
+	req := request.New[string, models.AuthUser](ctx, email)
+
+	msg := models.AuthMsg{
+		VerifyLogin: &req,
 	}
-
-	req := request.New[models.UserRequestBody, models.User](ctx, requestBody)
-
-	msg := models.UserMsg{Single: &req}
 
 	if err := a.sendMsg(ctx, msg); err != nil {
 		return nil, err
 	}
 
-	user, err := req.Wait()
+	authUser, err := req.Wait()
 	if err != nil {
 		return nil, err
 	}
 
-	if user == nil || user.ID == nil {
+	if authUser.IsDefault() {
 		return nil, errors.New(WRONG_EMAIL_OR_PASSWORD)
 	}
 
-	requestPasswordHash := utils.GeneratePasswordHash(password, *user.Salt)
+	requestPasswordHash := utils.GeneratePasswordHash(password, authUser.Salt)
 
-	if requestPasswordHash != *user.Password {
+	if requestPasswordHash != authUser.PasswordHash {
 		return nil, errors.New(WRONG_EMAIL_OR_PASSWORD)
 	}
 
 	expiresAt := time.Now().Add(time.Hour * 24)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
-		"ID":        *user.ID,
-		"email":     *user.Email,
-		"firstName": *user.FirstName,
-		"lastName":  *user.LastName,
+		"ID":        *authUser.ID,
+		"email":     *authUser.Email,
+		"firstName": *authUser.FirstName,
+		"lastName":  *authUser.LastName,
 		"expiresAt": expiresAt,
 	})
 
@@ -140,25 +138,23 @@ func (a Auth) Login(ctx context.Context, email string, password string) (*models
 	}, nil
 }
 
-func (a Auth) Register(ctx context.Context, email string, firstName string, lastName string, password string) (*models.RegisterResponse, error) {
-	requestBody := models.UserRequestBody{Email: pointers.String(email)}
-
+func (a Auth) Register(ctx context.Context, register models.RegisterRequestParams) (*models.RegisterResponse, error) {
 	ctxu := utils.GetModelFromContext[models.User](ctx, utils.CtxUserKey)
 	if ctxu == nil {
 		return nil, fmt.Errorf("invalid user context")
 	}
 
-	userIDOpt := request.UserIDOption[models.UserRequestBody, models.User](*ctxu.ID)
+	userIDOpt := request.UserIDOption[string, bool](*ctxu.ID)
 
 	req := request.New(
 		ctx,
-		requestBody,
+		register.Email,
 		userIDOpt,
 	)
 
-	singleMsg := models.UserMsg{Single: &req}
+	varifyEmail := models.AuthMsg{VerifyEmail: &req}
 
-	if err := a.sendMsg(ctx, singleMsg); err != nil {
+	if err := a.sendMsg(ctx, varifyEmail); err != nil {
 		return nil, err
 	}
 
@@ -166,29 +162,33 @@ func (a Auth) Register(ctx context.Context, email string, firstName string, last
 	if err != nil {
 		return nil, err
 	}
-	if response != nil && !response.IsNil() {
-		return nil, fmt.Errorf(EMAIL_IS_ALREADY_IN_USE_PATTERN, email)
+	if response != nil && !*response {
+		return nil, fmt.Errorf(EMAIL_IS_ALREADY_IN_USE_PATTERN, register.Email)
 	}
 
 	salt := utils.GenerateSaltString()
-	passwordHash := utils.GeneratePasswordHash(password, salt)
+	passwordHash := utils.GeneratePasswordHash(register.Password, salt)
 
-	creationUser := models.User{
-		ID:        pointers.String(uuid.New().String()),
-		Email:     &email,
-		FirstName: &firstName,
-		LastName:  &lastName,
-		Password:  &passwordHash,
-		Salt:      &salt,
-		Active:    pointers.Bool(true),
+	creationUser := models.AuthUser{
+		User: models.User{
+			ID:        pointers.ToPtr(uuid.New().String()),
+			Email:     &register.Email,
+			FirstName: &register.FirstName,
+			LastName:  &register.LastName,
+			Active:    pointers.ToPtr(false),
+		},
+		Password: models.Password{
+			PasswordHash: passwordHash,
+			Salt:         salt,
+		},
 	}
 
-	createUserIDOpt := request.UserIDOption[[]models.User, request.Signal](*ctxu.ID)
+	createUserIDOpt := request.UserIDOption[models.AuthUser, request.Signal](*ctxu.ID)
 
-	creationRequest := request.New(ctx, []models.User{creationUser}, createUserIDOpt)
+	creationRequest := request.New(ctx, creationUser, createUserIDOpt)
 
-	createMsg := models.UserMsg{
-		Create: &creationRequest,
+	createMsg := models.AuthMsg{
+		RegisterUser: &creationRequest,
 	}
 
 	if err := a.sendMsg(ctx, createMsg); err != nil {

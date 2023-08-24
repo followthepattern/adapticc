@@ -76,9 +76,9 @@ func (repository User) MonitorChannels() {
 func (service User) replyRequest(req models.UserMsg) {
 	switch {
 	case req.Single != nil:
-		requestBody := req.Single.RequestBody()
-		if requestBody.ID != nil {
-			user, err := service.GetByID(*requestBody.ID)
+		requestParams := req.Single.RequestParams()
+		if requestParams.ID != nil {
+			user, err := service.GetByID(*requestParams.ID)
 			if err != nil {
 				req.Single.ReplyError(err)
 				return
@@ -88,8 +88,8 @@ func (service User) replyRequest(req models.UserMsg) {
 			}
 			req.Single.Reply(*user)
 			return
-		} else if requestBody.Email != nil {
-			user, err := service.GetByEmail(*requestBody.Email)
+		} else if requestParams.Email != nil {
+			user, err := service.GetByEmail(*requestParams.Email)
 			if err != nil {
 				req.Single.ReplyError(err)
 				return
@@ -101,38 +101,38 @@ func (service User) replyRequest(req models.UserMsg) {
 			return
 		}
 	case req.List != nil:
-		requestBody := req.List.RequestBody()
+		requestParams := req.List.RequestParams()
 		userID := req.List.UserID()
-		resp, err := service.Get(userID, requestBody)
+		resp, err := service.Get(userID, requestParams)
 		if err != nil {
 			req.List.ReplyError(err)
 			return
 		}
 		req.List.Reply(*resp)
 	case req.Create != nil:
-		requestBody := req.Create.RequestBody()
+		requestParams := req.Create.RequestParams()
 
 		userID := req.Create.UserID()
 
-		err := service.Create(userID, requestBody)
+		err := service.Create(userID, requestParams)
 		if err != nil {
 			req.Create.ReplyError(err)
 			return
 		}
 		req.Create.Reply(request.Success())
 	case req.Update != nil:
-		requestBody := req.Update.RequestBody()
+		requestParams := req.Update.RequestParams()
 		userID := req.Update.UserID()
-		err := service.Update(userID, requestBody)
+		err := service.Update(userID, requestParams)
 		if err != nil {
 			req.Update.ReplyError(err)
 			return
 		}
 		req.Update.Reply(request.Success())
 	case req.Delete != nil:
-		requestBody := req.Delete.RequestBody()
+		requestParams := req.Delete.RequestParams()
 		userID := req.Delete.UserID()
-		err := service.Delete(userID, requestBody)
+		err := service.Delete(userID, requestParams)
 		if err != nil {
 			req.Delete.ReplyError(err)
 			return
@@ -151,9 +151,11 @@ func (repo User) Create(userID string, users []models.User) (err error) {
 		return errors.New("there is no effective permission to create this resource")
 	}
 
+	active := false
+
 	for i := range users {
-		users[i].RegisteredAt = pointers.Time(time.Now())
-		users[i].Active = pointers.ToPtr(false)
+		users[i].Userlog = setCreateUserlog(userID, time.Now())
+		users[i].Active = &active
 	}
 	_, err = repo.db.Insert(repo.tableName()).Rows(users).Executor().Exec()
 	return
@@ -183,7 +185,7 @@ func (repo User) GetByEmail(email string) (*models.User, error) {
 	return &user, err
 }
 
-func (repo User) Get(userID string, request models.UserListRequestBody) (*models.UserListResponse, error) {
+func (repo User) Get(userID string, request models.UserListRequestParams) (*models.UserListResponse, error) {
 	data := []models.User{}
 
 	query := repo.db.From(repo.tableName())
@@ -211,7 +213,7 @@ func (repo User) Get(userID string, request models.UserListRequestBody) (*models
 	}
 
 	if request.Pagination.Page == nil {
-		request.Pagination.Page = pointers.UInt(models.DefaultPage)
+		request.Pagination.Page = pointers.ToPtr[uint](models.DefaultPage)
 	}
 
 	if request.Pagination.PageSize != nil {
@@ -240,7 +242,8 @@ func (repo User) Get(userID string, request models.UserListRequestBody) (*models
 }
 
 func (repo User) Update(userID string, user models.User) error {
-	// user.UpdatedAt = pointers.Time(time.Now())
+	user.Userlog = setUpdateUserlog(userID, time.Now())
+
 	query := repo.db.Update(repo.tableName()).
 		Set(user).
 		Where(C("id").Eq(*user.ID))

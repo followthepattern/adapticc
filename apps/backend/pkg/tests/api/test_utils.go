@@ -37,17 +37,15 @@ func runRequest(srv http.Handler, r *http.Request, data interface{}) (int, error
 }
 
 func NewMockedContainer(ctx context.Context, db *sql.DB, cfg config.Config) (*container.Container, error) {
-	logger, err := zap.NewDevelopment()
-	if err != nil {
-		return nil, err
-	}
+	logger := zap.NewExample()
+
 	cont := container.New(
 		ctx,
 		cfg,
 		db,
 		logger)
 
-	err = internal.RegisterDependencies(cont)
+	err := internal.RegisterDependencies(cont)
 	if err != nil {
 		return nil, err
 	}

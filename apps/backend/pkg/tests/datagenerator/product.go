@@ -7,8 +7,8 @@ import (
 
 func NewRandomProduct() models.Product {
 	return models.Product{
-		ID:          pointers.String(String(8)),
-		Title:       pointers.String(String(8)),
-		Description: pointers.String(String(8)),
+		ID:          pointers.ToPtr(String(8)),
+		Title:       pointers.ToPtr(String(8)),
+		Description: pointers.ToPtr(String(8)),
 	}
 }

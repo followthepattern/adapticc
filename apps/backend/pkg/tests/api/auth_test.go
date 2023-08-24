@@ -18,7 +18,7 @@ import (
 	"github.com/followthepattern/adapticc/pkg/tests/sqlexpectations"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/graph-gophers/graphql-go/errors"
+	"github.com/followthepattern/graphql-go/errors"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -48,7 +48,7 @@ var _ = Describe("Authentication", func() {
 		handler http.Handler
 
 		testResponse  *graphqlAuthResponse
-		generatedUser models.User
+		generatedUser models.AuthUser
 		password      string
 	)
 
@@ -74,8 +74,8 @@ var _ = Describe("Authentication", func() {
 			panic(err)
 		}
 
-		password = datagenerator.String(13)
 		testResponse = &graphqlAuthResponse{}
+		password = datagenerator.String(13)
 		generatedUser = datagenerator.NewRandomAuthUser(password)
 	})
 
@@ -93,7 +93,7 @@ var _ = Describe("Authentication", func() {
 		)
 
 		It("Success", func() {
-			sqlexpectations.ExpectGetUserByEmail(mock, generatedUser, *generatedUser.Email)
+			sqlexpectations.ExpectGetAuthUserByEmail(mock, generatedUser, *generatedUser.Email)
 
 			graphRequest := graphqlRequest{
 				Query: fmt.Sprintf(queryTemplate, *generatedUser.Email, password),
@@ -111,7 +111,7 @@ var _ = Describe("Authentication", func() {
 		})
 
 		It("Wrong password", func() {
-			sqlexpectations.ExpectGetUserByEmail(mock, generatedUser, *generatedUser.Email)
+			sqlexpectations.ExpectGetAuthUserByEmail(mock, generatedUser, *generatedUser.Email)
 
 			graphRequest := graphqlRequest{
 				Query: fmt.Sprintf(queryTemplate, *generatedUser.Email, "wrong-password"),
@@ -148,8 +148,9 @@ var _ = Describe("Authentication", func() {
 			}
 			request, _ := json.Marshal(graphRequest)
 
-			sqlexpectations.ExpectGetUserByEmail(mock, models.User{}, *generatedUser.Email)
-			sqlexpectations.ExpectCreateUser(mock, "", generatedUser)
+			sqlexpectations.ExpectVerifyEmail(mock, 0, *generatedUser.Email)
+
+			sqlexpectations.ExpectCreateAuthUser(mock, "", generatedUser)
 
 			code, err := runRequest(handler, httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request)), testResponse)
 			Expect(err).To(BeNil())
@@ -171,7 +172,7 @@ var _ = Describe("Authentication", func() {
 			}
 			request, _ := json.Marshal(graphRequest)
 
-			sqlexpectations.ExpectGetUserByEmail(mock, generatedUser, *generatedUser.Email)
+			sqlexpectations.ExpectVerifyEmail(mock, 1, *generatedUser.Email)
 
 			code, err := runRequest(handler, httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request)), testResponse)
 			Expect(err).To(BeNil())

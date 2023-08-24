@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
@@ -88,68 +89,60 @@ func (service Product) replyRequest(request models.ProductMsg) {
 	}
 }
 
-func (service Product) replySingle(request request.RequestHandler[models.ProductRequestBody, models.Product]) {
-	requestBody := request.RequestBody()
+func (service Product) replySingle(request request.RequestHandler[string, models.Product]) {
+	id := request.RequestParams()
 	userID := request.UserID()
-	if requestBody.ID != nil {
-		product, err := service.GetByID(userID, *requestBody.ID)
-		if err != nil {
-			request.ReplyError(err)
-			return
-		}
-		request.Reply(*product)
-		return
-	}
 
-	request.ReplyError(errors.New("missing userID or productID"))
-}
-
-func (service Product) replyList(request request.RequestHandler[models.ProductListRequestBody, models.ProductListResponse]) {
-	requestBody := request.RequestBody()
-	userID := request.UserID()
-	product, err := service.Get(userID, requestBody)
+	product, err := service.GetByID(userID, id)
 	if err != nil {
 		request.ReplyError(err)
 		return
 	}
 	request.Reply(*product)
-	return
+}
+
+func (service Product) replyList(request request.RequestHandler[models.ProductListRequestParams, models.ProductListResponse]) {
+	requestParams := request.RequestParams()
+	userID := request.UserID()
+	product, err := service.Get(userID, requestParams)
+	if err != nil {
+		request.ReplyError(err)
+		return
+	}
+	request.Reply(*product)
 }
 
 func (service Product) replyCreate(req request.RequestHandler[[]models.Product, request.Signal]) {
-	requestBody := req.RequestBody()
+	requestParams := req.RequestParams()
 	userID := req.UserID()
-	err := service.Create(userID, requestBody)
+	err := service.Create(userID, requestParams)
 	if err != nil {
 		req.ReplyError(err)
 		return
 	}
 	req.Reply(request.Success())
-	return
 }
 
 func (service Product) replyUpdate(req request.RequestHandler[models.Product, request.Signal]) {
-	requestBody := req.RequestBody()
+	requestParams := req.RequestParams()
 	userID := req.UserID()
-	err := service.Update(userID, requestBody)
+	err := service.Update(userID, requestParams)
 	if err != nil {
 		req.ReplyError(err)
 		return
 	}
 	req.Reply(request.Success())
-	return
 }
 
 func (service Product) replyDelete(req request.RequestHandler[string, request.Signal]) {
-	requestBody := req.RequestBody()
+	requestParams := req.RequestParams()
 	userID := req.UserID()
-	err := service.Delete(userID, requestBody)
+	err := service.Delete(userID, requestParams)
 	if err != nil {
 		req.ReplyError(err)
 		return
 	}
 	req.Reply(request.Success())
-	return
 }
 
 func (repo Product) Create(userID string, products []models.Product) (err error) {
@@ -162,10 +155,9 @@ func (repo Product) Create(userID string, products []models.Product) (err error)
 		return errors.New("there is no effective permission to create this resource")
 	}
 
-	// TODO: set log fields
-	// for i, _ := range products {
-	// 	products[i].CreatedAt = pointers.Time(time.Now())
-	// }
+	for i, _ := range products {
+		products[i].Userlog = setCreateUserlog(userID, time.Now())
+	}
 
 	insertion := repo.db.Insert(repo.tableName())
 
@@ -195,7 +187,7 @@ func (repo Product) GetByID(userID string, id string) (*models.Product, error) {
 	return &product, nil
 }
 
-func (repo Product) Get(userID string, request models.ProductListRequestBody) (*models.ProductListResponse, error) {
+func (repo Product) Get(userID string, request models.ProductListRequestParams) (*models.ProductListResponse, error) {
 	data := []models.Product{}
 
 	query := repo.db.From(repo.tableName())
@@ -264,9 +256,11 @@ func (repo Product) Get(userID string, request models.ProductListRequestBody) (*
 	return &result, nil
 }
 
-func (repo Product) Update(userID string, request models.Product) error {
+func (repo Product) Update(userID string, model models.Product) error {
+	model.Userlog = setUpdateUserlog(userID, time.Now())
+
 	query := repo.db.Update(repo.tableName()).
-		Set(request)
+		Set(model)
 
 	query = sqlbuilder.GetUpdateWithPermissions(
 		query,
@@ -275,7 +269,7 @@ func (repo Product) Update(userID string, request models.Product) error {
 		userID,
 	)
 
-	query = query.Where(I("id").Eq(*request.ID))
+	query = query.Where(I("id").Eq(*model.ID))
 
 	_, err := query.
 		Executor().

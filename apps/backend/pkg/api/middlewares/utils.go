@@ -2,6 +2,8 @@ package middlewares
 
 import (
 	"errors"
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/followthepattern/adapticc/pkg/models"
@@ -11,44 +13,58 @@ import (
 const (
 	AuthorizationHeader = "Authorization"
 	BearerPrefix        = "Bearer"
+	InvalidToken        = "invalid token"
+	ExpiredToken        = "ExpiredToken"
 )
 
-func getUserContextFromClaims(claims jwt.MapClaims) (*models.User, error) {
+func invalidTokenError(field string) error {
+	return fmt.Errorf("%s - missing field: %s", InvalidToken, field)
+}
+
+func getAuthorizedUserFromClaims(claims jwt.MapClaims) (*models.User, error) {
 	id, ok := claims["ID"].(string)
 	if !ok {
-		return nil, errors.New("ID is not in claims")
+		return nil, invalidTokenError("ID")
 	}
 	email, ok := claims["email"].(string)
 	if !ok {
-		return nil, errors.New("email is not in claims")
+		return nil, invalidTokenError("email")
 	}
 	firstName, ok := claims["firstName"].(string)
 	if !ok {
-		return nil, errors.New("firstName is not in claims")
+		return nil, invalidTokenError("firstName")
 	}
 	lastName, ok := claims["lastName"].(string)
 	if !ok {
-		return nil, errors.New("lastName is not in claims")
+		return nil, invalidTokenError("lastName")
 	}
 	expiresAtStr, ok := claims["expiresAt"].(string)
 	if !ok {
-		return nil, errors.New("expiresAt is not in claims")
+		return nil, invalidTokenError("expiresAt")
 	}
-
 	expiresAt, err := time.Parse(time.RFC3339, expiresAtStr)
 	if err != nil {
-		return nil, errors.New("expiresAt doesn't have the right time format")
+		return nil, err
 	}
 
 	if time.Now().After(expiresAt) {
-		return nil, errors.New("token is expired")
+		return nil, errors.New(ExpiredToken)
 	}
 
-	user := models.User{
+	return &models.User{
 		ID:        &id,
 		Email:     &email,
 		FirstName: &firstName,
 		LastName:  &lastName,
+	}, nil
+}
+
+func getToken(tokenString string) string {
+	tokens := strings.Split(tokenString, BearerPrefix)
+
+	if len(tokens) < 2 {
+		return ""
 	}
-	return &user, nil
+
+	return strings.TrimSpace(tokens[1])
 }

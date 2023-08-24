@@ -22,7 +22,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/graph-gophers/graphql-go/errors"
+	"github.com/followthepattern/graphql-go/errors"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -114,7 +114,7 @@ var _ = Describe("User graphql queries", func() {
 			handler, err := api.GetRouter(cont)
 			Expect(err).To(BeNil())
 
-			listRequestBody := models.UserListRequestBody{
+			listRequestParams := models.UserListRequestParams{
 				Pagination: models.Pagination{
 					PageSize: pointers.ToPtr[uint](5),
 					Page:     pointers.ToPtr[uint](1),
@@ -144,7 +144,7 @@ var _ = Describe("User graphql queries", func() {
 				}
 			}`
 
-			query := fmt.Sprintf(queryTemplate, *listRequestBody.Filter.Search)
+			query := fmt.Sprintf(queryTemplate, *listRequestParams.Filter.Search)
 
 			graphRequest := graphqlRequest{
 				Query: query,
@@ -154,7 +154,7 @@ var _ = Describe("User graphql queries", func() {
 
 			users := []models.User{datagenerator.NewRandomUser(), datagenerator.NewRandomUser(), datagenerator.NewRandomUser()}
 
-			sqlexpectations.ExpectUsers(mock, "", users, listRequestBody)
+			sqlexpectations.ExpectUsers(mock, "", users, listRequestParams)
 
 			testResponse := &graphqlUserResponse{}
 
@@ -178,7 +178,7 @@ var _ = Describe("User graphql queries", func() {
 			handler, err := api.GetRouter(cont)
 			Expect(err).To(BeNil())
 
-			listRequestBody := models.UserListRequestBody{
+			listRequestParams := models.UserListRequestParams{
 				Filter: models.ListFilter{
 					Search: pointers.ToPtr("email@email.com"),
 				},
@@ -203,7 +203,7 @@ var _ = Describe("User graphql queries", func() {
 				}
 			}`
 
-			query := fmt.Sprintf(queryTemplate, *listRequestBody.Filter.Search)
+			query := fmt.Sprintf(queryTemplate, *listRequestParams.Filter.Search)
 
 			graphRequest := graphqlRequest{
 				Query: query,
@@ -213,7 +213,7 @@ var _ = Describe("User graphql queries", func() {
 
 			users := []models.User{datagenerator.NewRandomUser(), datagenerator.NewRandomUser(), datagenerator.NewRandomUser()}
 
-			sqlexpectations.ExpectUsersWithoutPaging(mock, "", users, listRequestBody)
+			sqlexpectations.ExpectUsersWithoutPaging(mock, "", users, listRequestParams)
 
 			testResponse := &graphqlUserResponse{}
 
@@ -312,9 +312,7 @@ var _ = Describe("User graphql queries", func() {
 			})
 
 			tokenString, err := token.SignedString([]byte(cfg.Server.HmacSecret))
-			if err != nil {
-				panic(err)
-			}
+			Expect(err).To(BeNil())
 
 			graphRequest := graphqlRequest{
 				Query: fmt.Sprintf(graphql, *user.ID, *user.FirstName, *user.LastName),
@@ -322,12 +320,12 @@ var _ = Describe("User graphql queries", func() {
 
 			request, _ := json.Marshal(graphRequest)
 
-			sqlexpectations.ExpectUpdateUser(mock, "", user)
+			sqlexpectations.ExpectUpdateUser(mock, *contextUser.ID, user)
 
 			testResponse := &graphqlUserResponse{}
 
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
-			httpRequest.Header.Set(middlewares.AuthorizationHeader, tokenString)
+			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("Bearer %s", tokenString))
 
 			code, err := runRequest(handler, httpRequest, testResponse)
 			Expect(err).To(BeNil())

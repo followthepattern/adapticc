@@ -7,7 +7,7 @@ import (
 	"reflect"
 
 	"github.com/followthepattern/adapticc/pkg/config"
-	"github.com/followthepattern/adapticc/pkg/utils"
+	"github.com/followthepattern/adapticc/pkg/utils/pointers"
 
 	"go.uber.org/zap"
 )
@@ -17,7 +17,7 @@ type DependencyKey string
 type ConstructorFunc[T any] func(cont *Container) (*T, error)
 
 func getKey[T any](value T) DependencyKey {
-	ttype := utils.GetUnderlyingTypeRecursively(reflect.TypeOf(value))
+	ttype := pointers.GetUnderlyingTypeRecursively(reflect.TypeOf(value))
 	dependencyKey := DependencyKey(fmt.Sprintf("%s.%s", ttype.PkgPath(), ttype.Name()))
 	return dependencyKey
 }

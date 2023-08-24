@@ -32,6 +32,8 @@ func GetRouter(cont *container.Container) (*chi.Mux, error) {
 
 	middlewares.AddMiddlewareLogger(r, cont.GetLogger())
 
+	authMiddleware := middlewares.NewJWT(cont)
+
 	graphqlHandler, err := graphql.NewHandler(cont)
 	if err != nil {
 		return nil, err
@@ -41,11 +43,9 @@ func GetRouter(cont *container.Container) (*chi.Mux, error) {
 		return nil, err
 	}
 
-	authMiddleware := middlewares.NewJWT(cont)
-
 	r.Route("/", func(r chi.Router) {
 		r.With(authMiddleware.Authenticate).Post("/graphql", graphqlHandler.ServeHTTP)
-		r.Mount("/", restHandler)
+		r.With(authMiddleware.Authenticate).Mount("/", restHandler)
 	})
 
 	return r, nil

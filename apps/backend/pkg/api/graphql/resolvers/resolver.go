@@ -8,7 +8,7 @@ import (
 
 type Resolver struct {
 	users        UserResolver
-	machines     ProductResolver
+	products     ProductResolver
 	authMutation AuthMutation
 }
 
@@ -29,18 +29,18 @@ func ResolverDependencyConstructor(cont *container.Container) (*Resolver, error)
 		return nil, errors.New("authMutation can't be nil")
 	}
 
-	mq, err := NewProductQuery(cont)
+	pq, err := NewProductQuery(cont)
 	if err != nil {
 		return nil, err
 	}
 
-	if mq == nil {
-		return nil, errors.New("machineQuery can't be nil")
+	if pq == nil {
+		return nil, errors.New("productQuery can't be nil")
 	}
 
 	resolver := Resolver{
 		users:        *uq,
-		machines:     *mq,
+		products:     *pq,
 		authMutation: *am,
 	}
 
@@ -56,5 +56,5 @@ func (r Resolver) Authentication() (AuthMutation, error) {
 }
 
 func (r Resolver) Products() (ProductResolver, error) {
-	return r.machines, nil
+	return r.products, nil
 }

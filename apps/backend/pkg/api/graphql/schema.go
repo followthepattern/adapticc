@@ -29,7 +29,10 @@ type User {
 	firstName: String
 	lastName: String
 	active: Boolean
-	registeredAt: Time
+	creationUserID: String
+	updateUserID: String
+	createdAt: Time
+	updatedAt: Time
 }
 
 input UserInput {
@@ -42,13 +45,17 @@ type UserListResponse {
 	count: Int64!
 	pageSize: Uint
 	page: Uint
-	data: [User]!
+	data: [User!]!
 }
 
 type Product {
 	id: String
 	title: String
 	description: String
+	creationUserID: String
+	updateUserID: String
+	createdAt: Time
+	updatedAt: Time
 }
 
 input ProductInput {
@@ -98,7 +105,7 @@ type UserQuery {
 
 type ProductQuery {
 	single(id: String!): Product
-	list(pagination: Pagination!, filter: ListFilter, orderBy: [OrderBy!]): ProductListResponse
+	list(pagination: Pagination, filter: ListFilter, orderBy: [OrderBy!]): ProductListResponse
 }
 
 type UserMutation {
