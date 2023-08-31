@@ -32,7 +32,7 @@ var _ = Describe("Request", func() {
 	Context("Wait", func() {
 		It("successful finish", func() {
 			go func() {
-				req.Reply(Success())
+				req.Reply(Success)
 			}()
 
 			_, err := req.Wait()

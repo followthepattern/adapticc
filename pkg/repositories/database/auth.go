@@ -109,7 +109,7 @@ func (service Auth) replyRegisterUser(handler request.RequestHandler[models.Auth
 		return
 	}
 
-	handler.Reply(request.Success())
+	handler.Reply(request.Success)
 }
 
 func (service Auth) replyVerifyLogin(handler request.RequestHandler[string, models.AuthUser]) {

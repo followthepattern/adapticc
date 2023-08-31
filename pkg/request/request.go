@@ -6,9 +6,7 @@ import (
 	"time"
 )
 
-func Success() struct{} {
-	return struct{}{}
-}
+var Success = struct{}{}
 
 type Signal struct{}
 

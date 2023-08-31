@@ -73,7 +73,7 @@ func (service Mail) replyRequest(req request.RequestHandler[models.Mail, struct{
 		req.ReplyError(err)
 		return
 	}
-	req.Reply(request.Success())
+	req.Reply(request.Success)
 }
 
 func (service Mail) sendMail(mail models.Mail) error {

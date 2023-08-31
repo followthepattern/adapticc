@@ -120,7 +120,7 @@ func (service Product) replyCreate(req request.RequestHandler[[]models.Product, 
 		req.ReplyError(err)
 		return
 	}
-	req.Reply(request.Success())
+	req.Reply(request.Success)
 }
 
 func (service Product) replyUpdate(req request.RequestHandler[models.Product, request.Signal]) {
@@ -131,7 +131,7 @@ func (service Product) replyUpdate(req request.RequestHandler[models.Product, re
 		req.ReplyError(err)
 		return
 	}
-	req.Reply(request.Success())
+	req.Reply(request.Success)
 }
 
 func (service Product) replyDelete(req request.RequestHandler[string, request.Signal]) {
@@ -142,7 +142,7 @@ func (service Product) replyDelete(req request.RequestHandler[string, request.Si
 		req.ReplyError(err)
 		return
 	}
-	req.Reply(request.Success())
+	req.Reply(request.Success)
 }
 
 func (repo Product) Create(userID string, products []models.Product) (err error) {

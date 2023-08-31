@@ -119,7 +119,7 @@ func (service User) replyRequest(req models.UserMsg) {
 			req.Create.ReplyError(err)
 			return
 		}
-		req.Create.Reply(request.Success())
+		req.Create.Reply(request.Success)
 	case req.Update != nil:
 		requestParams := req.Update.RequestParams()
 		userID := req.Update.UserID()
@@ -128,7 +128,7 @@ func (service User) replyRequest(req models.UserMsg) {
 			req.Update.ReplyError(err)
 			return
 		}
-		req.Update.Reply(request.Success())
+		req.Update.Reply(request.Success)
 	case req.Delete != nil:
 		requestParams := req.Delete.RequestParams()
 		userID := req.Delete.UserID()
@@ -137,7 +137,7 @@ func (service User) replyRequest(req models.UserMsg) {
 			req.Delete.ReplyError(err)
 			return
 		}
-		req.Delete.Reply(request.Success())
+		req.Delete.Reply(request.Success)
 	}
 }
 
