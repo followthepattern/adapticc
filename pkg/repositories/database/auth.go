@@ -83,7 +83,7 @@ func (service Auth) replyRequest(req models.AuthMsg) {
 }
 
 func (service Auth) replyVerifyEmail(handler request.Task[string, bool]) {
-	email := handler.RequestParams()
+	email := handler.TaskParams()
 
 	count, err := service.db.From("usr.users").Where(Ex{"email": email}).Count()
 	if err != nil {
@@ -96,7 +96,7 @@ func (service Auth) replyVerifyEmail(handler request.Task[string, bool]) {
 }
 
 func (service Auth) replyRegisterUser(handler request.Task[models.AuthUser, request.Signal]) {
-	registerUser := handler.RequestParams()
+	registerUser := handler.TaskParams()
 
 	registerUser.Userlog = models.Userlog{
 		CreatedAt: pointers.ToPtr(time.Now()),
@@ -115,7 +115,7 @@ func (service Auth) replyRegisterUser(handler request.Task[models.AuthUser, requ
 func (service Auth) replyVerifyLogin(handler request.Task[string, models.AuthUser]) {
 	authUser := models.AuthUser{}
 
-	email := handler.RequestParams()
+	email := handler.TaskParams()
 
 	query := service.db.From("usr.users").Where(Ex{"email": email})
 

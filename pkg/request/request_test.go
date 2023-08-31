@@ -51,7 +51,7 @@ var _ = Describe("Request", func() {
 		It("times out", func() {
 			req.SetOptions(TimeoutOption[string, struct{}](time.Second))
 			_, err := req.Wait()
-			Expect(err).To(MatchError(requestTimedout))
+			Expect(err).To(MatchError(taskTimedout))
 		})
 
 		It("context gets cancelled", func() {

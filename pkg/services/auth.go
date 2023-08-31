@@ -71,14 +71,14 @@ func (service Auth) MonitorChannels() {
 		select {
 		case request := <-service.authMsgChannelIn:
 			if request.Login != nil {
-				result, err := service.Login(request.Login.Context(), request.Login.RequestParams().Email, request.Login.RequestParams().Password)
+				result, err := service.Login(request.Login.Context(), request.Login.TaskParams().Email, request.Login.TaskParams().Password)
 				if err != nil {
 					request.Login.ReplyError(err)
 					continue
 				}
 				request.Login.Reply(*result)
 			} else if request.Register != nil {
-				register := request.Register.RequestParams()
+				register := request.Register.TaskParams()
 				result, err := service.Register(request.Register.Context(), register)
 				if err != nil {
 					request.Register.ReplyError(err)

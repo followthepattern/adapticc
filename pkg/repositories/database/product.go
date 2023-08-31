@@ -90,7 +90,7 @@ func (service Product) replyRequest(request models.ProductMsg) {
 }
 
 func (service Product) replySingle(request request.Task[string, models.Product]) {
-	id := request.RequestParams()
+	id := request.TaskParams()
 	userID := request.UserID()
 
 	product, err := service.GetByID(userID, id)
@@ -102,7 +102,7 @@ func (service Product) replySingle(request request.Task[string, models.Product])
 }
 
 func (service Product) replyList(request request.Task[models.ProductListRequestParams, models.ProductListResponse]) {
-	requestParams := request.RequestParams()
+	requestParams := request.TaskParams()
 	userID := request.UserID()
 	product, err := service.Get(userID, requestParams)
 	if err != nil {
@@ -113,7 +113,7 @@ func (service Product) replyList(request request.Task[models.ProductListRequestP
 }
 
 func (service Product) replyCreate(req request.Task[[]models.Product, request.Signal]) {
-	requestParams := req.RequestParams()
+	requestParams := req.TaskParams()
 	userID := req.UserID()
 	err := service.Create(userID, requestParams)
 	if err != nil {
@@ -124,7 +124,7 @@ func (service Product) replyCreate(req request.Task[[]models.Product, request.Si
 }
 
 func (service Product) replyUpdate(req request.Task[models.Product, request.Signal]) {
-	requestParams := req.RequestParams()
+	requestParams := req.TaskParams()
 	userID := req.UserID()
 	err := service.Update(userID, requestParams)
 	if err != nil {
@@ -135,7 +135,7 @@ func (service Product) replyUpdate(req request.Task[models.Product, request.Sign
 }
 
 func (service Product) replyDelete(req request.Task[string, request.Signal]) {
-	requestParams := req.RequestParams()
+	requestParams := req.TaskParams()
 	userID := req.UserID()
 	err := service.Delete(userID, requestParams)
 	if err != nil {

@@ -76,7 +76,7 @@ func (repository User) MonitorChannels() {
 func (service User) replyRequest(req models.UserMsg) {
 	switch {
 	case req.Single != nil:
-		requestParams := req.Single.RequestParams()
+		requestParams := req.Single.TaskParams()
 		if requestParams.ID != nil {
 			user, err := service.GetByID(*requestParams.ID)
 			if err != nil {
@@ -101,7 +101,7 @@ func (service User) replyRequest(req models.UserMsg) {
 			return
 		}
 	case req.List != nil:
-		requestParams := req.List.RequestParams()
+		requestParams := req.List.TaskParams()
 		userID := req.List.UserID()
 		resp, err := service.Get(userID, requestParams)
 		if err != nil {
@@ -110,7 +110,7 @@ func (service User) replyRequest(req models.UserMsg) {
 		}
 		req.List.Reply(*resp)
 	case req.Create != nil:
-		requestParams := req.Create.RequestParams()
+		requestParams := req.Create.TaskParams()
 
 		userID := req.Create.UserID()
 
@@ -121,7 +121,7 @@ func (service User) replyRequest(req models.UserMsg) {
 		}
 		req.Create.Reply(request.Success)
 	case req.Update != nil:
-		requestParams := req.Update.RequestParams()
+		requestParams := req.Update.TaskParams()
 		userID := req.Update.UserID()
 		err := service.Update(userID, requestParams)
 		if err != nil {
@@ -130,7 +130,7 @@ func (service User) replyRequest(req models.UserMsg) {
 		}
 		req.Update.Reply(request.Success)
 	case req.Delete != nil:
-		requestParams := req.Delete.RequestParams()
+		requestParams := req.Delete.TaskParams()
 		userID := req.Delete.UserID()
 		err := service.Delete(userID, requestParams)
 		if err != nil {

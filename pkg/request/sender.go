@@ -14,7 +14,7 @@ func CreateSenderFunc[T any](ch chan<- T, timeoutInterval time.Duration) func(ct
 		case ch <- msg:
 			return nil
 		case <-ticker.C:
-			return errors.New(requestSendTimedout)
+			return errors.New(taskSendTimedout)
 		case <-ctx.Done():
 			return errors.New(contextCancelled)
 		}

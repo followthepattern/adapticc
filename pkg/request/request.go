@@ -12,23 +12,21 @@ type Signal struct{}
 
 type TaskOption[TaskT any, SuccessResultT any] func(*Task[TaskT, SuccessResultT])
 
-type Task[RequestParamsT any, RespT any] struct {
-	ctx           context.Context
-	userID        string
-	result        result[RespT]
-	requestParams RequestParamsT
+type Task[TaskParamsT any, RespT any] struct {
+	ctx        context.Context
+	userID     string
+	result     result[RespT]
+	taskParams TaskParamsT
 
-	timeoutInterval         time.Duration
-	responseTimeoutInterval time.Duration
+	timeoutInterval time.Duration
 }
 
 func New[TaskT any, SuccessResultT any](ctx context.Context, body TaskT, opts ...TaskOption[TaskT, SuccessResultT]) Task[TaskT, SuccessResultT] {
 	req := Task[TaskT, SuccessResultT]{
-		ctx:                     ctx,
-		result:                  newResult[SuccessResultT](),
-		timeoutInterval:         DefaultTimeOut,
-		responseTimeoutInterval: DefaultTimeOut,
-		requestParams:           body,
+		ctx:             ctx,
+		result:          newResult[SuccessResultT](),
+		timeoutInterval: DefaultTimeOut,
+		taskParams:      body,
 	}
 
 	for _, opt := range opts {
@@ -46,8 +44,8 @@ func (r Task[TaskT, SuccessResultT]) UserID() string {
 	return r.userID
 }
 
-func (r Task[TaskT, SuccessResultT]) RequestParams() TaskT {
-	return r.requestParams
+func (r Task[TaskT, SuccessResultT]) TaskParams() TaskT {
+	return r.taskParams
 }
 
 func (r Task[TaskT, SuccessResultT]) Wait() (*SuccessResultT, error) {
@@ -63,7 +61,7 @@ func (r Task[TaskT, SuccessResultT]) Wait() (*SuccessResultT, error) {
 	case err := <-errResult:
 		return nil, err
 	case <-ticker.C:
-		return nil, errors.New(requestTimedout)
+		return nil, errors.New(taskTimedout)
 	case <-r.ctx.Done():
 		return nil, errors.New(contextCancelled)
 	}

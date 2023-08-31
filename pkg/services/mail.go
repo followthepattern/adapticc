@@ -68,7 +68,7 @@ func (service Mail) MonitorChannels() {
 }
 
 func (service Mail) replyRequest(req request.Task[models.Mail, struct{}]) {
-	requestParams := req.RequestParams()
+	requestParams := req.TaskParams()
 	if err := service.sendMail(requestParams); err != nil {
 		req.ReplyError(err)
 		return
