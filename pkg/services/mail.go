@@ -11,7 +11,7 @@ import (
 	"github.com/followthepattern/adapticc/pkg/utils"
 )
 
-type MailMsgChannel chan request.RequestHandler[models.Mail, struct{}]
+type MailMsgChannel chan request.Task[models.Mail, struct{}]
 
 func RegisterMailChannel(cont *container.Container) {
 	if cont == nil {
@@ -28,7 +28,7 @@ type Mail struct {
 	ctx   context.Context
 	email utils.Email
 
-	mailMsgChannel <-chan request.RequestHandler[models.Mail, struct{}]
+	mailMsgChannel <-chan request.Task[models.Mail, struct{}]
 }
 
 func MailDependencyConstructor(cont *container.Container) (*Mail, error) {
@@ -67,7 +67,7 @@ func (service Mail) MonitorChannels() {
 	}
 }
 
-func (service Mail) replyRequest(req request.RequestHandler[models.Mail, struct{}]) {
+func (service Mail) replyRequest(req request.Task[models.Mail, struct{}]) {
 	requestParams := req.RequestParams()
 	if err := service.sendMail(requestParams); err != nil {
 		req.ReplyError(err)

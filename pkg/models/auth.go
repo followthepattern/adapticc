@@ -52,9 +52,9 @@ type RegisterResponse struct {
 }
 
 type AuthMsg struct {
-	Register     *request.RequestHandler[RegisterRequestParams, RegisterResponse]
-	RegisterUser *request.RequestHandler[AuthUser, request.Signal]
-	Login        *request.RequestHandler[LoginRequestParams, LoginResponse]
-	VerifyEmail  *request.RequestHandler[string, bool]
-	VerifyLogin  *request.RequestHandler[string, AuthUser]
+	Register     *request.Task[RegisterRequestParams, RegisterResponse]
+	RegisterUser *request.Task[AuthUser, request.Signal]
+	Login        *request.Task[LoginRequestParams, LoginResponse]
+	VerifyEmail  *request.Task[string, bool]
+	VerifyLogin  *request.Task[string, AuthUser]
 }

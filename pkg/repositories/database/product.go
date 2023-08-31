@@ -89,7 +89,7 @@ func (service Product) replyRequest(request models.ProductMsg) {
 	}
 }
 
-func (service Product) replySingle(request request.RequestHandler[string, models.Product]) {
+func (service Product) replySingle(request request.Task[string, models.Product]) {
 	id := request.RequestParams()
 	userID := request.UserID()
 
@@ -101,7 +101,7 @@ func (service Product) replySingle(request request.RequestHandler[string, models
 	request.Reply(*product)
 }
 
-func (service Product) replyList(request request.RequestHandler[models.ProductListRequestParams, models.ProductListResponse]) {
+func (service Product) replyList(request request.Task[models.ProductListRequestParams, models.ProductListResponse]) {
 	requestParams := request.RequestParams()
 	userID := request.UserID()
 	product, err := service.Get(userID, requestParams)
@@ -112,7 +112,7 @@ func (service Product) replyList(request request.RequestHandler[models.ProductLi
 	request.Reply(*product)
 }
 
-func (service Product) replyCreate(req request.RequestHandler[[]models.Product, request.Signal]) {
+func (service Product) replyCreate(req request.Task[[]models.Product, request.Signal]) {
 	requestParams := req.RequestParams()
 	userID := req.UserID()
 	err := service.Create(userID, requestParams)
@@ -123,7 +123,7 @@ func (service Product) replyCreate(req request.RequestHandler[[]models.Product, 
 	req.Reply(request.Success)
 }
 
-func (service Product) replyUpdate(req request.RequestHandler[models.Product, request.Signal]) {
+func (service Product) replyUpdate(req request.Task[models.Product, request.Signal]) {
 	requestParams := req.RequestParams()
 	userID := req.UserID()
 	err := service.Update(userID, requestParams)
@@ -134,7 +134,7 @@ func (service Product) replyUpdate(req request.RequestHandler[models.Product, re
 	req.Reply(request.Success)
 }
 
-func (service Product) replyDelete(req request.RequestHandler[string, request.Signal]) {
+func (service Product) replyDelete(req request.Task[string, request.Signal]) {
 	requestParams := req.RequestParams()
 	userID := req.UserID()
 	err := service.Delete(userID, requestParams)

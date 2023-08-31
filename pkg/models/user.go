@@ -40,9 +40,9 @@ type UserListRequestParams = ListRequestParams[ListFilter]
 type UserListResponse = ListResponse[User]
 
 type UserMsg struct {
-	Single *request.RequestHandler[SingleUserRequestParams, User]
-	List   *request.RequestHandler[UserListRequestParams, UserListResponse]
-	Create *request.RequestHandler[[]User, request.Signal]
-	Update *request.RequestHandler[User, request.Signal]
-	Delete *request.RequestHandler[string, request.Signal]
+	Single *request.Task[SingleUserRequestParams, User]
+	List   *request.Task[UserListRequestParams, UserListResponse]
+	Create *request.Task[[]User, request.Signal]
+	Update *request.Task[User, request.Signal]
+	Delete *request.Task[string, request.Signal]
 }

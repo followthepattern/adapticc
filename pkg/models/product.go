@@ -34,9 +34,9 @@ type ProductListRequestParams = ListRequestParams[ListFilter]
 type ProductListResponse = ListResponse[Product]
 
 type ProductMsg struct {
-	Single *request.RequestHandler[string, Product]
-	List   *request.RequestHandler[ProductListRequestParams, ProductListResponse]
-	Create *request.RequestHandler[[]Product, request.Signal]
-	Update *request.RequestHandler[Product, request.Signal]
-	Delete *request.RequestHandler[string, request.Signal]
+	Single *request.Task[string, Product]
+	List   *request.Task[ProductListRequestParams, ProductListResponse]
+	Create *request.Task[[]Product, request.Signal]
+	Update *request.Task[Product, request.Signal]
+	Delete *request.Task[string, request.Signal]
 }

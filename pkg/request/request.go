@@ -10,22 +10,22 @@ var Success = struct{}{}
 
 type Signal struct{}
 
-type RequestHandlerOption[RequestT any, RespT any] func(*RequestHandler[RequestT, RespT])
+type TaskOption[TaskT any, SuccessResultT any] func(*Task[TaskT, SuccessResultT])
 
-type RequestHandler[RequestParamsT any, RespT any] struct {
+type Task[RequestParamsT any, RespT any] struct {
 	ctx           context.Context
 	userID        string
-	response      response[RespT]
+	result        result[RespT]
 	requestParams RequestParamsT
 
 	timeoutInterval         time.Duration
 	responseTimeoutInterval time.Duration
 }
 
-func New[RequestT any, RespT any](ctx context.Context, body RequestT, opts ...RequestHandlerOption[RequestT, RespT]) RequestHandler[RequestT, RespT] {
-	req := RequestHandler[RequestT, RespT]{
+func New[TaskT any, SuccessResultT any](ctx context.Context, body TaskT, opts ...TaskOption[TaskT, SuccessResultT]) Task[TaskT, SuccessResultT] {
+	req := Task[TaskT, SuccessResultT]{
 		ctx:                     ctx,
-		response:                newResponse[RespT](),
+		result:                  newResult[SuccessResultT](),
 		timeoutInterval:         DefaultTimeOut,
 		responseTimeoutInterval: DefaultTimeOut,
 		requestParams:           body,
@@ -38,26 +38,29 @@ func New[RequestT any, RespT any](ctx context.Context, body RequestT, opts ...Re
 	return req
 }
 
-func (r RequestHandler[RequestT, RespT]) Context() context.Context {
+func (r Task[TaskT, SuccessResultT]) Context() context.Context {
 	return r.ctx
 }
 
-func (r RequestHandler[RequestT, RespT]) UserID() string {
+func (r Task[TaskT, SuccessResultT]) UserID() string {
 	return r.userID
 }
 
-func (r RequestHandler[RequestT, RespT]) RequestParams() RequestT {
+func (r Task[TaskT, SuccessResultT]) RequestParams() TaskT {
 	return r.requestParams
 }
 
-func (r RequestHandler[RequestT, RespT]) Wait() (*RespT, error) {
+func (r Task[TaskT, SuccessResultT]) Wait() (*SuccessResultT, error) {
 	ticker := time.NewTicker(r.timeoutInterval)
 	defer ticker.Stop()
 
+	successResult := r.result.successResult
+	errResult := r.result.err
+
 	select {
-	case msg := <-r.response.result:
+	case msg := <-successResult:
 		return &msg, nil
-	case err := <-r.response.err:
+	case err := <-errResult:
 		return nil, err
 	case <-ticker.C:
 		return nil, errors.New(requestTimedout)
@@ -66,58 +69,62 @@ func (r RequestHandler[RequestT, RespT]) Wait() (*RespT, error) {
 	}
 }
 
-func (r *RequestHandler[RequestT, RespT]) SetOptions(opts ...RequestHandlerOption[RequestT, RespT]) {
+func (r *Task[TaskT, SuccessResultT]) SetOptions(opts ...TaskOption[TaskT, SuccessResultT]) {
 	for _, opt := range opts {
 		opt(r)
 	}
 }
 
-func (r RequestHandler[RequestT, RespT]) Reply(response RespT) {
+func (r Task[TaskT, SuccessResultT]) Reply(response SuccessResultT) {
 	ticker := time.NewTicker(r.timeoutInterval)
 	defer ticker.Stop()
 
+	successResult := r.result.successResult
+
 	go func() {
 		select {
-		case r.response.result <- response:
+		case successResult <- response:
 		case <-ticker.C:
 		}
 	}()
 }
 
-func (r RequestHandler[RequestT, RespT]) ReplyError(err error) {
+func (r Task[TaskT, SuccessResultT]) ReplyError(err error) {
 	ticker := time.NewTicker(r.timeoutInterval)
 	defer ticker.Stop()
 
+	errResult := r.result.err
+
 	go func() {
 		select {
-		case r.response.err <- err:
+		case errResult <- err:
 		case <-ticker.C:
 		}
 	}()
 }
 
-func TimeoutOption[RequestT any, RespT any](timeout time.Duration) RequestHandlerOption[RequestT, RespT] {
-	return func(r *RequestHandler[RequestT, RespT]) {
+func TimeoutOption[TaskT any, SuccessResultT any](timeout time.Duration) TaskOption[TaskT, SuccessResultT] {
+	return func(r *Task[TaskT, SuccessResultT]) {
 		r.timeoutInterval = timeout
 	}
 }
 
-func UserIDOption[RequestT any, RespT any](userID string) RequestHandlerOption[RequestT, RespT] {
-	return func(r *RequestHandler[RequestT, RespT]) {
+func UserIDOption[TaskT any, SuccessResultT any](userID string) TaskOption[TaskT, SuccessResultT] {
+	return func(r *Task[TaskT, SuccessResultT]) {
 		r.userID = userID
 	}
 }
 
-type response[T any] struct {
-	err    chan error `json:"-"`
-	result chan T     `json:"-"`
+type result[T any] struct {
+	err           chan error `json:"-"`
+	successResult chan T     `json:"-"`
 }
 
-func newResponse[T any]() response[T] {
+func newResult[T any]() result[T] {
 	err := make(chan error)
-	result := make(chan T)
-	return response[T]{
-		err:    err,
-		result: result,
+	successResult := make(chan T)
+	return result[T]{
+		err:           err,
+		successResult: successResult,
 	}
 }

@@ -20,7 +20,7 @@ func TestSuite(t *testing.T) {
 
 var _ = Describe("Request", func() {
 	var (
-		req RequestHandler[string, struct{}]
+		req Task[string, struct{}]
 		ctx context.Context
 	)
 
