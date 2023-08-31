@@ -16,7 +16,7 @@ services:
       - ./db/dump/testdata.sql:/docker-entrypoint-initdb.d/testdata.sql
 
   backend:
-    image: golang:1.20.5
+    image: golang:1.21
     hostname: adapticc_backend
     container_name: adapticc_backend
     command: bash -c "go run ./cmd/adapticc"

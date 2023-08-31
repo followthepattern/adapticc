@@ -1,5 +1,4 @@
 config.yaml
-db/dump/*
 /**/dev.env
 
 __debug_bin
