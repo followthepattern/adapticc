@@ -48,6 +48,6 @@ func getInsertMergedResourcePermissions(userID string, resourceName string) *Sel
 	return query
 }
 
-func GetInsertWithPermissions(db Database, resourceName string, userID string) (int64, error) {
+func GetInsertWithPermissions(db *Database, resourceName string, userID string) (int64, error) {
 	return db.From(getInsertMergedResourcePermissions(userID, resourceName).As("res")).Where(L("res.permissions & 1").Gt(0)).Count()
 }

@@ -29,7 +29,7 @@ func RegisterUserChannel(cont *container.Container) {
 
 type User struct {
 	usrMsgIn <-chan models.UserMsg
-	db       Database
+	db       *Database
 	ctx      context.Context
 }
 
@@ -51,7 +51,7 @@ func UserDependencyConstructor(cont *container.Container) (*User, error) {
 
 	dependency := &User{
 		ctx:      cont.GetContext(),
-		db:       *db,
+		db:       db,
 		usrMsgIn: *userMsg,
 	}
 

@@ -55,15 +55,7 @@ func RegisterDependencies(cont *container.Container) error {
 	// }
 
 	// product plugin
-	repositories.RegisterProductChannel(cont)
-	services.RegisterProductChannel(cont)
-
 	err = container.Register(cont, repositories.ProductDependencyConstructor)
-	if err != nil {
-		return err
-	}
-
-	err = container.Register(cont, services.ProductDependencyConstructor)
 	if err != nil {
 		return err
 	}

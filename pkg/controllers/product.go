@@ -6,53 +6,36 @@ import (
 
 	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
-	"github.com/followthepattern/adapticc/pkg/request"
-	"github.com/followthepattern/adapticc/pkg/services"
+	"github.com/followthepattern/adapticc/pkg/repositories/database"
 	"github.com/followthepattern/adapticc/pkg/utils"
 	"github.com/followthepattern/adapticc/pkg/utils/pointers"
 	"github.com/google/uuid"
 )
 
 type Product struct {
-	productMsgChannelOut chan<- models.ProductMsg
-	sendMsg              func(ctx context.Context, msg models.ProductMsg) error
+	repository *database.Product
 }
 
 func ProductDependencyConstructor(cont *container.Container) (*Product, error) {
-	productMsgChannelOut, err := container.Resolve[services.ProductMsgChannel](cont)
+	repository, err := container.Resolve[database.Product](cont)
 	if err != nil {
 		return nil, err
 	}
 
 	dependency := Product{
-		productMsgChannelOut: *productMsgChannelOut,
-		sendMsg:              request.CreateSenderFunc(*productMsgChannelOut, request.DefaultTimeOut),
+		repository: repository,
 	}
 
 	return &dependency, nil
 }
 
-func (ctrl Product) GetByID(ctx context.Context, id string) (*models.Product, error) {
+func (service Product) GetByID(ctx context.Context, id string) (*models.Product, error) {
 	ctxu := utils.GetModelFromContext[models.User](ctx, utils.CtxUserKey)
 	if ctxu == nil {
 		return nil, fmt.Errorf("invalid user context")
 	}
 
-	userIDOpt := request.UserIDOption[string, models.Product](*ctxu.ID)
-
-	req := request.New(
-		ctx,
-		id,
-		userIDOpt,
-	)
-
-	msg := models.ProductMsg{Single: &req}
-
-	if err := ctrl.sendMsg(ctx, msg); err != nil {
-		return nil, err
-	}
-
-	result, err := req.Wait()
+	result, err := service.repository.GetByID(*ctxu.ID, id)
 	if err != nil {
 		return nil, err
 	}
@@ -64,34 +47,13 @@ func (ctrl Product) GetByID(ctx context.Context, id string) (*models.Product, er
 	return result, nil
 }
 
-func (ctrl Product) Get(ctx context.Context, filter models.ProductListRequestParams) (*models.ProductListResponse, error) {
+func (service Product) Get(ctx context.Context, filter models.ProductListRequestParams) (*models.ProductListResponse, error) {
 	ctxu := utils.GetModelFromContext[models.User](ctx, utils.CtxUserKey)
 	if ctxu == nil {
 		return nil, fmt.Errorf("invalid user context")
 	}
 
-	userIDOpt := request.UserIDOption[models.ProductListRequestParams, models.ProductListResponse](*ctxu.ID)
-
-	req := request.New(
-		ctx,
-		filter,
-		userIDOpt,
-	)
-
-	msg := models.ProductMsg{List: &req}
-
-	if err := ctrl.sendMsg(ctx, msg); err != nil {
-		return nil, err
-	}
-
-	result, err := req.Wait()
-	if err != nil {
-		return nil, err
-	}
-
-	response := models.ProductListResponse(*result)
-
-	return &response, nil
+	return service.repository.Get(*ctxu.ID, filter)
 }
 
 func (service Product) Create(ctx context.Context, value models.Product) error {
@@ -104,30 +66,12 @@ func (service Product) Create(ctx context.Context, value models.Product) error {
 		return fmt.Errorf("invalid user context")
 	}
 
-	userIDOpt := request.UserIDOption[[]models.Product, request.Signal](*ctxu.ID)
-
 	value.ID = pointers.ToPtr(uuid.New().String())
 
-	req := request.New(
-		ctx,
-		[]models.Product{value},
-		userIDOpt,
-	)
-
-	msg := models.ProductMsg{
-		Create: &req,
-	}
-
-	if err := service.sendMsg(ctx, msg); err != nil {
-		return err
-	}
-
-	_, err := req.Wait()
-
-	return err
+	return service.repository.Create(*ctxu.ID, []models.Product{value})
 }
 
-func (ctrl Product) Update(ctx context.Context, value models.Product) error {
+func (service Product) Update(ctx context.Context, value models.Product) error {
 	if err := value.UpdateValidate(); err != nil {
 		return err
 	}
@@ -137,47 +81,14 @@ func (ctrl Product) Update(ctx context.Context, value models.Product) error {
 		return fmt.Errorf("invalid user context")
 	}
 
-	userIDOpt := request.UserIDOption[models.Product, request.Signal](*ctxu.ID)
-
-	req := request.New(
-		ctx,
-		value,
-		userIDOpt,
-	)
-
-	msg := models.ProductMsg{
-		Update: &req,
-	}
-
-	if err := ctrl.sendMsg(ctx, msg); err != nil {
-		return err
-	}
-
-	_, err := req.Wait()
-
-	return err
+	return service.repository.Update(*ctxu.ID, value)
 }
 
-func (ctrl Product) Delete(ctx context.Context, id string) error {
+func (service Product) Delete(ctx context.Context, id string) error {
 	ctxu := utils.GetModelFromContext[models.User](ctx, utils.CtxUserKey)
 	if ctxu == nil {
 		return fmt.Errorf("invalid user context")
 	}
 
-	userIDOpt := request.UserIDOption[string, request.Signal](*ctxu.ID)
-
-	req := request.New(
-		ctx,
-		id,
-		userIDOpt,
-	)
-
-	msg := models.ProductMsg{Delete: &req}
-
-	if err := ctrl.sendMsg(ctx, msg); err != nil {
-		return err
-	}
-
-	_, err := req.Wait()
-	return err
+	return service.repository.Delete(*ctxu.ID, id)
 }

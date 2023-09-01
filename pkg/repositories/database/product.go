@@ -9,33 +9,17 @@ import (
 	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/repositories/database/sqlbuilder"
-	"github.com/followthepattern/adapticc/pkg/request"
 	"github.com/followthepattern/adapticc/pkg/utils/pointers"
 
 	. "github.com/doug-martin/goqu/v9"
 	"github.com/doug-martin/goqu/v9/exp"
 )
 
-type ProductMsgChannel chan models.ProductMsg
-
-func RegisterProductChannel(cont *container.Container) {
-	if cont == nil {
-		return
-	}
-	requestChan := make(ProductMsgChannel)
-	container.Register(cont, func(cont *container.Container) (*ProductMsgChannel, error) {
-		return &requestChan, nil
-	})
-}
+const productTable = "usr.products"
 
 type Product struct {
-	usrMsgIn <-chan models.ProductMsg
-	db       Database
-	ctx      context.Context
-}
-
-func (Product) tableName() string {
-	return "usr.products"
+	db  *Database
+	ctx context.Context
 }
 
 func ProductDependencyConstructor(cont *container.Container) (*Product, error) {
@@ -45,104 +29,12 @@ func ProductDependencyConstructor(cont *container.Container) (*Product, error) {
 		return nil, errors.New("db is null")
 	}
 
-	userMsg, err := container.Resolve[ProductMsgChannel](cont)
-	if err != nil {
-		return nil, err
-	}
-
 	dependency := &Product{
-		ctx:      cont.GetContext(),
-		db:       *db,
-		usrMsgIn: *userMsg,
+		ctx: cont.GetContext(),
+		db:  db,
 	}
-
-	go func() {
-		dependency.MonitorChannels()
-	}()
 
 	return dependency, nil
-}
-
-func (repository Product) MonitorChannels() {
-	for {
-		select {
-		case request := <-repository.usrMsgIn:
-			repository.replyRequest(request)
-		case <-repository.ctx.Done():
-			return
-		}
-	}
-}
-
-func (service Product) replyRequest(request models.ProductMsg) {
-	switch {
-	case request.Single != nil:
-		service.replySingle(*request.Single)
-	case request.List != nil:
-		service.replyList(*request.List)
-	case request.Create != nil:
-		service.replyCreate(*request.Create)
-	case request.Update != nil:
-		service.replyUpdate(*request.Update)
-	case request.Delete != nil:
-		service.replyDelete(*request.Delete)
-	}
-}
-
-func (service Product) replySingle(request request.Task[string, models.Product]) {
-	id := request.TaskParams()
-	userID := request.UserID()
-
-	product, err := service.GetByID(userID, id)
-	if err != nil {
-		request.ReplyError(err)
-		return
-	}
-	request.Reply(*product)
-}
-
-func (service Product) replyList(request request.Task[models.ProductListRequestParams, models.ProductListResponse]) {
-	requestParams := request.TaskParams()
-	userID := request.UserID()
-	product, err := service.Get(userID, requestParams)
-	if err != nil {
-		request.ReplyError(err)
-		return
-	}
-	request.Reply(*product)
-}
-
-func (service Product) replyCreate(req request.Task[[]models.Product, request.Signal]) {
-	requestParams := req.TaskParams()
-	userID := req.UserID()
-	err := service.Create(userID, requestParams)
-	if err != nil {
-		req.ReplyError(err)
-		return
-	}
-	req.Reply(request.Success)
-}
-
-func (service Product) replyUpdate(req request.Task[models.Product, request.Signal]) {
-	requestParams := req.TaskParams()
-	userID := req.UserID()
-	err := service.Update(userID, requestParams)
-	if err != nil {
-		req.ReplyError(err)
-		return
-	}
-	req.Reply(request.Success)
-}
-
-func (service Product) replyDelete(req request.Task[string, request.Signal]) {
-	requestParams := req.TaskParams()
-	userID := req.UserID()
-	err := service.Delete(userID, requestParams)
-	if err != nil {
-		req.ReplyError(err)
-		return
-	}
-	req.Reply(request.Success)
 }
 
 func (repo Product) Create(userID string, products []models.Product) (err error) {
@@ -159,7 +51,7 @@ func (repo Product) Create(userID string, products []models.Product) (err error)
 		products[i].Userlog = setCreateUserlog(userID, time.Now())
 	}
 
-	insertion := repo.db.Insert(repo.tableName())
+	insertion := repo.db.Insert(productTable)
 
 	_, err = insertion.Rows(products).Executor().Exec()
 	return
@@ -168,7 +60,7 @@ func (repo Product) Create(userID string, products []models.Product) (err error)
 func (repo Product) GetByID(userID string, id string) (*models.Product, error) {
 	product := models.Product{}
 
-	query := repo.db.From(repo.tableName()).
+	query := repo.db.From(productTable).
 		Where(Ex{
 			"id": id})
 
@@ -190,7 +82,7 @@ func (repo Product) GetByID(userID string, id string) (*models.Product, error) {
 func (repo Product) Get(userID string, request models.ProductListRequestParams) (*models.ProductListResponse, error) {
 	data := []models.Product{}
 
-	query := repo.db.From(repo.tableName())
+	query := repo.db.From(productTable)
 
 	if request.Filter.Search != nil {
 		pattern := fmt.Sprintf("%%%s%%", *request.Filter.Search)
@@ -259,7 +151,7 @@ func (repo Product) Get(userID string, request models.ProductListRequestParams) 
 func (repo Product) Update(userID string, model models.Product) error {
 	model.Userlog = setUpdateUserlog(userID, time.Now())
 
-	query := repo.db.Update(repo.tableName()).
+	query := repo.db.Update(productTable).
 		Set(model)
 
 	query = sqlbuilder.GetUpdateWithPermissions(
@@ -278,7 +170,7 @@ func (repo Product) Update(userID string, model models.Product) error {
 }
 
 func (repo Product) Delete(userID, id string) error {
-	query := repo.db.Delete(repo.tableName())
+	query := repo.db.Delete(productTable)
 
 	query = sqlbuilder.GetDeleteWithPermissions(
 		query,
