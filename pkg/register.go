@@ -28,7 +28,6 @@ func RegisterDependencies(cont *container.Container) error {
 	}
 
 	// auth plugin
-	repositories.RegisterAuthChannel(cont)
 	services.RegisterAuthChannel(cont)
 
 	err = container.Register(cont, repositories.AuthDependencyConstructor)
