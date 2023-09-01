@@ -29,13 +29,13 @@ func ProductDependencyConstructor(cont *container.Container) (*Product, error) {
 	return &dependency, nil
 }
 
-func (service Product) GetByID(ctx context.Context, id string) (*models.Product, error) {
+func (ctrl Product) GetByID(ctx context.Context, id string) (*models.Product, error) {
 	ctxu := utils.GetModelFromContext[models.User](ctx, utils.CtxUserKey)
 	if ctxu == nil {
 		return nil, fmt.Errorf("invalid user context")
 	}
 
-	result, err := service.repository.GetByID(*ctxu.ID, id)
+	result, err := ctrl.repository.GetByID(*ctxu.ID, id)
 	if err != nil {
 		return nil, err
 	}
@@ -47,16 +47,16 @@ func (service Product) GetByID(ctx context.Context, id string) (*models.Product,
 	return result, nil
 }
 
-func (service Product) Get(ctx context.Context, filter models.ProductListRequestParams) (*models.ProductListResponse, error) {
+func (ctrl Product) Get(ctx context.Context, filter models.ProductListRequestParams) (*models.ProductListResponse, error) {
 	ctxu := utils.GetModelFromContext[models.User](ctx, utils.CtxUserKey)
 	if ctxu == nil {
 		return nil, fmt.Errorf("invalid user context")
 	}
 
-	return service.repository.Get(*ctxu.ID, filter)
+	return ctrl.repository.Get(*ctxu.ID, filter)
 }
 
-func (service Product) Create(ctx context.Context, value models.Product) error {
+func (ctrl Product) Create(ctx context.Context, value models.Product) error {
 	if err := value.CreateValidate(); err != nil {
 		return err
 	}
@@ -68,10 +68,10 @@ func (service Product) Create(ctx context.Context, value models.Product) error {
 
 	value.ID = pointers.ToPtr(uuid.New().String())
 
-	return service.repository.Create(*ctxu.ID, []models.Product{value})
+	return ctrl.repository.Create(*ctxu.ID, []models.Product{value})
 }
 
-func (service Product) Update(ctx context.Context, value models.Product) error {
+func (ctrl Product) Update(ctx context.Context, value models.Product) error {
 	if err := value.UpdateValidate(); err != nil {
 		return err
 	}
@@ -81,14 +81,14 @@ func (service Product) Update(ctx context.Context, value models.Product) error {
 		return fmt.Errorf("invalid user context")
 	}
 
-	return service.repository.Update(*ctxu.ID, value)
+	return ctrl.repository.Update(*ctxu.ID, value)
 }
 
-func (service Product) Delete(ctx context.Context, id string) error {
+func (ctrl Product) Delete(ctx context.Context, id string) error {
 	ctxu := utils.GetModelFromContext[models.User](ctx, utils.CtxUserKey)
 	if ctxu == nil {
 		return fmt.Errorf("invalid user context")
 	}
 
-	return service.repository.Delete(*ctxu.ID, id)
+	return ctrl.repository.Delete(*ctxu.ID, id)
 }

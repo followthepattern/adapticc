@@ -28,8 +28,6 @@ func RegisterDependencies(cont *container.Container) error {
 	}
 
 	// auth plugin
-	services.RegisterAuthChannel(cont)
-
 	err = container.Register(cont, repositories.AuthDependencyConstructor)
 	if err != nil {
 		return err
@@ -55,11 +53,6 @@ func RegisterDependencies(cont *container.Container) error {
 
 	// product plugin
 	err = container.Register(cont, repositories.ProductDependencyConstructor)
-	if err != nil {
-		return err
-	}
-
-	err = container.Register(cont, controllers.ProductDependencyConstructor)
 	if err != nil {
 		return err
 	}

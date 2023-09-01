@@ -20,73 +20,24 @@ const WRONG_EMAIL_OR_PASSWORD = "WRONG_EMAIL_OR_PASSWORD"
 const EMAIL_IS_ALREADY_IN_USE_PATTERN = "%v is already in use, please try a different email address"
 
 type Auth struct {
-	authMsgChannelIn <-chan models.AuthMsg
-	repository       *database.Auth
-	ctx              context.Context
-	cfg              config.Config
-}
-
-type AuthMsgChannel chan models.AuthMsg
-
-func RegisterAuthChannel(cont *container.Container) {
-	if cont == nil {
-		return
-	}
-	authMsgChannel := make(AuthMsgChannel)
-	container.Register(cont, func(cont *container.Container) (*AuthMsgChannel, error) {
-		return &authMsgChannel, nil
-	})
+	repository *database.Auth
+	ctx        context.Context
+	cfg        config.Config
 }
 
 func AuthDependencyConstructor(cont *container.Container) (*Auth, error) {
-	authMsgChannelIn, err := container.Resolve[AuthMsgChannel](cont)
-	if err != nil {
-		return nil, err
-	}
-
 	repository, err := container.Resolve[database.Auth](cont)
 	if err != nil {
 		return nil, err
 	}
 
 	dependency := Auth{
-		ctx:              cont.GetContext(),
-		cfg:              cont.GetConfig(),
-		authMsgChannelIn: *authMsgChannelIn,
-		repository:       repository,
+		ctx:        cont.GetContext(),
+		cfg:        cont.GetConfig(),
+		repository: repository,
 	}
-
-	go func() {
-		dependency.MonitorChannels()
-	}()
 
 	return &dependency, nil
-}
-
-func (service Auth) MonitorChannels() {
-	for {
-		select {
-		case request := <-service.authMsgChannelIn:
-			if request.Login != nil {
-				result, err := service.Login(request.Login.Context(), request.Login.TaskParams().Email, request.Login.TaskParams().Password)
-				if err != nil {
-					request.Login.ReplyError(err)
-					continue
-				}
-				request.Login.Reply(*result)
-			} else if request.Register != nil {
-				register := request.Register.TaskParams()
-				result, err := service.Register(request.Register.Context(), register)
-				if err != nil {
-					request.Register.ReplyError(err)
-					continue
-				}
-				request.Register.Reply(*result)
-			}
-		case <-service.ctx.Done():
-			return
-		}
-	}
 }
 
 func (service Auth) Login(ctx context.Context, email string, password string) (*models.LoginResponse, error) {
