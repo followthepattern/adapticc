@@ -1,7 +1,6 @@
 package models
 
 import (
-	"github.com/followthepattern/adapticc/pkg/request"
 	"github.com/followthepattern/adapticc/pkg/utils/pointers"
 )
 
@@ -38,11 +37,3 @@ type SingleUserRequestParams struct {
 type UserListRequestParams = ListRequestParams[ListFilter]
 
 type UserListResponse = ListResponse[User]
-
-type UserMsg struct {
-	Single *request.Task[SingleUserRequestParams, User]
-	List   *request.Task[UserListRequestParams, UserListResponse]
-	Create *request.Task[[]User, request.Signal]
-	Update *request.Task[User, request.Signal]
-	Delete *request.Task[string, request.Signal]
-}
