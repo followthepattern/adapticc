@@ -9,15 +9,7 @@ import (
 )
 
 func RegisterDependencies(cont *container.Container) error {
-	repositories.RegisterUserChannel(cont)
-	services.RegisterUserChannel(cont)
-
 	err := container.Register(cont, repositories.UserDependencyConstructor)
-	if err != nil {
-		return err
-	}
-
-	err = container.Register(cont, services.UserDependencyConstructor)
 	if err != nil {
 		return err
 	}
