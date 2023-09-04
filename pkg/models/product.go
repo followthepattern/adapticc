@@ -1,7 +1,6 @@
 package models
 
 import (
-	"github.com/followthepattern/adapticc/pkg/request"
 	validation "github.com/go-ozzo/ozzo-validation"
 )
 
@@ -32,11 +31,3 @@ func (e Product) UpdateValidate() error {
 type ProductListRequestParams = ListRequestParams[ListFilter]
 
 type ProductListResponse = ListResponse[Product]
-
-type ProductMsg struct {
-	Single *request.RequestHandler[string, Product]
-	List   *request.RequestHandler[ProductListRequestParams, ProductListResponse]
-	Create *request.RequestHandler[[]Product, request.Signal]
-	Update *request.RequestHandler[Product, request.Signal]
-	Delete *request.RequestHandler[string, request.Signal]
-}

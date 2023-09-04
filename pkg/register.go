@@ -9,15 +9,7 @@ import (
 )
 
 func RegisterDependencies(cont *container.Container) error {
-	repositories.RegisterUserChannel(cont)
-	services.RegisterUserChannel(cont)
-
 	err := container.Register(cont, repositories.UserDependencyConstructor)
-	if err != nil {
-		return err
-	}
-
-	err = container.Register(cont, services.UserDependencyConstructor)
 	if err != nil {
 		return err
 	}
@@ -28,9 +20,6 @@ func RegisterDependencies(cont *container.Container) error {
 	}
 
 	// auth plugin
-	repositories.RegisterAuthChannel(cont)
-	services.RegisterAuthChannel(cont)
-
 	err = container.Register(cont, repositories.AuthDependencyConstructor)
 	if err != nil {
 		return err
@@ -55,20 +44,7 @@ func RegisterDependencies(cont *container.Container) error {
 	// }
 
 	// product plugin
-	repositories.RegisterProductChannel(cont)
-	services.RegisterProductChannel(cont)
-
 	err = container.Register(cont, repositories.ProductDependencyConstructor)
-	if err != nil {
-		return err
-	}
-
-	err = container.Register(cont, services.ProductDependencyConstructor)
-	if err != nil {
-		return err
-	}
-
-	err = container.Register(cont, controllers.ProductDependencyConstructor)
 	if err != nil {
 		return err
 	}

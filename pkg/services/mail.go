@@ -7,28 +7,13 @@ import (
 	"github.com/followthepattern/adapticc/pkg/config"
 	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
-	"github.com/followthepattern/adapticc/pkg/request"
 	"github.com/followthepattern/adapticc/pkg/utils"
 )
-
-type MailMsgChannel chan request.RequestHandler[models.Mail, struct{}]
-
-func RegisterMailChannel(cont *container.Container) {
-	if cont == nil {
-		return
-	}
-	mailMsgChannel := make(MailMsgChannel)
-	container.Register(cont, func(cont *container.Container) (*MailMsgChannel, error) {
-		return &mailMsgChannel, nil
-	})
-}
 
 type Mail struct {
 	cfg   config.Mail
 	ctx   context.Context
 	email utils.Email
-
-	mailMsgChannel <-chan request.RequestHandler[models.Mail, struct{}]
 }
 
 func MailDependencyConstructor(cont *container.Container) (*Mail, error) {
@@ -43,40 +28,10 @@ func MailDependencyConstructor(cont *container.Container) (*Mail, error) {
 		email: utils.NewEmailWrapper(),
 	}
 
-	mailMsgChannel, err := container.Resolve[MailMsgChannel](cont)
-	if err != nil {
-		return nil, err
-	}
-	dependency.mailMsgChannel = *mailMsgChannel
-
-	go func() {
-		dependency.MonitorChannels()
-	}()
-
 	return &dependency, nil
 }
 
-func (service Mail) MonitorChannels() {
-	for {
-		select {
-		case req := <-service.mailMsgChannel:
-			service.replyRequest(req)
-		case <-service.ctx.Done():
-			return
-		}
-	}
-}
-
-func (service Mail) replyRequest(req request.RequestHandler[models.Mail, struct{}]) {
-	requestParams := req.RequestParams()
-	if err := service.sendMail(requestParams); err != nil {
-		req.ReplyError(err)
-		return
-	}
-	req.Reply(request.Success())
-}
-
-func (service Mail) sendMail(mail models.Mail) error {
+func (service Mail) SendMail(mail models.Mail) error {
 	config := service.cfg
 
 	service.email.SetFrom(mail.From)
