@@ -5,11 +5,11 @@ import (
 )
 
 type User struct {
-	ID        *string `json:"id,omitempty" goqu:"skipupdate"`
-	Email     *string `json:"email,omitempty" goqu:"skipupdate"`
-	FirstName *string `json:"first_name,omitempty" db:"first_name"`
-	LastName  *string `json:"last_name,omitempty" db:"last_name"`
-	Active    *bool   `json:"active,omitempty" goqu:"skipupdate"`
+	ID        *string `db:"id" goqu:"skipupdate"`
+	Email     *string `db:"email" goqu:"skipupdate"`
+	FirstName *string `db:"first_name"`
+	LastName  *string `db:"last_name"`
+	Active    *bool   `db:"active" goqu:"skipupdate"`
 	Userlog
 }
 

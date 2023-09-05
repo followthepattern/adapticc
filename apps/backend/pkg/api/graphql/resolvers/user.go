@@ -9,15 +9,6 @@ import (
 	"github.com/followthepattern/adapticc/pkg/models"
 )
 
-type User struct {
-	ID        *string
-	Email     *string
-	FirstName *string
-	LastName  *string
-	Active    *bool
-	UserLog
-}
-
 func getFromUserListResponseModel(response models.UserListResponse) *ListResponse[models.User] {
 	resp := fromListReponseModel[models.User, models.User](models.ListResponse[models.User](response))
 	resp.Data = response.Data
