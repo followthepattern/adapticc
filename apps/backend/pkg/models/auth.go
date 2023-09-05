@@ -2,8 +2,6 @@ package models
 
 import (
 	"time"
-
-	"github.com/followthepattern/adapticc/pkg/request"
 )
 
 type LoginResponse struct {
@@ -49,12 +47,4 @@ type RegisterResponse struct {
 	Email     *string `json:"email"`
 	FirstName *string `json:"first_name"`
 	LastName  *string `json:"last_name"`
-}
-
-type AuthMsg struct {
-	Register     *request.RequestHandler[RegisterRequestParams, RegisterResponse]
-	RegisterUser *request.RequestHandler[AuthUser, request.Signal]
-	Login        *request.RequestHandler[LoginRequestParams, LoginResponse]
-	VerifyEmail  *request.RequestHandler[string, bool]
-	VerifyLogin  *request.RequestHandler[string, AuthUser]
 }

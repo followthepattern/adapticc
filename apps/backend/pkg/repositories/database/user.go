@@ -9,28 +9,14 @@ import (
 	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/repositories/database/sqlbuilder"
-	"github.com/followthepattern/adapticc/pkg/request"
 	"github.com/followthepattern/adapticc/pkg/utils/pointers"
 
 	. "github.com/doug-martin/goqu/v9"
 )
 
-type UserMsgChannel chan models.UserMsg
-
-func RegisterUserChannel(cont *container.Container) {
-	if cont == nil {
-		return
-	}
-	requestChan := make(UserMsgChannel)
-	container.Register(cont, func(cont *container.Container) (*UserMsgChannel, error) {
-		return &requestChan, nil
-	})
-}
-
 type User struct {
-	usrMsgIn <-chan models.UserMsg
-	db       Database
-	ctx      context.Context
+	db  *Database
+	ctx context.Context
 }
 
 func (User) tableName() string {
@@ -44,101 +30,12 @@ func UserDependencyConstructor(cont *container.Container) (*User, error) {
 		return nil, errors.New("db is null")
 	}
 
-	userMsg, err := container.Resolve[UserMsgChannel](cont)
-	if err != nil {
-		return nil, err
-	}
-
 	dependency := &User{
-		ctx:      cont.GetContext(),
-		db:       *db,
-		usrMsgIn: *userMsg,
+		ctx: cont.GetContext(),
+		db:  db,
 	}
-
-	go func() {
-		dependency.MonitorChannels()
-	}()
 
 	return dependency, nil
-}
-
-func (repository User) MonitorChannels() {
-	for {
-		select {
-		case request := <-repository.usrMsgIn:
-			repository.replyRequest(request)
-		case <-repository.ctx.Done():
-			return
-		}
-	}
-}
-
-func (service User) replyRequest(req models.UserMsg) {
-	switch {
-	case req.Single != nil:
-		requestParams := req.Single.RequestParams()
-		if requestParams.ID != nil {
-			user, err := service.GetByID(*requestParams.ID)
-			if err != nil {
-				req.Single.ReplyError(err)
-				return
-			}
-			if user == nil {
-				user = &models.User{}
-			}
-			req.Single.Reply(*user)
-			return
-		} else if requestParams.Email != nil {
-			user, err := service.GetByEmail(*requestParams.Email)
-			if err != nil {
-				req.Single.ReplyError(err)
-				return
-			}
-			if user == nil {
-				user = &models.User{}
-			}
-			req.Single.Reply(*user)
-			return
-		}
-	case req.List != nil:
-		requestParams := req.List.RequestParams()
-		userID := req.List.UserID()
-		resp, err := service.Get(userID, requestParams)
-		if err != nil {
-			req.List.ReplyError(err)
-			return
-		}
-		req.List.Reply(*resp)
-	case req.Create != nil:
-		requestParams := req.Create.RequestParams()
-
-		userID := req.Create.UserID()
-
-		err := service.Create(userID, requestParams)
-		if err != nil {
-			req.Create.ReplyError(err)
-			return
-		}
-		req.Create.Reply(request.Success())
-	case req.Update != nil:
-		requestParams := req.Update.RequestParams()
-		userID := req.Update.UserID()
-		err := service.Update(userID, requestParams)
-		if err != nil {
-			req.Update.ReplyError(err)
-			return
-		}
-		req.Update.Reply(request.Success())
-	case req.Delete != nil:
-		requestParams := req.Delete.RequestParams()
-		userID := req.Delete.UserID()
-		err := service.Delete(userID, requestParams)
-		if err != nil {
-			req.Delete.ReplyError(err)
-			return
-		}
-		req.Delete.Reply(request.Success())
-	}
 }
 
 func (repo User) Create(userID string, users []models.User) (err error) {
