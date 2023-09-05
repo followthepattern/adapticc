@@ -38,11 +38,11 @@ type userData struct {
 }
 
 type users struct {
-	Single  resolvers.User                      `json:"single,omitempty"`
-	Profile resolvers.User                      `json:"profile,omitempty"`
-	List    models.ListResponse[resolvers.User] `json:"list,omitempty"`
-	Update  resolvers.ResponseStatus            `json:"update,omitempty"`
-	Delete  resolvers.ResponseStatus            `json:"delete,omitempty"`
+	Single  models.User                      `json:"single,omitempty"`
+	Profile models.User                      `json:"profile,omitempty"`
+	List    models.ListResponse[models.User] `json:"list,omitempty"`
+	Update  resolvers.ResponseStatus         `json:"update,omitempty"`
+	Delete  resolvers.ResponseStatus         `json:"delete,omitempty"`
 }
 
 var _ = Describe("User graphql queries", func() {
