@@ -6,29 +6,26 @@ import (
 
 	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
-	"github.com/followthepattern/adapticc/pkg/request"
-	"github.com/followthepattern/adapticc/pkg/services"
+	"github.com/followthepattern/adapticc/pkg/repositories/database"
 	"github.com/followthepattern/adapticc/pkg/utils"
 	"github.com/followthepattern/adapticc/pkg/utils/pointers"
 	"github.com/google/uuid"
 )
 
 type User struct {
-	ctx               context.Context
-	userMsgChannelOut chan<- models.UserMsg
-	sendMsg           func(context.Context, models.UserMsg) error
+	ctx        context.Context
+	repository *database.User
 }
 
 func UserDependencyConstructor(cont *container.Container) (*User, error) {
-	userMsgChannel, err := container.Resolve[services.UserMsgChannel](cont)
+	repository, err := container.Resolve[database.User](cont)
 	if err != nil {
 		return nil, err
 	}
 
 	return &User{
-		ctx:               cont.GetContext(),
-		userMsgChannelOut: *userMsgChannel,
-		sendMsg:           request.CreateSenderFunc(*userMsgChannel, request.DefaultTimeOut),
+		ctx:        cont.GetContext(),
+		repository: repository,
 	}, nil
 }
 
@@ -38,23 +35,7 @@ func (ctrl User) GetByID(ctx context.Context, id string) (*models.User, error) {
 		return nil, fmt.Errorf("invalid user context")
 	}
 
-	userIDOpt := request.UserIDOption[models.SingleUserRequestParams, models.User](*ctxu.ID)
-
-	requestParams := models.SingleUserRequestParams{ID: &id}
-
-	req := request.New(
-		ctx,
-		requestParams,
-		userIDOpt,
-	)
-
-	msg := models.UserMsg{Single: &req}
-
-	if err := ctrl.sendMsg(ctx, msg); err != nil {
-		return nil, err
-	}
-
-	result, err := req.Wait()
+	result, err := ctrl.repository.GetByID(id)
 	if err != nil {
 		return nil, err
 	}
@@ -72,25 +53,7 @@ func (ctrl User) Profile(ctx context.Context) (*models.User, error) {
 		return nil, fmt.Errorf("invalid user context")
 	}
 
-	requestParams := models.SingleUserRequestParams{
-		ID: ctxu.ID,
-	}
-
-	userIDOpt := request.UserIDOption[models.SingleUserRequestParams, models.User](*ctxu.ID)
-
-	req := request.New(
-		ctx,
-		requestParams,
-		userIDOpt,
-	)
-
-	msg := models.UserMsg{Single: &req}
-
-	if err := ctrl.sendMsg(ctx, msg); err != nil {
-		return nil, err
-	}
-
-	user, err := req.Wait()
+	user, err := ctrl.repository.GetByID(*ctxu.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -104,28 +67,12 @@ func (ctrl User) Get(ctx context.Context, filter models.UserListRequestParams) (
 		return models.UserListResponse{}, fmt.Errorf("invalid user context")
 	}
 
-	userIDOpt := request.UserIDOption[models.UserListRequestParams, models.UserListResponse](*ctxu.ID)
-
-	req := request.New(
-		ctx,
-		filter,
-		userIDOpt,
-	)
-
-	msg := models.UserMsg{List: &req}
-
-	if err := ctrl.sendMsg(ctx, msg); err != nil {
-		return models.UserListResponse{}, err
-	}
-
-	result, err := req.Wait()
+	result, err := ctrl.repository.Get(*ctxu.ID, filter)
 	if err != nil {
 		return models.UserListResponse{}, err
 	}
 
-	response := models.UserListResponse(*result)
-
-	return response, nil
+	return *result, nil
 }
 
 func (ctrl User) Create(ctx context.Context, user models.User) error {
@@ -134,27 +81,9 @@ func (ctrl User) Create(ctx context.Context, user models.User) error {
 		return fmt.Errorf("invalid user context")
 	}
 
-	userIDOpt := request.UserIDOption[[]models.User, request.Signal](*ctxu.ID)
-
 	user.ID = pointers.ToPtr(uuid.New().String())
 
-	req := request.New(
-		ctx,
-		[]models.User{user},
-		userIDOpt,
-	)
-
-	msg := models.UserMsg{
-		Create: &req,
-	}
-
-	if err := ctrl.sendMsg(ctx, msg); err != nil {
-		return err
-	}
-
-	_, err := req.Wait()
-
-	return err
+	return ctrl.repository.Create(*ctxu.ID, []models.User{user})
 }
 
 func (ctrl User) Update(ctx context.Context, user models.User) error {
@@ -163,25 +92,7 @@ func (ctrl User) Update(ctx context.Context, user models.User) error {
 		return fmt.Errorf("invalid user context")
 	}
 
-	userIDOpt := request.UserIDOption[models.User, request.Signal](*ctxu.ID)
-
-	req := request.New(
-		ctx,
-		user,
-		userIDOpt,
-	)
-
-	msg := models.UserMsg{
-		Update: &req,
-	}
-
-	if err := ctrl.sendMsg(ctx, msg); err != nil {
-		return err
-	}
-
-	_, err := req.Wait()
-
-	return err
+	return ctrl.repository.Update(*ctxu.ID, user)
 }
 
 func (ctrl User) Delete(ctx context.Context, id string) error {
@@ -190,20 +101,5 @@ func (ctrl User) Delete(ctx context.Context, id string) error {
 		return fmt.Errorf("invalid user context")
 	}
 
-	userIDOpt := request.UserIDOption[string, request.Signal](*ctxu.ID)
-
-	req := request.New(
-		ctx,
-		id,
-		userIDOpt,
-	)
-
-	msg := models.UserMsg{Delete: &req}
-
-	if err := ctrl.sendMsg(ctx, msg); err != nil {
-		return err
-	}
-
-	_, err := req.Wait()
-	return err
+	return ctrl.repository.Delete(*ctxu.ID, id)
 }
