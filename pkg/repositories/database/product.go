@@ -2,11 +2,11 @@ package database
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"time"
 
-	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/repositories/database/sqlbuilder"
 	"github.com/followthepattern/adapticc/pkg/utils/pointers"
@@ -22,19 +22,17 @@ type Product struct {
 	ctx context.Context
 }
 
-func ProductDependencyConstructor(cont *container.Container) (*Product, error) {
-	db := New("postgres", cont.GetDB())
+func NewProduct(ctx context.Context, database *sql.DB) (Product, error) {
+	db := New("postgres", database)
 
 	if db == nil {
-		return nil, errors.New("db is null")
+		return Product{}, errors.New("db is null")
 	}
 
-	dependency := &Product{
-		ctx: cont.GetContext(),
+	return Product{
+		ctx: ctx,
 		db:  db,
-	}
-
-	return dependency, nil
+	}, nil
 }
 
 func (repo Product) Create(userID string, products []models.Product) (err error) {

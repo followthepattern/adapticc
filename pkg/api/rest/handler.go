@@ -3,21 +3,28 @@ package rest
 import (
 	"net/http"
 
-	"github.com/followthepattern/adapticc/pkg/container"
+	"github.com/followthepattern/adapticc/pkg/controllers"
 	"github.com/go-chi/chi"
 )
 
-func NewHandler(cont *container.Container) (http.Handler, error) {
+type RestConfig struct {
+	product controllers.Product
+}
+
+func NewRestConfig(product controllers.Product) RestConfig {
+	return RestConfig{
+		product: product,
+	}
+}
+
+func New(rest RestConfig) http.Handler {
 	r := chi.NewMux()
 
-	product, err := newProduct(cont)
-	if err != nil {
-		return nil, err
-	}
+	product := NewProduct(rest.product)
 
 	r.Route("/products", func(r chi.Router) {
 		r.Post("/", product.Create)
 	})
 
-	return r, nil
+	return r
 }

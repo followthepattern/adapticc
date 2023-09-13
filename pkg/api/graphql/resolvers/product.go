@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/controllers"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/utils/pointers"
@@ -17,17 +16,11 @@ func getFromProductListResponseModel(response models.ProductListResponse) ListRe
 }
 
 type ProductResolver struct {
-	cont *container.Container
-	ctrl *controllers.Product
+	ctrl controllers.Product
 }
 
-func NewProductQuery(cont *container.Container) (*ProductResolver, error) {
-	ctrl, err := container.Resolve[controllers.Product](cont)
-	if err != nil {
-		return nil, err
-	}
-
-	return &ProductResolver{cont: cont, ctrl: ctrl}, nil
+func NewProductQuery(ctrl controllers.Product) ProductResolver {
+	return ProductResolver{ctrl: ctrl}
 }
 
 func (resolver ProductResolver) Single(ctx context.Context, args struct{ Id string }) (*models.Product, error) {

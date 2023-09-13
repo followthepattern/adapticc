@@ -4,29 +4,20 @@ import (
 	"context"
 
 	"github.com/followthepattern/adapticc/pkg/config"
-	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/services"
 )
 
 type Auth struct {
 	cfg         config.Config
-	authService *services.Auth
+	authService services.Auth
 }
 
-func AuthDependencyConstructor(cont *container.Container) (*Auth, error) {
-	authService, err := container.Resolve[services.Auth](cont)
-	if err != nil {
-		return nil, err
-	}
-
-	dependency := Auth{
+func NewAuth(cfg config.Config, authService services.Auth) Auth {
+	return Auth{
 		authService: authService,
+		cfg:         cfg,
 	}
-
-	dependency.cfg = cont.GetConfig()
-
-	return &dependency, nil
 }
 
 func (ctrl Auth) Login(ctx context.Context, login models.LoginRequestParams) (*models.LoginResponse, error) {

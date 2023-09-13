@@ -2,10 +2,10 @@ package database
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"time"
 
-	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/utils/pointers"
 	"go.uber.org/zap"
@@ -14,25 +14,23 @@ import (
 )
 
 type Auth struct {
-	logger zap.Logger
+	logger *zap.Logger
 	db     *Database
 	ctx    context.Context
 }
 
-func AuthDependencyConstructor(cont *container.Container) (*Auth, error) {
-	db := New("postgres", cont.GetDB())
+func NewAuth(ctx context.Context, database *sql.DB, logger *zap.Logger) (Auth, error) {
+	db := New("postgres", database)
 
 	if db == nil {
-		return nil, errors.New("db is null")
+		return Auth{}, errors.New("db is null")
 	}
 
-	dependency := &Auth{
-		ctx:    cont.GetContext(),
+	return Auth{
+		ctx:    ctx,
 		db:     db,
-		logger: *cont.GetLogger(),
-	}
-
-	return dependency, nil
+		logger: logger,
+	}, nil
 }
 
 func (service Auth) VerifyEmail(email string) (bool, error) {

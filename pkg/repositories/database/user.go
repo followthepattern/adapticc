@@ -2,11 +2,11 @@ package database
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"time"
 
-	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/repositories/database/sqlbuilder"
 	"github.com/followthepattern/adapticc/pkg/utils/pointers"
@@ -23,19 +23,17 @@ func (User) tableName() string {
 	return "usr.users"
 }
 
-func UserDependencyConstructor(cont *container.Container) (*User, error) {
-	db := New("postgres", cont.GetDB())
+func NewUser(ctx context.Context, database *sql.DB) (User, error) {
+	db := New("postgres", database)
 
 	if db == nil {
-		return nil, errors.New("db is null")
+		return User{}, errors.New("db is null")
 	}
 
-	dependency := &User{
-		ctx: cont.GetContext(),
+	return User{
+		ctx: ctx,
 		db:  db,
-	}
-
-	return dependency, nil
+	}, nil
 }
 
 func (repo User) Create(userID string, users []models.User) (err error) {

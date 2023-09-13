@@ -8,11 +8,15 @@ import (
 	"os"
 	"os/signal"
 
-	internal "github.com/followthepattern/adapticc/pkg"
 	"github.com/followthepattern/adapticc/pkg/api"
+	"github.com/followthepattern/adapticc/pkg/api/graphql"
+	"github.com/followthepattern/adapticc/pkg/api/graphql/resolvers"
+	"github.com/followthepattern/adapticc/pkg/api/rest"
 	"github.com/followthepattern/adapticc/pkg/config"
-	"github.com/followthepattern/adapticc/pkg/container"
+	"github.com/followthepattern/adapticc/pkg/controllers"
 	"github.com/followthepattern/adapticc/pkg/hostserver"
+	"github.com/followthepattern/adapticc/pkg/repositories/database"
+	"github.com/followthepattern/adapticc/pkg/services"
 
 	_ "github.com/lib/pq"
 	"go.uber.org/zap"
@@ -40,24 +44,36 @@ func main() {
 
 	ctx := context.Background()
 
-	cont := container.New(
-		ctx,
-		*cfg,
-		db,
-		logger)
-
-	err = internal.RegisterDependencies(cont)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 
-	router, err := api.GetRouter(cont)
+	userController, err := buildUserController(ctx, db, *cfg, logger)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	authController, err := buildAuthController(ctx, db, *cfg, logger)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	productController, err := buildProductController(ctx, db, *cfg, logger)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	resolverConfig := resolvers.NewResolverConfig(
+		*userController,
+		*authController,
+		*productController)
+
+	resolver := resolvers.New(resolverConfig)
+
+	graphqlHandler := graphql.New(&resolver)
+
+	restHandler := rest.New(rest.NewRestConfig(*productController))
+
+	router := api.NewHttpApi(*cfg, graphqlHandler, restHandler, logger)
 
 	server := hostserver.NewServer(router, logger)
 	ctx, cancel := context.WithCancel(ctx)
@@ -71,4 +87,36 @@ func main() {
 	if err := server.Serve(ctx, cfg.Server.Host, cfg.Server.Port); err != nil {
 		logger.Error("failed to serve server", zap.Error(err))
 	}
+}
+
+func buildUserController(ctx context.Context, db *sql.DB, cfg config.Config, logger *zap.Logger) (*controllers.User, error) {
+	user, err := database.NewUser(ctx, db)
+	if err != nil {
+		return nil, err
+	}
+	ctrl := controllers.NewUser(user)
+
+	return &ctrl, err
+}
+
+func buildAuthController(ctx context.Context, db *sql.DB, cfg config.Config, logger *zap.Logger) (*controllers.Auth, error) {
+	auth, err := database.NewAuth(ctx, db, logger)
+	if err != nil {
+		return nil, err
+	}
+	authService := services.NewAuth(cfg, auth)
+
+	ctrl := controllers.NewAuth(cfg, authService)
+
+	return &ctrl, err
+}
+
+func buildProductController(ctx context.Context, db *sql.DB, cfg config.Config, logger *zap.Logger) (*controllers.Product, error) {
+	product, err := database.NewProduct(ctx, db)
+	if err != nil {
+		return nil, err
+	}
+	productController := controllers.NewProduct(product)
+
+	return &productController, err
 }

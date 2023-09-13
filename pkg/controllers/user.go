@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/repositories/database"
 	"github.com/followthepattern/adapticc/pkg/utils"
@@ -13,20 +12,13 @@ import (
 )
 
 type User struct {
-	ctx        context.Context
-	repository *database.User
+	repository database.User
 }
 
-func UserDependencyConstructor(cont *container.Container) (*User, error) {
-	repository, err := container.Resolve[database.User](cont)
-	if err != nil {
-		return nil, err
-	}
-
-	return &User{
-		ctx:        cont.GetContext(),
+func NewUser(repository database.User) User {
+	return User{
 		repository: repository,
-	}, nil
+	}
 }
 
 func (ctrl User) GetByID(ctx context.Context, id string) (*models.User, error) {

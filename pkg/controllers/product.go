@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/repositories/database"
 	"github.com/followthepattern/adapticc/pkg/utils"
@@ -13,20 +12,13 @@ import (
 )
 
 type Product struct {
-	repository *database.Product
+	repository database.Product
 }
 
-func ProductDependencyConstructor(cont *container.Container) (*Product, error) {
-	repository, err := container.Resolve[database.Product](cont)
-	if err != nil {
-		return nil, err
-	}
-
-	dependency := Product{
+func NewProduct(repository database.Product) Product {
+	return Product{
 		repository: repository,
 	}
-
-	return &dependency, nil
 }
 
 func (ctrl Product) GetByID(ctx context.Context, id string) (*models.Product, error) {

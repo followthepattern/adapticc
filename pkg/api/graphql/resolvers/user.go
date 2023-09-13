@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/controllers"
 	"github.com/followthepattern/adapticc/pkg/models"
 )
@@ -16,17 +15,11 @@ func getFromUserListResponseModel(response models.UserListResponse) *ListRespons
 }
 
 type UserResolver struct {
-	cont *container.Container
-	ctrl *controllers.User
+	ctrl controllers.User
 }
 
-func NewUserQuery(cont *container.Container) (*UserResolver, error) {
-	ctrl, err := container.Resolve[controllers.User](cont)
-	if err != nil {
-		return nil, err
-	}
-
-	return &UserResolver{cont: cont, ctrl: ctrl}, nil
+func NewUserQuery(ctrl controllers.User) UserResolver {
+	return UserResolver{ctrl: ctrl}
 }
 
 func (resolver UserResolver) Single(ctx context.Context, args struct{ Id string }) (*models.User, error) {
