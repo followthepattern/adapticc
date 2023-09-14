@@ -9,9 +9,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-	"github.com/followthepattern/adapticc/pkg/api"
 	"github.com/followthepattern/adapticc/pkg/config"
-	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/services"
 	"github.com/followthepattern/adapticc/pkg/tests/datagenerator"
@@ -43,7 +41,6 @@ var _ = Describe("Authentication", func() {
 		mdb     *sql.DB
 		mock    sqlmock.Sqlmock
 		ctx     context.Context
-		cont    *container.Container
 		cfg     config.Config
 		handler http.Handler
 
@@ -65,14 +62,7 @@ var _ = Describe("Authentication", func() {
 			},
 		}
 
-		cont, err = NewMockedContainer(ctx, mdb, cfg)
-		if err != nil {
-			panic(err)
-		}
-		handler, err = api.GetRouter(cont)
-		if err != nil {
-			panic(err)
-		}
+		handler = NewMockHandler(ctx, mdb, cfg)
 
 		testResponse = &graphqlAuthResponse{}
 		password = datagenerator.String(13)

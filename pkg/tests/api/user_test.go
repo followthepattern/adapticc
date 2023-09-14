@@ -10,11 +10,9 @@ import (
 	"net/http/httptest"
 	"time"
 
-	"github.com/followthepattern/adapticc/pkg/api"
 	"github.com/followthepattern/adapticc/pkg/api/graphql/resolvers"
 	"github.com/followthepattern/adapticc/pkg/api/middlewares"
 	"github.com/followthepattern/adapticc/pkg/config"
-	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/tests/datagenerator"
 	"github.com/followthepattern/adapticc/pkg/tests/sqlexpectations"
@@ -51,7 +49,6 @@ var _ = Describe("User graphql queries", func() {
 		mock    sqlmock.Sqlmock
 		ctx     context.Context
 		cfg     config.Config
-		cont    *container.Container
 		handler http.Handler
 	)
 
@@ -65,11 +62,8 @@ var _ = Describe("User graphql queries", func() {
 		mdb, mock, err = sqlmock.New()
 		Expect(err).To(BeNil())
 
-		cont, err = NewMockedContainer(ctx, mdb, cfg)
-		Expect(err).To(BeNil())
+		handler = NewMockHandler(ctx, mdb, cfg)
 
-		handler, err = api.GetRouter(cont)
-		Expect(err).To(BeNil())
 	})
 
 	Context("Single", func() {
@@ -111,9 +105,6 @@ var _ = Describe("User graphql queries", func() {
 
 	Context("List", func() {
 		It("Success default query", func() {
-			handler, err := api.GetRouter(cont)
-			Expect(err).To(BeNil())
-
 			listRequestParams := models.UserListRequestParams{
 				Pagination: models.Pagination{
 					PageSize: pointers.ToPtr[uint](5),
@@ -175,9 +166,6 @@ var _ = Describe("User graphql queries", func() {
 		})
 
 		It("Success withouth page and pageSize params", func() {
-			handler, err := api.GetRouter(cont)
-			Expect(err).To(BeNil())
-
 			listRequestParams := models.UserListRequestParams{
 				Filter: models.ListFilter{
 					Search: pointers.ToPtr("email@email.com"),

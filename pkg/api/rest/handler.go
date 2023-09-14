@@ -7,20 +7,10 @@ import (
 	"github.com/go-chi/chi"
 )
 
-type RestConfig struct {
-	product controllers.Product
-}
-
-func NewRestConfig(product controllers.Product) RestConfig {
-	return RestConfig{
-		product: product,
-	}
-}
-
-func New(rest RestConfig) http.Handler {
+func New(ctrls controllers.Controllers) http.Handler {
 	r := chi.NewMux()
 
-	product := NewProduct(rest.product)
+	product := NewProduct(ctrls.Product())
 
 	r.Route("/products", func(r chi.Router) {
 		r.Post("/", product.Create)

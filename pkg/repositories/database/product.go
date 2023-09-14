@@ -22,17 +22,13 @@ type Product struct {
 	ctx context.Context
 }
 
-func NewProduct(ctx context.Context, database *sql.DB) (Product, error) {
+func NewProduct(ctx context.Context, database *sql.DB) Product {
 	db := New("postgres", database)
-
-	if db == nil {
-		return Product{}, errors.New("db is null")
-	}
 
 	return Product{
 		ctx: ctx,
 		db:  db,
-	}, nil
+	}
 }
 
 func (repo Product) Create(userID string, products []models.Product) (err error) {

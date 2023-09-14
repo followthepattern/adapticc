@@ -3,7 +3,6 @@ package database
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"time"
 
 	"github.com/followthepattern/adapticc/pkg/models"
@@ -14,23 +13,17 @@ import (
 )
 
 type Auth struct {
-	logger *zap.Logger
-	db     *Database
-	ctx    context.Context
+	db  *Database
+	ctx context.Context
 }
 
-func NewAuth(ctx context.Context, database *sql.DB, logger *zap.Logger) (Auth, error) {
+func NewAuth(ctx context.Context, database *sql.DB, logger *zap.Logger) Auth {
 	db := New("postgres", database)
 
-	if db == nil {
-		return Auth{}, errors.New("db is null")
-	}
-
 	return Auth{
-		ctx:    ctx,
-		db:     db,
-		logger: logger,
-	}, nil
+		ctx: ctx,
+		db:  db,
+	}
 }
 
 func (service Auth) VerifyEmail(email string) (bool, error) {

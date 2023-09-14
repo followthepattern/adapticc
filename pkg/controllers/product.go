@@ -2,22 +2,31 @@ package controllers
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 
+	"github.com/followthepattern/adapticc/pkg/config"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/repositories/database"
 	"github.com/followthepattern/adapticc/pkg/utils"
 	"github.com/followthepattern/adapticc/pkg/utils/pointers"
 	"github.com/google/uuid"
+	"go.uber.org/zap"
 )
 
 type Product struct {
 	repository database.Product
+	logger     *zap.Logger
+	cfg        config.Config
 }
 
-func NewProduct(repository database.Product) Product {
+func NewProduct(ctx context.Context, db *sql.DB, cfg config.Config, logger *zap.Logger) Product {
+	repository := database.NewProduct(ctx, db)
+
 	return Product{
 		repository: repository,
+		logger:     logger,
+		cfg:        cfg,
 	}
 }
 

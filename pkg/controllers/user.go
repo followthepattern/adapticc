@@ -2,21 +2,32 @@ package controllers
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 
+	"github.com/followthepattern/adapticc/pkg/config"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/repositories/database"
 	"github.com/followthepattern/adapticc/pkg/utils"
 	"github.com/followthepattern/adapticc/pkg/utils/pointers"
 	"github.com/google/uuid"
+	"go.uber.org/zap"
 )
 
 type User struct {
 	repository database.User
+	cfg        config.Config
+	logger     *zap.Logger
+	ctx        context.Context
 }
 
-func NewUser(repository database.User) User {
+func NewUser(ctx context.Context, db *sql.DB, cfg config.Config, logger *zap.Logger) User {
+	repository := database.NewUser(ctx, db)
+
 	return User{
+		ctx:        ctx,
+		cfg:        cfg,
+		logger:     logger,
 		repository: repository,
 	}
 }

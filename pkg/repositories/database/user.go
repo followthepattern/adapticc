@@ -23,17 +23,13 @@ func (User) tableName() string {
 	return "usr.users"
 }
 
-func NewUser(ctx context.Context, database *sql.DB) (User, error) {
+func NewUser(ctx context.Context, database *sql.DB) User {
 	db := New("postgres", database)
-
-	if db == nil {
-		return User{}, errors.New("db is null")
-	}
 
 	return User{
 		ctx: ctx,
 		db:  db,
-	}, nil
+	}
 }
 
 func (repo User) Create(userID string, users []models.User) (err error) {

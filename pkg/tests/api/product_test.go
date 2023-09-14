@@ -11,11 +11,9 @@ import (
 	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/followthepattern/adapticc/pkg/api"
 	"github.com/followthepattern/adapticc/pkg/api/graphql/resolvers"
 	"github.com/followthepattern/adapticc/pkg/api/middlewares"
 	"github.com/followthepattern/adapticc/pkg/config"
-	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/tests/datagenerator"
 	"github.com/followthepattern/adapticc/pkg/tests/sqlexpectations"
@@ -48,7 +46,6 @@ var _ = Describe("Product Test", func() {
 		mock    sqlmock.Sqlmock
 		ctx     context.Context
 		cfg     config.Config
-		cont    *container.Container
 		handler http.Handler
 	)
 
@@ -64,14 +61,8 @@ var _ = Describe("Product Test", func() {
 		if err != nil {
 			panic(err)
 		}
-		cont, err = NewMockedContainer(ctx, mdb, cfg)
-		if err != nil {
-			panic(err)
-		}
-		handler, err = api.GetRouter(cont)
-		if err != nil {
-			panic(err)
-		}
+
+		handler = NewMockHandler(ctx, mdb, cfg)
 
 	})
 
