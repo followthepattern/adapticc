@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/followthepattern/adapticc/pkg/accesscontrol"
 	"github.com/followthepattern/adapticc/pkg/api"
 	"github.com/followthepattern/adapticc/pkg/api/graphql"
 	"github.com/followthepattern/adapticc/pkg/api/rest"
@@ -41,10 +42,15 @@ func main() {
 
 	ctx := context.Background()
 
+	cerbosClient, err := accesscontrol.NewClient(cfg.Cerbos)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 
-	ctrls := controllers.New(ctx, db, *cfg, logger)
+	ctrls := controllers.New(ctx, cerbosClient, db, *cfg, logger)
 
 	graphqlHandler := graphql.New(ctrls)
 
