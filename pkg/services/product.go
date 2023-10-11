@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	cerbos "github.com/cerbos/cerbos/client"
@@ -17,56 +16,42 @@ import (
 )
 
 type Product struct {
-	repository   database.Product
-	logger       *zap.Logger
-	cfg          config.Config
-	cerbosClient cerbos.Client
+	Service
+	productRepository database.Product
+	roleRepository    database.Role
 }
 
-func (Product) resourceName() string {
-	return "product"
-}
-
-func NewProduct(ctx context.Context, cerbosClient cerbos.Client, productRepository database.Product, cfg config.Config, logger *zap.Logger) Product {
-	return Product{
-		repository:   productRepository,
+func NewProduct(ctx context.Context, cerbosClient cerbos.Client, productRepository database.Product, roleRepository database.Role, cfg config.Config, logger *zap.Logger) Product {
+	base := Service{
+		name:         "product",
 		logger:       logger,
 		cfg:          cfg,
 		cerbosClient: cerbosClient,
 	}
-}
 
-func (service Product) IsAllowed(ctx context.Context, action string, resourceID string) error {
-	ctxu := utils.GetModelFromContext[models.User](ctx, utils.CtxUserKey)
-
-	principal := cerbos.NewPrincipal(*ctxu.ID, "product:editor")
-
-	resource := cerbos.NewResource(service.resourceName(), resourceID)
-
-	ok, err := service.cerbosClient.IsAllowed(ctx, principal, resource, action)
-	if err != nil {
-		return err
+	product := Product{
+		Service:           base,
+		productRepository: productRepository,
+		roleRepository:    roleRepository,
 	}
 
-	if !ok {
-		return errors.New("action is not allowed")
-	}
+	product.getRoles = product
 
-	return nil
+	return product
 }
 
 func (service Product) GetByID(ctx context.Context, id string) (*models.Product, error) {
-	ctxu := utils.GetModelFromContext[models.User](ctx, utils.CtxUserKey)
-	if ctxu == nil {
-		return nil, fmt.Errorf("invalid user context")
+	ctxu, err := utils.GetUserContext(ctx)
+	if err == nil {
+		return nil, err
 	}
 
-	err := service.IsAllowed(ctx, accesscontrol.READ, id)
+	err = service.Authorize(ctx, *ctxu.ID, accesscontrol.READ, id)
 	if err != nil {
 		return nil, err
 	}
 
-	result, err := service.repository.GetByID(*ctxu.ID, id)
+	result, err := service.productRepository.GetByID(*ctxu.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -84,28 +69,28 @@ func (service Product) Get(ctx context.Context, filter models.ProductListRequest
 		return nil, fmt.Errorf("invalid user context")
 	}
 
-	err := service.IsAllowed(ctx, accesscontrol.READ, "all")
+	err := service.Authorize(ctx, *ctxu.ID, accesscontrol.READ, accesscontrol.ALLRESOURCE)
 	if err != nil {
 		return nil, err
 	}
 
-	return service.repository.Get(*ctxu.ID, filter)
+	return service.productRepository.Get(filter)
 }
 
 func (service Product) Create(ctx context.Context, value models.Product) error {
-	ctxu := utils.GetModelFromContext[models.User](ctx, utils.CtxUserKey)
-	if ctxu == nil {
-		return fmt.Errorf("invalid user context")
+	ctxu, err := utils.GetUserContext(ctx)
+	if err != nil {
+		return nil
 	}
 
 	value.ID = pointers.ToPtr(uuid.New().String())
 
-	err := service.IsAllowed(ctx, accesscontrol.CREATE, *value.ID)
+	err = service.Authorize(ctx, *ctxu.ID, accesscontrol.CREATE, *value.ID)
 	if err != nil {
 		return err
 	}
 
-	return service.repository.Create(*ctxu.ID, []models.Product{value})
+	return service.productRepository.Create(*ctxu.ID, []models.Product{value})
 }
 
 func (service Product) Update(ctx context.Context, value models.Product) error {
@@ -114,24 +99,47 @@ func (service Product) Update(ctx context.Context, value models.Product) error {
 		return fmt.Errorf("invalid user context")
 	}
 
-	err := service.IsAllowed(ctx, accesscontrol.UPDATE, *value.ID)
+	err := service.Authorize(ctx, *ctxu.ID, accesscontrol.UPDATE, *value.ID)
 	if err != nil {
 		return err
 	}
 
-	return service.repository.Update(*ctxu.ID, value)
+	return service.productRepository.Update(*ctxu.ID, value)
 }
 
 func (service Product) Delete(ctx context.Context, id string) error {
-	ctxu := utils.GetModelFromContext[models.User](ctx, utils.CtxUserKey)
-	if ctxu == nil {
-		return fmt.Errorf("invalid user context")
+	ctxu, err := utils.GetUserContext(ctx)
+	if err != nil {
+		return nil
 	}
 
-	err := service.IsAllowed(ctx, accesscontrol.DELETE, id)
+	err = service.Authorize(ctx, *ctxu.ID, accesscontrol.DELETE, id)
 	if err != nil {
 		return err
 	}
 
-	return service.repository.Delete(*ctxu.ID, id)
+	return service.productRepository.Delete(id)
+}
+
+func (service Product) GetRolesByUserID(userID string) ([]string, error) {
+	rolesArray, err := service.Service.GetRolesByUserID(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	roles, err := service.roleRepository.GetRolesByUserID(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	rolesArrayLen := len(rolesArray)
+	result := make([]string, rolesArrayLen+len(roles))
+
+	copy(result, rolesArray)
+
+	for i, role := range roles {
+		result[i+rolesArrayLen] = role.Name
+	}
+
+	return result, nil
 }

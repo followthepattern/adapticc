@@ -45,6 +45,9 @@ func (service Auth) VerifyLogin(email string) (models.AuthUser, error) {
 	authUser := models.AuthUser{}
 
 	_, err := service.db.From("usr.users").Where(Ex{"email": email}).ScanStruct(&authUser)
+	if err != nil {
+		return authUser, err
+	}
 
 	return authUser, err
 }

@@ -56,7 +56,7 @@ func (ctrl User) Profile(ctx context.Context) (*models.User, error) {
 		return nil, fmt.Errorf("invalid user context")
 	}
 
-	user, err := ctrl.repository.GetByID(*ctxu.ID)
+	user, err := ctrl.repository.GetProfile(*ctxu.ID)
 	if err != nil {
 		return nil, err
 	}

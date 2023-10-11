@@ -20,7 +20,8 @@ type Product struct {
 
 func NewProduct(ctx context.Context, cerbosClient cerbos.Client, db *sql.DB, cfg config.Config, logger *zap.Logger) Product {
 	productRepository := database.NewProduct(ctx, db)
-	productService := services.NewProduct(ctx, cerbosClient, productRepository, cfg, logger)
+	roleRepository := database.NewRole(ctx, db)
+	productService := services.NewProduct(ctx, cerbosClient, productRepository, roleRepository, cfg, logger)
 
 	return Product{
 		product: productService,

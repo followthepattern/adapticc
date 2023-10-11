@@ -10,6 +10,8 @@ const (
 	READ   = "read"
 	UPDATE = "update"
 	DELETE = "delete"
+
+	ALLRESOURCE = "ALL"
 )
 
 func NewClient(cfg config.Cerbos) (cerbos.Client, error) {

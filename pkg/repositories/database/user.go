@@ -64,6 +64,29 @@ func (repo User) GetByID(id string) (*models.User, error) {
 	return &user, err
 }
 
+func (repo User) GetProfile(id string) (*models.User, error) {
+	user := models.User{}
+
+	query := repo.db.From(repo.tableName()).Where(Ex{"id": id})
+
+	_, err := query.ScanStruct(&user)
+	if err != nil {
+		return nil, err
+	}
+
+	query = repo.db.From(S("usr").Table("user_role").As("ur")).
+		Join(S("usr").Table("roles").As("r"),
+			On(Ex{"r.id": I("ur.role_id")})).
+		Where(Ex{"user_id": id})
+
+	err = query.ScanStructs(&user.Roles)
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, err
+}
+
 func (repo User) GetByEmail(email string) (*models.User, error) {
 	user := models.User{}
 
