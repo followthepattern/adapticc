@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 
-	cerbos "github.com/cerbos/cerbos/client"
+	"github.com/followthepattern/adapticc/pkg/accesscontrol"
 	"github.com/followthepattern/adapticc/pkg/config"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/repositories/database"
@@ -18,10 +18,10 @@ type Product struct {
 	cfg     config.Config
 }
 
-func NewProduct(ctx context.Context, cerbosClient cerbos.Client, db *sql.DB, cfg config.Config, logger *zap.Logger) Product {
+func NewProduct(ctx context.Context, ac accesscontrol.AccessControl, db *sql.DB, cfg config.Config, logger *zap.Logger) Product {
 	productRepository := database.NewProduct(ctx, db)
 	roleRepository := database.NewRole(ctx, db)
-	productService := services.NewProduct(ctx, cerbosClient, productRepository, roleRepository, cfg, logger)
+	productService := services.NewProduct(ctx, ac, productRepository, roleRepository, cfg, logger)
 
 	return Product{
 		product: productService,

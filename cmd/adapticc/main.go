@@ -42,7 +42,7 @@ func main() {
 
 	ctx := context.Background()
 
-	cerbosClient, err := accesscontrol.NewClient(cfg.Cerbos)
+	cerbosClient, err := accesscontrol.New(cfg.Cerbos)
 	if err != nil {
 		log.Fatal(err)
 	}

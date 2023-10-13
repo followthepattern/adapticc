@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/followthepattern/adapticc/pkg/accesscontrol"
 	"github.com/followthepattern/adapticc/pkg/config"
@@ -13,25 +14,28 @@ import (
 	"go.uber.org/zap"
 )
 
-type Product struct {
-	ac                accesscontrol.AccessControl
-	productRepository database.Product
-	roleRepository    database.Role
+type User struct {
+	userRepository database.User
+	roleRepository database.Role
+	ac             accesscontrol.AccessControl
 }
 
-func NewProduct(ctx context.Context, accesscontrol accesscontrol.AccessControl, productRepository database.Product, roleRepository database.Role, cfg config.Config, logger *zap.Logger) Product {
-	product := Product{
-		ac:                accesscontrol.WithKind("product"),
-		productRepository: productRepository,
-		roleRepository:    roleRepository,
+func NewUser(ctx context.Context, ac accesscontrol.AccessControl, db *sql.DB, cfg config.Config, logger *zap.Logger) User {
+	repository := database.NewUser(ctx, db)
+	roleRepository := database.NewRole(ctx, db)
+
+	user := User{
+		userRepository: repository,
+		roleRepository: roleRepository,
+		ac:             ac.WithKind("user"),
 	}
 
-	return product
+	return user
 }
 
-func (service Product) GetByID(ctx context.Context, id string) (*models.Product, error) {
+func (service User) GetByID(ctx context.Context, id string) (*models.User, error) {
 	ctxu, err := utils.GetUserContext(ctx)
-	if err != nil {
+	if err == nil {
 		return nil, err
 	}
 
@@ -45,7 +49,7 @@ func (service Product) GetByID(ctx context.Context, id string) (*models.Product,
 		return nil, err
 	}
 
-	result, err := service.productRepository.GetByID(*ctxu.ID)
+	result, err := service.userRepository.GetByID(id)
 	if err != nil {
 		return nil, err
 	}
@@ -57,26 +61,45 @@ func (service Product) GetByID(ctx context.Context, id string) (*models.Product,
 	return result, nil
 }
 
-func (service Product) Get(ctx context.Context, filter models.ProductListRequestParams) (*models.ProductListResponse, error) {
+func (service User) Profile(ctx context.Context) (*models.User, error) {
 	ctxu, err := utils.GetUserContext(ctx)
+	if err == nil {
+		return nil, err
+	}
+
+	user, err := service.userRepository.GetByID(*ctxu.ID)
 	if err != nil {
 		return nil, err
+	}
+
+	return user, nil
+}
+
+func (service User) Get(ctx context.Context, filter models.UserListRequestParams) (models.UserListResponse, error) {
+	ctxu, err := utils.GetUserContext(ctx)
+	if err != nil {
+		return models.UserListResponse{}, err
 	}
 
 	roles, err := service.roleRepository.GetProfileRolesArray(*ctxu.ID)
 	if err != nil {
-		return nil, err
+		return models.UserListResponse{}, err
 	}
 
 	err = service.ac.Authorize(ctx, *ctxu.ID, accesscontrol.READ, accesscontrol.ALLRESOURCE, roles...)
 	if err != nil {
-		return nil, err
+		return models.UserListResponse{}, err
 	}
 
-	return service.productRepository.Get(filter)
+	result, err := service.userRepository.Get(*ctxu.ID, filter)
+	if err != nil {
+		return models.UserListResponse{}, err
+	}
+
+	return *result, nil
 }
 
-func (service Product) Create(ctx context.Context, value models.Product) error {
+func (service User) Create(ctx context.Context, value models.User) error {
 	ctxu, err := utils.GetUserContext(ctx)
 	if err != nil {
 		return nil
@@ -94,10 +117,10 @@ func (service Product) Create(ctx context.Context, value models.Product) error {
 
 	value.ID = pointers.ToPtr(uuid.New().String())
 
-	return service.productRepository.Create(*ctxu.ID, []models.Product{value})
+	return service.userRepository.Create(*ctxu.ID, []models.User{value})
 }
 
-func (service Product) Update(ctx context.Context, value models.Product) error {
+func (service User) Update(ctx context.Context, value models.User) error {
 	ctxu, err := utils.GetUserContext(ctx)
 	if err != nil {
 		return nil
@@ -113,10 +136,10 @@ func (service Product) Update(ctx context.Context, value models.Product) error {
 		return err
 	}
 
-	return service.productRepository.Update(*ctxu.ID, value)
+	return service.userRepository.Update(*ctxu.ID, value)
 }
 
-func (service Product) Delete(ctx context.Context, id string) error {
+func (service User) Delete(ctx context.Context, id string) error {
 	ctxu, err := utils.GetUserContext(ctx)
 	if err != nil {
 		return nil
@@ -132,5 +155,5 @@ func (service Product) Delete(ctx context.Context, id string) error {
 		return err
 	}
 
-	return service.productRepository.Delete(id)
+	return service.userRepository.Delete(*ctxu.ID, id)
 }

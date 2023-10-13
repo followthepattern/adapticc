@@ -61,18 +61,6 @@ func (repo User) GetByID(id string) (*models.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &user, err
-}
-
-func (repo User) GetProfile(id string) (*models.User, error) {
-	user := models.User{}
-
-	query := repo.db.From(repo.tableName()).Where(Ex{"id": id})
-
-	_, err := query.ScanStruct(&user)
-	if err != nil {
-		return nil, err
-	}
 
 	query = repo.db.From(S("usr").Table("user_role").As("ur")).
 		Join(S("usr").Table("roles").As("r"),

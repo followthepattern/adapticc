@@ -9,12 +9,7 @@ import (
 	"go.uber.org/zap"
 )
 
-type getRoles interface {
-	GetRolesByUserID(userID string) ([]string, error)
-}
-
 type Service struct {
-	getRoles
 	name         string
 	logger       *zap.Logger
 	cfg          config.Config
@@ -29,17 +24,10 @@ func NewService(name string, cerbosClient cerbos.Client, cfg config.Config, logg
 		cfg:          cfg,
 	}
 
-	service.getRoles = service
-
 	return service
 }
 
-func (service Service) Authorize(ctx context.Context, principalID string, action string, resourceID string) error {
-	roles, err := service.getRoles.GetRolesByUserID(principalID)
-	if err != nil {
-		return err
-	}
-
+func (service Service) Authorize(ctx context.Context, action string, resourceID string, principalID string, roles ...string) error {
 	principal := cerbos.NewPrincipal(principalID, roles...)
 
 	resource := cerbos.NewResource(service.name, resourceID)
@@ -54,8 +42,4 @@ func (service Service) Authorize(ctx context.Context, principalID string, action
 	}
 
 	return nil
-}
-
-func (service Service) GetRolesByUserID(userID string) ([]string, error) {
-	return []string{}, nil
 }

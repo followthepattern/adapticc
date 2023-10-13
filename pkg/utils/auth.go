@@ -53,5 +53,9 @@ func GetUserContext(ctx context.Context) (models.User, error) {
 		return models.User{}, errors.New("invalid user context")
 	}
 
+	if model.IsDefault() {
+		return models.User{}, errors.New("invalid user context")
+	}
+
 	return model, nil
 }
