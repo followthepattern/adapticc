@@ -15,6 +15,7 @@ const (
 	DELETE = "delete"
 
 	ALLRESOURCE = "ALL"
+	NEW         = "NEW"
 )
 
 type Config struct {

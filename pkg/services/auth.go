@@ -109,3 +109,21 @@ func (service Auth) Register(ctx context.Context, register models.RegisterReques
 		LastName:  creationUser.LastName,
 	}, nil
 }
+
+func GenerateTokenStringFromUser(model models.User, secret []byte) (string, error) {
+	expiresAt := time.Now().Add(time.Hour * 24)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
+		"ID":        *model.ID,
+		"email":     *model.Email,
+		"firstName": *model.FirstName,
+		"lastName":  *model.LastName,
+		"expiresAt": expiresAt,
+	})
+
+	tokenString, err := token.SignedString(secret)
+	if err != nil {
+		return "", err
+	}
+
+	return tokenString, nil
+}

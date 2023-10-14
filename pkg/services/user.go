@@ -35,7 +35,7 @@ func NewUser(ctx context.Context, ac accesscontrol.AccessControl, db *sql.DB, cf
 
 func (service User) GetByID(ctx context.Context, id string) (*models.User, error) {
 	ctxu, err := utils.GetUserContext(ctx)
-	if err == nil {
+	if err != nil {
 		return nil, err
 	}
 
@@ -63,7 +63,7 @@ func (service User) GetByID(ctx context.Context, id string) (*models.User, error
 
 func (service User) Profile(ctx context.Context) (*models.User, error) {
 	ctxu, err := utils.GetUserContext(ctx)
-	if err == nil {
+	if err != nil {
 		return nil, err
 	}
 
@@ -91,7 +91,7 @@ func (service User) Get(ctx context.Context, filter models.UserListRequestParams
 		return models.UserListResponse{}, err
 	}
 
-	result, err := service.userRepository.Get(*ctxu.ID, filter)
+	result, err := service.userRepository.Get(filter)
 	if err != nil {
 		return models.UserListResponse{}, err
 	}
@@ -110,14 +110,16 @@ func (service User) Create(ctx context.Context, value models.User) error {
 		return err
 	}
 
-	err = service.ac.Authorize(ctx, *ctxu.ID, accesscontrol.CREATE, *value.ID, roles...)
+	err = service.ac.Authorize(ctx, *ctxu.ID, accesscontrol.CREATE, accesscontrol.NEW, roles...)
 	if err != nil {
 		return err
 	}
 
 	value.ID = pointers.ToPtr(uuid.New().String())
+	value.CreationUserID = ctxu.ID
+	value.Active = pointers.ToPtr(false)
 
-	return service.userRepository.Create(*ctxu.ID, []models.User{value})
+	return service.userRepository.Create([]models.User{value})
 }
 
 func (service User) Update(ctx context.Context, value models.User) error {
@@ -142,7 +144,7 @@ func (service User) Update(ctx context.Context, value models.User) error {
 func (service User) Delete(ctx context.Context, id string) error {
 	ctxu, err := utils.GetUserContext(ctx)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	roles, err := service.roleRepository.GetProfileRolesArray(*ctxu.ID)
