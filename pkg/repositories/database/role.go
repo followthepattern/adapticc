@@ -8,6 +8,11 @@ import (
 	"github.com/followthepattern/adapticc/pkg/models"
 )
 
+var (
+	roleTableName     = S("usr").Table("roles")
+	userRoleTableName = S("usr").Table("user_role")
+)
+
 type Role struct {
 	db  *Database
 	ctx context.Context
@@ -25,7 +30,7 @@ func NewRole(ctx context.Context, database *sql.DB) Role {
 func (repo Role) GetByID(id string) (*models.Role, error) {
 	var data models.Role
 
-	_, err := repo.db.From(S("usr").Table("roles")).
+	_, err := repo.db.From(roleTableName).
 		Where(Ex{"id": id}).
 		ScanStruct(&data)
 
@@ -39,8 +44,8 @@ func (repo Role) GetByID(id string) (*models.Role, error) {
 func (repo Role) GetRolesByUserID(userID string) ([]models.Role, error) {
 	var data []models.Role
 
-	err := repo.db.From(S("usr").Table("user_role").As("ur")).
-		Join(S("usr").Table("roles").As("r"),
+	err := repo.db.From(userRoleTableName.As("ur")).
+		Join(roleTableName.As("r"),
 			On(Ex{"r.id": I("ur.role_id")})).
 		Where(Ex{"user_id": userID}).
 		ScanStructs(&data)

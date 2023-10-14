@@ -14,7 +14,7 @@ import (
 	"github.com/doug-martin/goqu/v9/exp"
 )
 
-const productTable = "usr.products"
+var productTable = S("usr").Table("roles")
 
 type Product struct {
 	db  *Database

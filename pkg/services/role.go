@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 
-	cerbos "github.com/cerbos/cerbos/client"
 	"github.com/followthepattern/adapticc/pkg/accesscontrol"
 	"github.com/followthepattern/adapticc/pkg/config"
 	"github.com/followthepattern/adapticc/pkg/models"
@@ -18,30 +17,17 @@ type Role struct {
 	ac             accesscontrol.AccessControl
 }
 
-func NewRole(ctx context.Context, cerbosClient cerbos.Client, db *sql.DB, cfg config.Config, logger *zap.Logger) User {
+func NewRole(ctx context.Context, ac accesscontrol.AccessControl, db *sql.DB, cfg config.Config, logger *zap.Logger) User {
 	repository := database.NewUser(ctx, db)
 	roleRepository := database.NewRole(ctx, db)
 
 	user := User{
 		userRepository: repository,
 		roleRepository: roleRepository,
+		ac:             ac,
 	}
 
 	return user
-}
-
-func (service Role) GetProfileRoles(ctx context.Context) ([]models.Role, error) {
-	ctxu, err := utils.GetUserContext(ctx)
-	if err == nil {
-		return nil, err
-	}
-
-	result, err := service.roleRepository.GetRolesByUserID(*ctxu.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	return result, nil
 }
 
 func (service Role) GetByID(ctx context.Context, id string) (*models.Role, error) {
