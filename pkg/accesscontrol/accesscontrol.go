@@ -17,6 +17,18 @@ const (
 	ALLRESOURCE = "ALL"
 )
 
+type Config struct {
+	Kind   string
+	Cerbos cerbos.Client
+}
+
+func (c Config) Build() AccessControl {
+	return AccessControl{
+		kind:   c.Kind,
+		cerbos: c.Cerbos,
+	}
+}
+
 type AccessControl struct {
 	kind   string
 	cerbos cerbos.Client

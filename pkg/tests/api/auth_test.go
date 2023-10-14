@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 
+	"github.com/followthepattern/adapticc/pkg/accesscontrol"
 	"github.com/followthepattern/adapticc/pkg/config"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/services"
@@ -53,16 +54,16 @@ var _ = Describe("Authentication", func() {
 		ctx = context.Background()
 		var err error
 		mdb, mock, err = sqlmock.New()
-		if err != nil {
-			panic(err)
-		}
+		Expect(err).To(BeNil())
 		cfg = config.Config{
 			Server: config.Server{
 				HmacSecret: "test",
 			},
 		}
 
-		handler = NewMockHandler(ctx, mdb, cfg)
+		ac := accesscontrol.Config{}.Build()
+
+		handler = NewMockHandler(ctx, ac, mdb, cfg)
 
 		testResponse = &graphqlAuthResponse{}
 		password = datagenerator.String(13)

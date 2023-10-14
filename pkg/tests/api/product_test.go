@@ -11,6 +11,8 @@ import (
 	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/followthepattern/adapticc/mocks"
+	"github.com/followthepattern/adapticc/pkg/accesscontrol"
 	"github.com/followthepattern/adapticc/pkg/api/graphql/resolvers"
 	"github.com/followthepattern/adapticc/pkg/api/middlewares"
 	"github.com/followthepattern/adapticc/pkg/config"
@@ -19,6 +21,7 @@ import (
 	"github.com/followthepattern/adapticc/pkg/tests/sqlexpectations"
 	"github.com/followthepattern/graphql-go/errors"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
@@ -42,11 +45,12 @@ type products struct {
 
 var _ = Describe("Product Test", func() {
 	var (
-		mdb     *sql.DB
-		mock    sqlmock.Sqlmock
-		ctx     context.Context
-		cfg     config.Config
-		handler http.Handler
+		mdb      *sql.DB
+		mock     sqlmock.Sqlmock
+		ctx      context.Context
+		cfg      config.Config
+		handler  http.Handler
+		mockCtrl *gomock.Controller
 	)
 
 	BeforeEach(func() {
@@ -62,7 +66,13 @@ var _ = Describe("Product Test", func() {
 			panic(err)
 		}
 
-		handler = NewMockHandler(ctx, mdb, cfg)
+		mockCtrl = gomock.NewController(GinkgoT())
+		ac := accesscontrol.Config{
+			Kind:   "product",
+			Cerbos: mocks.NewMockClient(mockCtrl),
+		}.Build()
+
+		handler = NewMockHandler(ctx, ac, mdb, cfg)
 
 	})
 

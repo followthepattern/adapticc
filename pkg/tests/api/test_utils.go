@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/followthepattern/adapticc/pkg/accesscontrol"
 	"github.com/followthepattern/adapticc/pkg/api"
 	"github.com/followthepattern/adapticc/pkg/api/graphql"
 	"github.com/followthepattern/adapticc/pkg/api/rest"
@@ -38,10 +39,10 @@ func runRequest(srv http.Handler, r *http.Request, data interface{}) (int, error
 	return response.Code, nil
 }
 
-func NewMockHandler(ctx context.Context, db *sql.DB, cfg config.Config) http.Handler {
+func NewMockHandler(ctx context.Context, ac accesscontrol.AccessControl, db *sql.DB, cfg config.Config) http.Handler {
 	logger := zap.NewExample()
 
-	ctrls := controllers.New(ctx, db, cfg, logger)
+	ctrls := controllers.New(ctx, ac, db, cfg, logger)
 
 	graphqlHandler := graphql.New(ctrls)
 

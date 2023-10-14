@@ -10,6 +10,8 @@ import (
 	"net/http/httptest"
 	"time"
 
+	"github.com/followthepattern/adapticc/mocks"
+	"github.com/followthepattern/adapticc/pkg/accesscontrol"
 	"github.com/followthepattern/adapticc/pkg/api/graphql/resolvers"
 	"github.com/followthepattern/adapticc/pkg/api/middlewares"
 	"github.com/followthepattern/adapticc/pkg/config"
@@ -18,6 +20,7 @@ import (
 	"github.com/followthepattern/adapticc/pkg/tests/sqlexpectations"
 	"github.com/followthepattern/adapticc/pkg/utils/pointers"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/golang/mock/gomock"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/followthepattern/graphql-go/errors"
@@ -45,11 +48,12 @@ type users struct {
 
 var _ = Describe("User graphql queries", func() {
 	var (
-		mdb     *sql.DB
-		mock    sqlmock.Sqlmock
-		ctx     context.Context
-		cfg     config.Config
-		handler http.Handler
+		mdb      *sql.DB
+		mock     sqlmock.Sqlmock
+		ctx      context.Context
+		cfg      config.Config
+		handler  http.Handler
+		mockCtrl *gomock.Controller
 	)
 
 	BeforeEach(func() {
@@ -62,7 +66,13 @@ var _ = Describe("User graphql queries", func() {
 		mdb, mock, err = sqlmock.New()
 		Expect(err).To(BeNil())
 
-		handler = NewMockHandler(ctx, mdb, cfg)
+		mockCtrl = gomock.NewController(GinkgoT())
+		ac := accesscontrol.Config{
+			Kind:   "user",
+			Cerbos: mocks.NewMockClient(mockCtrl),
+		}.Build()
+
+		handler = NewMockHandler(ctx, ac, mdb, cfg)
 
 	})
 
