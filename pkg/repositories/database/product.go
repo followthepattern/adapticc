@@ -14,7 +14,7 @@ import (
 	"github.com/doug-martin/goqu/v9/exp"
 )
 
-var productTable = S("usr").Table("roles")
+var productTable = S("usr").Table("products")
 
 type Product struct {
 	db  *Database
@@ -30,9 +30,9 @@ func NewProduct(ctx context.Context, database *sql.DB) Product {
 	}
 }
 
-func (repo Product) Create(userID string, products []models.Product) (err error) {
+func (repo Product) Create(products []models.Product) (err error) {
 	for i, _ := range products {
-		products[i].Userlog = setCreateUserlog(userID, time.Now())
+		products[i].Userlog.CreatedAt = pointers.ToPtr(time.Now())
 	}
 
 	insertion := repo.db.Insert(productTable)
@@ -101,7 +101,7 @@ func (repo Product) Get(request models.ProductListRequestParams) (*models.Produc
 		query = query.Order(orderExpressions...)
 	}
 
-	err = query.Distinct().ScanStructs(&data)
+	err = query.ScanStructs(&data)
 	if err != nil {
 		return nil, err
 	}

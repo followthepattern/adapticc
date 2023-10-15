@@ -45,7 +45,7 @@ func (service Product) GetByID(ctx context.Context, id string) (*models.Product,
 		return nil, err
 	}
 
-	result, err := service.productRepository.GetByID(*ctxu.ID)
+	result, err := service.productRepository.GetByID(id)
 	if err != nil {
 		return nil, err
 	}
@@ -87,14 +87,15 @@ func (service Product) Create(ctx context.Context, value models.Product) error {
 		return err
 	}
 
-	err = service.ac.Authorize(ctx, *ctxu.ID, accesscontrol.CREATE, *value.ID, roles...)
+	err = service.ac.Authorize(ctx, *ctxu.ID, accesscontrol.CREATE, accesscontrol.NEW, roles...)
 	if err != nil {
 		return err
 	}
 
 	value.ID = pointers.ToPtr(uuid.New().String())
+	value.Userlog.CreationUserID = ctxu.ID
 
-	return service.productRepository.Create(*ctxu.ID, []models.Product{value})
+	return service.productRepository.Create([]models.Product{value})
 }
 
 func (service Product) Update(ctx context.Context, value models.Product) error {

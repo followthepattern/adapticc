@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/followthepattern/adapticc/mocks"
@@ -17,10 +16,10 @@ import (
 	"github.com/followthepattern/adapticc/pkg/api/middlewares"
 	"github.com/followthepattern/adapticc/pkg/config"
 	"github.com/followthepattern/adapticc/pkg/models"
+	"github.com/followthepattern/adapticc/pkg/services"
 	"github.com/followthepattern/adapticc/pkg/tests/datagenerator"
 	"github.com/followthepattern/adapticc/pkg/tests/sqlexpectations"
 	"github.com/followthepattern/graphql-go/errors"
-	"github.com/golang-jwt/jwt/v4"
 	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -45,12 +44,13 @@ type products struct {
 
 var _ = Describe("Product Test", func() {
 	var (
-		mdb      *sql.DB
-		mock     sqlmock.Sqlmock
-		ctx      context.Context
-		cfg      config.Config
-		handler  http.Handler
-		mockCtrl *gomock.Controller
+		mdb        *sql.DB
+		mock       sqlmock.Sqlmock
+		ctx        context.Context
+		cfg        config.Config
+		handler    http.Handler
+		mockCtrl   *gomock.Controller
+		mockCerbos *mocks.MockClient
 	)
 
 	BeforeEach(func() {
@@ -67,9 +67,10 @@ var _ = Describe("Product Test", func() {
 		}
 
 		mockCtrl = gomock.NewController(GinkgoT())
+		mockCerbos = mocks.NewMockClient(mockCtrl)
 		ac := accesscontrol.Config{
 			Kind:   "product",
-			Cerbos: mocks.NewMockClient(mockCtrl),
+			Cerbos: mockCerbos,
 		}.Build()
 
 		handler = NewMockHandler(ctx, ac, mdb, cfg)
@@ -88,34 +89,26 @@ var _ = Describe("Product Test", func() {
 			}
 		}`
 
-		It("Success", func() {
-			user := datagenerator.NewRandomUser()
+		It("Succeeds", func() {
+			contextUser := datagenerator.NewRandomUser()
 			product := datagenerator.NewRandomProduct()
-
-			sqlexpectations.ExpectProduct(mock, *user.ID, product)
-
-			expiresAt := time.Now().Add(time.Hour * 24)
-			token := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
-				"ID":        *user.ID,
-				"email":     *user.Email,
-				"firstName": *user.FirstName,
-				"lastName":  *user.LastName,
-				"expiresAt": expiresAt,
-			})
-
-			tokenString, err := token.SignedString([]byte(cfg.Server.HmacSecret))
-			Expect(err).To(BeNil())
+			role1 := datagenerator.NewRandomRole()
 
 			graphRequest := graphqlRequest{
 				Query: fmt.Sprintf(query, *product.ID),
 			}
-
 			request, _ := json.Marshal(graphRequest)
 
-			testResponse := &graphqlProductResponse{}
+			tokenString, err := services.GenerateTokenStringFromUser(contextUser, []byte(cfg.Server.HmacSecret))
+			Expect(err).To(BeNil())
 
+			testResponse := &graphqlProductResponse{}
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
-			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("Bearer %s", tokenString))
+			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("%s %s", middlewares.BearerPrefix, tokenString))
+
+			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, *contextUser.ID)
+			mockCerbos.EXPECT().IsAllowed(gomock.Any(), gomock.Any(), gomock.Any(), accesscontrol.READ).Return(true, nil)
+			sqlexpectations.ExpectProduct(mock, product)
 
 			code, err := runRequest(handler, httpRequest, testResponse)
 			Expect(err).To(BeNil())
@@ -150,8 +143,9 @@ var _ = Describe("Product Test", func() {
 		}`
 
 		It("Success", func() {
-			user := datagenerator.NewRandomUser()
 			product := datagenerator.NewRandomProduct()
+			contextUser := datagenerator.NewRandomUser()
+			role1 := datagenerator.NewRandomRole()
 
 			page := 2
 			pageSize := 10
@@ -160,30 +154,21 @@ var _ = Describe("Product Test", func() {
 				Search: product.ID,
 			}
 
-			sqlexpectations.ExpectProducts(mock, *user.ID, filter, page, pageSize, []models.Product{product})
-
-			expiresAt := time.Now().Add(time.Hour * 24)
-			token := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
-				"ID":        *user.ID,
-				"email":     *user.Email,
-				"firstName": *user.FirstName,
-				"lastName":  *user.LastName,
-				"expiresAt": expiresAt,
-			})
-
-			tokenString, err := token.SignedString([]byte(cfg.Server.HmacSecret))
-			Expect(err).To(BeNil())
-
 			graphRequest := graphqlRequest{
 				Query: fmt.Sprintf(query, pageSize, page, *product.ID),
 			}
-
 			request, _ := json.Marshal(graphRequest)
 
-			testResponse := &graphqlProductResponse{}
+			tokenString, err := services.GenerateTokenStringFromUser(contextUser, []byte(cfg.Server.HmacSecret))
+			Expect(err).To(BeNil())
 
+			testResponse := &graphqlProductResponse{}
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
-			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("Bearer %s", tokenString))
+			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("%s %s", middlewares.BearerPrefix, tokenString))
+
+			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, *contextUser.ID)
+			mockCerbos.EXPECT().IsAllowed(gomock.Any(), gomock.Any(), gomock.Any(), accesscontrol.READ).Return(true, nil)
+			sqlexpectations.ExpectProducts(mock, filter, page, pageSize, []models.Product{product})
 
 			code, err := runRequest(handler, httpRequest, testResponse)
 			Expect(err).To(BeNil())
@@ -212,34 +197,25 @@ var _ = Describe("Product Test", func() {
 		}`
 
 		It("Success", func() {
-			user := datagenerator.NewRandomUser()
+			contextUser := datagenerator.NewRandomUser()
 			product := datagenerator.NewRandomProduct()
-
-			expiresAt := time.Now().Add(time.Hour * 24)
-
-			sqlexpectations.CreateProduct(mock, *user.ID, product)
-
-			token := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
-				"ID":        *user.ID,
-				"email":     *user.Email,
-				"firstName": *user.FirstName,
-				"lastName":  *user.LastName,
-				"expiresAt": expiresAt,
-			})
-
-			tokenString, err := token.SignedString([]byte(cfg.Server.HmacSecret))
-			Expect(err).To(BeNil())
+			role1 := datagenerator.NewRandomRole()
 
 			graphRequest := graphqlRequest{
 				Query: fmt.Sprintf(query, *product.Title, *product.Description),
 			}
-
 			request, _ := json.Marshal(graphRequest)
 
-			testResponse := &graphqlProductResponse{}
+			tokenString, err := services.GenerateTokenStringFromUser(contextUser, []byte(cfg.Server.HmacSecret))
+			Expect(err).To(BeNil())
 
+			testResponse := &graphqlProductResponse{}
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
-			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("Bearer %s", tokenString))
+			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("%s %s", middlewares.BearerPrefix, tokenString))
+
+			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, *contextUser.ID)
+			mockCerbos.EXPECT().IsAllowed(gomock.Any(), gomock.Any(), gomock.Any(), accesscontrol.CREATE).Return(true, nil)
+			sqlexpectations.CreateProduct(mock, *contextUser.ID, product)
 
 			code, err := runRequest(handler, httpRequest, testResponse)
 			Expect(err).To(BeNil())
@@ -267,33 +243,25 @@ var _ = Describe("Product Test", func() {
 		}`
 
 		It("Success", func() {
-			user := datagenerator.NewRandomUser()
+			contextUser := datagenerator.NewRandomUser()
 			product := datagenerator.NewRandomProduct()
-
-			sqlexpectations.UpdateProduct(mock, *user.ID, product)
-
-			expiresAt := time.Now().Add(time.Hour * 24)
-			token := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
-				"ID":        *user.ID,
-				"email":     *user.Email,
-				"firstName": *user.FirstName,
-				"lastName":  *user.LastName,
-				"expiresAt": expiresAt,
-			})
-
-			tokenString, err := token.SignedString([]byte(cfg.Server.HmacSecret))
-			Expect(err).To(BeNil())
+			role1 := datagenerator.NewRandomRole()
 
 			graphRequest := graphqlRequest{
 				Query: fmt.Sprintf(query, *product.ID, *product.Title, *product.Description),
 			}
-
 			request, _ := json.Marshal(graphRequest)
 
-			testResponse := &graphqlProductResponse{}
+			tokenString, err := services.GenerateTokenStringFromUser(contextUser, []byte(cfg.Server.HmacSecret))
+			Expect(err).To(BeNil())
 
+			testResponse := &graphqlProductResponse{}
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
-			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("Bearer %s", tokenString))
+			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("%s %s", middlewares.BearerPrefix, tokenString))
+
+			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, *contextUser.ID)
+			mockCerbos.EXPECT().IsAllowed(gomock.Any(), gomock.Any(), gomock.Any(), accesscontrol.UPDATE).Return(true, nil)
+			sqlexpectations.UpdateProduct(mock, *contextUser.ID, product)
 
 			code, err := runRequest(handler, httpRequest, testResponse)
 			Expect(err).To(BeNil())
@@ -317,33 +285,25 @@ var _ = Describe("Product Test", func() {
 		}`
 
 		It("Success", func() {
-			user := datagenerator.NewRandomUser()
+			contextUser := datagenerator.NewRandomUser()
 			product := datagenerator.NewRandomProduct()
-
-			sqlexpectations.DeleteProduct(mock, *user.ID, product)
-
-			expiresAt := time.Now().Add(time.Hour * 24)
-			token := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
-				"ID":        *user.ID,
-				"email":     *user.Email,
-				"firstName": *user.FirstName,
-				"lastName":  *user.LastName,
-				"expiresAt": expiresAt,
-			})
-
-			tokenString, err := token.SignedString([]byte(cfg.Server.HmacSecret))
-			Expect(err).To(BeNil())
+			role1 := datagenerator.NewRandomRole()
 
 			graphRequest := graphqlRequest{
 				Query: fmt.Sprintf(query, *product.ID),
 			}
-
 			request, _ := json.Marshal(graphRequest)
 
-			testResponse := &graphqlProductResponse{}
+			tokenString, err := services.GenerateTokenStringFromUser(contextUser, []byte(cfg.Server.HmacSecret))
+			Expect(err).To(BeNil())
 
+			testResponse := &graphqlProductResponse{}
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
-			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("Bearer %s", tokenString))
+			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("%s %s", middlewares.BearerPrefix, tokenString))
+
+			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, *contextUser.ID)
+			mockCerbos.EXPECT().IsAllowed(gomock.Any(), gomock.Any(), gomock.Any(), accesscontrol.DELETE).Return(true, nil)
+			sqlexpectations.DeleteProduct(mock, product)
 
 			code, err := runRequest(handler, httpRequest, testResponse)
 			Expect(err).To(BeNil())
