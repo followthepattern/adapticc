@@ -2,13 +2,12 @@ package database
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"time"
 
-	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
-	"github.com/followthepattern/adapticc/pkg/repositories/database/sqlbuilder"
 	"github.com/followthepattern/adapticc/pkg/utils/pointers"
 
 	. "github.com/doug-martin/goqu/v9"
@@ -23,36 +22,18 @@ func (User) tableName() string {
 	return "usr.users"
 }
 
-func UserDependencyConstructor(cont *container.Container) (*User, error) {
-	db := New("postgres", cont.GetDB())
+func NewUser(ctx context.Context, database *sql.DB) User {
+	db := New("postgres", database)
 
-	if db == nil {
-		return nil, errors.New("db is null")
-	}
-
-	dependency := &User{
-		ctx: cont.GetContext(),
+	return User{
+		ctx: ctx,
 		db:  db,
 	}
-
-	return dependency, nil
 }
 
-func (repo User) Create(userID string, users []models.User) (err error) {
-	count, err := sqlbuilder.GetInsertWithPermissions(repo.db, "USER", userID)
-	if err != nil {
-		return err
-	}
-
-	if count == 0 {
-		return errors.New("there is no effective permission to create this resource")
-	}
-
-	active := false
-
+func (repo User) Create(users []models.User) (err error) {
 	for i := range users {
-		users[i].Userlog = setCreateUserlog(userID, time.Now())
-		users[i].Active = &active
+		users[i].Userlog.CreatedAt = pointers.ToPtr(time.Now())
 	}
 	_, err = repo.db.Insert(repo.tableName()).Rows(users).Executor().Exec()
 	return
@@ -67,6 +48,7 @@ func (repo User) GetByID(id string) (*models.User, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return &user, err
 }
 
@@ -82,7 +64,7 @@ func (repo User) GetByEmail(email string) (*models.User, error) {
 	return &user, err
 }
 
-func (repo User) Get(userID string, request models.UserListRequestParams) (*models.UserListResponse, error) {
+func (repo User) Get(request models.UserListRequestParams) (*models.UserListResponse, error) {
 	data := []models.User{}
 
 	query := repo.db.From(repo.tableName())
@@ -96,13 +78,6 @@ func (repo User) Get(userID string, request models.UserListRequestParams) (*mode
 				I("email").Like(pattern),
 			))
 	}
-
-	query = sqlbuilder.GetSelectWithPermissions(
-		query,
-		"USER",
-		I("users.id"),
-		userID,
-	)
 
 	count, err := query.Count()
 	if err != nil {
@@ -145,13 +120,6 @@ func (repo User) Update(userID string, user models.User) error {
 		Set(user).
 		Where(C("id").Eq(*user.ID))
 
-	query = sqlbuilder.GetUpdateWithPermissions(
-		query,
-		"USER",
-		I("users.id"),
-		userID,
-	)
-
 	_, err := query.Executor().Exec()
 	return err
 }
@@ -159,13 +127,6 @@ func (repo User) Update(userID string, user models.User) error {
 func (repo User) Delete(userID, id string) error {
 	query := repo.db.Delete(repo.tableName()).
 		Where(C("id").Eq(id))
-
-	query = sqlbuilder.GetDeleteWithPermissions(
-		query,
-		"USER",
-		I("usr.users.id"),
-		userID,
-	)
 
 	result, err := query.Executor().Exec()
 	if err != nil {

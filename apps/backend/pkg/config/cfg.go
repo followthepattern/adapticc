@@ -13,6 +13,7 @@ type Config struct {
 	Server  Server `mapstructure:"server"`
 	DB      DB     `mapstructure:"db"`
 	Mail    Mail   `mapstructure:"mail"`
+	Cerbos  Cerbos `mapstructure:"cerbos"`
 }
 
 func (cfg *Config) Validate() error {

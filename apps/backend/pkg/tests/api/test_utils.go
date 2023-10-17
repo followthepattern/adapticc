@@ -11,9 +11,12 @@ import (
 	"strings"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	internal "github.com/followthepattern/adapticc/pkg"
+	"github.com/followthepattern/adapticc/pkg/accesscontrol"
+	"github.com/followthepattern/adapticc/pkg/api"
+	"github.com/followthepattern/adapticc/pkg/api/graphql"
+	"github.com/followthepattern/adapticc/pkg/api/rest"
 	"github.com/followthepattern/adapticc/pkg/config"
-	"github.com/followthepattern/adapticc/pkg/container"
+	"github.com/followthepattern/adapticc/pkg/controllers"
 	"go.uber.org/zap"
 )
 
@@ -36,21 +39,16 @@ func runRequest(srv http.Handler, r *http.Request, data interface{}) (int, error
 	return response.Code, nil
 }
 
-func NewMockedContainer(ctx context.Context, db *sql.DB, cfg config.Config) (*container.Container, error) {
+func NewMockHandler(ctx context.Context, ac accesscontrol.AccessControl, db *sql.DB, cfg config.Config) http.Handler {
 	logger := zap.NewExample()
 
-	cont := container.New(
-		ctx,
-		cfg,
-		db,
-		logger)
+	ctrls := controllers.New(ctx, ac, db, cfg, logger)
 
-	err := internal.RegisterDependencies(cont)
-	if err != nil {
-		return nil, err
-	}
+	graphqlHandler := graphql.New(ctrls)
 
-	return cont, nil
+	restHandler := rest.New(ctrls)
+
+	return api.NewHttpApi(cfg, graphqlHandler, restHandler, logger)
 }
 
 var replaceEmptySpacesToSpace = regexp.MustCompile(`\s+`)

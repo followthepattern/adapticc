@@ -16,6 +16,13 @@ func NewRandomUser() models.User {
 		Email:     pointers.ToPtr(RandomEmail(8, 8)),
 		FirstName: pointers.ToPtr(String(8)),
 		LastName:  pointers.ToPtr(String(8)),
+		Active:    pointers.ToPtr(false),
+		Userlog: models.Userlog{
+			CreationUserID: pointers.ToPtr(uuid.New().String()),
+			UpdateUserID:   pointers.ToPtr(uuid.New().String()),
+			CreatedAt:      pointers.ToPtr(time.Now()),
+			UpdatedAt:      pointers.ToPtr(time.Now()),
+		},
 	}
 }
 

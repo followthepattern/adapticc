@@ -1,0 +1,35 @@
+apiVersion: api.cerbos.dev/v1
+resourcePolicy:
+  version: "default"
+  resource: "user"
+  rules:
+    - actions:
+        - read
+      effect: EFFECT_ALLOW
+      roles:
+        - user:viewer
+      
+    - actions:
+        - create
+      effect: EFFECT_ALLOW
+      roles:
+        - user:creator
+
+    - actions:
+        - create
+        - read
+        - update
+        - delete
+      effect: EFFECT_ALLOW
+      roles:
+        - user:editor
+   
+    - actions:
+        - read
+        - update
+        - delete
+      effect: EFFECT_ALLOW
+      roles: ["*"]
+      condition:
+        match:
+          expr: R.attr.creationId == P.id

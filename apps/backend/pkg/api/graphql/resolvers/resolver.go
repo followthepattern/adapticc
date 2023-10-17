@@ -1,9 +1,7 @@
 package resolvers
 
 import (
-	"errors"
-
-	"github.com/followthepattern/adapticc/pkg/container"
+	"github.com/followthepattern/adapticc/pkg/controllers"
 )
 
 type Resolver struct {
@@ -12,39 +10,36 @@ type Resolver struct {
 	authMutation AuthMutation
 }
 
-func ResolverDependencyConstructor(cont *container.Container) (*Resolver, error) {
-	uq, err := NewUserQuery(cont)
-	if err != nil {
-		return nil, err
-	}
-	if uq == nil {
-		return nil, errors.New("userQuery can't be nil")
-	}
+type ResolverConfig struct {
+	userController    controllers.User
+	authController    controllers.Auth
+	productController controllers.Product
+}
 
-	am, err := NewAuthMutation(cont)
-	if err != nil {
-		return nil, err
+func NewResolverConfig(
+	userController controllers.User,
+	authController controllers.Auth,
+	productController controllers.Product,
+) ResolverConfig {
+	return ResolverConfig{
+		userController:    userController,
+		authController:    authController,
+		productController: productController,
 	}
-	if am == nil {
-		return nil, errors.New("authMutation can't be nil")
-	}
+}
 
-	pq, err := NewProductQuery(cont)
-	if err != nil {
-		return nil, err
-	}
-
-	if pq == nil {
-		return nil, errors.New("productQuery can't be nil")
-	}
+func New(rc ResolverConfig) Resolver {
+	uq := NewUserQuery(rc.userController)
+	am := NewAuthMutation(rc.authController)
+	pq := NewProductQuery(rc.productController)
 
 	resolver := Resolver{
-		users:        *uq,
-		products:     *pq,
-		authMutation: *am,
+		users:        uq,
+		products:     pq,
+		authMutation: am,
 	}
 
-	return &resolver, nil
+	return resolver
 }
 
 func (r Resolver) Users() (UserResolver, error) {

@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/followthepattern/adapticc/pkg/config"
-	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/repositories/database"
 	"github.com/followthepattern/adapticc/pkg/utils"
@@ -20,24 +19,15 @@ const WRONG_EMAIL_OR_PASSWORD = "WRONG_EMAIL_OR_PASSWORD"
 const EMAIL_IS_ALREADY_IN_USE_PATTERN = "%v is already in use, please try a different email address"
 
 type Auth struct {
-	repository *database.Auth
-	ctx        context.Context
+	repository database.Auth
 	cfg        config.Config
 }
 
-func AuthDependencyConstructor(cont *container.Container) (*Auth, error) {
-	repository, err := container.Resolve[database.Auth](cont)
-	if err != nil {
-		return nil, err
-	}
-
-	dependency := Auth{
-		ctx:        cont.GetContext(),
-		cfg:        cont.GetConfig(),
+func NewAuth(cfg config.Config, repository database.Auth) Auth {
+	return Auth{
+		cfg:        cfg,
 		repository: repository,
 	}
-
-	return &dependency, nil
 }
 
 func (service Auth) Login(ctx context.Context, email string, password string) (*models.LoginResponse, error) {
@@ -118,4 +108,22 @@ func (service Auth) Register(ctx context.Context, register models.RegisterReques
 		FirstName: creationUser.FirstName,
 		LastName:  creationUser.LastName,
 	}, nil
+}
+
+func GenerateTokenStringFromUser(model models.User, secret []byte) (string, error) {
+	expiresAt := time.Now().Add(time.Hour * 24)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
+		"ID":        *model.ID,
+		"email":     *model.Email,
+		"firstName": *model.FirstName,
+		"lastName":  *model.LastName,
+		"expiresAt": expiresAt,
+	})
+
+	tokenString, err := token.SignedString(secret)
+	if err != nil {
+		return "", err
+	}
+
+	return tokenString, nil
 }

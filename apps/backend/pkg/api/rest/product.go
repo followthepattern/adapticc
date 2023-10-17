@@ -4,27 +4,18 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/controllers"
 	"github.com/followthepattern/adapticc/pkg/models"
-	"go.uber.org/zap"
 )
 
 type Product struct {
-	product *controllers.Product
-	logger  *zap.Logger
+	product controllers.Product
 }
 
-func newProduct(cont *container.Container) (*Product, error) {
-	service, err := container.Resolve[controllers.Product](cont)
-	if err != nil {
-		return nil, err
+func NewProduct(ctrl controllers.Product) Product {
+	return Product{
+		product: ctrl,
 	}
-
-	return &Product{
-		product: service,
-		logger:  cont.GetLogger(),
-	}, nil
 }
 
 func (service Product) Create(w http.ResponseWriter, r *http.Request) {

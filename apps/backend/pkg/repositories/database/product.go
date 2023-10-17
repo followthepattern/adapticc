@@ -2,53 +2,37 @@ package database
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"time"
 
-	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
-	"github.com/followthepattern/adapticc/pkg/repositories/database/sqlbuilder"
 	"github.com/followthepattern/adapticc/pkg/utils/pointers"
 
 	. "github.com/doug-martin/goqu/v9"
 	"github.com/doug-martin/goqu/v9/exp"
 )
 
-const productTable = "usr.products"
+var productTable = S("usr").Table("products")
 
 type Product struct {
 	db  *Database
 	ctx context.Context
 }
 
-func ProductDependencyConstructor(cont *container.Container) (*Product, error) {
-	db := New("postgres", cont.GetDB())
+func NewProduct(ctx context.Context, database *sql.DB) Product {
+	db := New("postgres", database)
 
-	if db == nil {
-		return nil, errors.New("db is null")
-	}
-
-	dependency := &Product{
-		ctx: cont.GetContext(),
+	return Product{
+		ctx: ctx,
 		db:  db,
 	}
-
-	return dependency, nil
 }
 
-func (repo Product) Create(userID string, products []models.Product) (err error) {
-	count, err := sqlbuilder.GetInsertWithPermissions(repo.db, "PRODUCT", userID)
-	if err != nil {
-		return err
-	}
-
-	if count == 0 {
-		return errors.New("there is no effective permission to create this resource")
-	}
-
+func (repo Product) Create(products []models.Product) (err error) {
 	for i, _ := range products {
-		products[i].Userlog = setCreateUserlog(userID, time.Now())
+		products[i].Userlog.CreatedAt = pointers.ToPtr(time.Now())
 	}
 
 	insertion := repo.db.Insert(productTable)
@@ -57,19 +41,12 @@ func (repo Product) Create(userID string, products []models.Product) (err error)
 	return
 }
 
-func (repo Product) GetByID(userID string, id string) (*models.Product, error) {
+func (repo Product) GetByID(id string) (*models.Product, error) {
 	product := models.Product{}
 
 	query := repo.db.From(productTable).
 		Where(Ex{
 			"id": id})
-
-	query = sqlbuilder.GetSelectWithPermissions(
-		query,
-		"PRODUCT",
-		I("products.id"),
-		userID,
-	)
 
 	_, err := query.ScanStruct(&product)
 	if err != nil {
@@ -79,7 +56,7 @@ func (repo Product) GetByID(userID string, id string) (*models.Product, error) {
 	return &product, nil
 }
 
-func (repo Product) Get(userID string, request models.ProductListRequestParams) (*models.ProductListResponse, error) {
+func (repo Product) Get(request models.ProductListRequestParams) (*models.ProductListResponse, error) {
 	data := []models.Product{}
 
 	query := repo.db.From(productTable)
@@ -93,16 +70,7 @@ func (repo Product) Get(userID string, request models.ProductListRequestParams) 
 			))
 	}
 
-	query = sqlbuilder.GetSelectWithPermissions(
-		query,
-		"PRODUCT",
-		I("products.id"),
-		userID,
-	)
-
-	var count int64
-
-	_, err := sqlbuilder.DistinctCount(query, I("products.id")).ScanVal(&count)
+	count, err := query.Count()
 	if err != nil {
 		return nil, err
 	}
@@ -133,7 +101,7 @@ func (repo Product) Get(userID string, request models.ProductListRequestParams) 
 		query = query.Order(orderExpressions...)
 	}
 
-	err = query.Distinct().ScanStructs(&data)
+	err = query.ScanStructs(&data)
 	if err != nil {
 		return nil, err
 	}
@@ -151,39 +119,34 @@ func (repo Product) Get(userID string, request models.ProductListRequestParams) 
 func (repo Product) Update(userID string, model models.Product) error {
 	model.Userlog = setUpdateUserlog(userID, time.Now())
 
-	query := repo.db.Update(productTable).
-		Set(model)
-
-	query = sqlbuilder.GetUpdateWithPermissions(
-		query,
-		"PRODUCT",
-		I("products.id"),
-		userID,
-	)
-
-	query = query.Where(I("id").Eq(*model.ID))
-
-	_, err := query.
+	_, err := repo.db.Update(productTable).
+		Set(model).
+		Where(I("id").Eq(*model.ID)).
 		Executor().
 		Exec()
+
 	return err
 }
 
-func (repo Product) Delete(userID, id string) error {
-	query := repo.db.Delete(productTable)
-
-	query = sqlbuilder.GetDeleteWithPermissions(
-		query,
-		"PRODUCT",
-		I("usr.products.id"),
-		userID,
-	)
-
-	query = query.Where(C("id").Eq(id))
-
-	_, err := query.
+func (repo Product) Delete(id string) error {
+	res, err := repo.db.
+		Delete(productTable).
+		Where(C("id").Eq(id)).
 		Executor().
 		Exec()
+
+	if err != nil {
+		return err
+	}
+
+	rows, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows < 1 {
+		return errors.New("no rows been deleted")
+	}
 
 	return err
 }
