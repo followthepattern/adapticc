@@ -1,0 +1,23 @@
+---
+server:
+  httpListenAddr: ":3592"
+  grpcListenAddr: ":3593"
+  apiExplorerEnabled: false
+  adminAPI:
+    adminCredentials: # AdminCredentials defines the admin user credentials.
+      passwordHash: JDJhJDEyJEdWVy8zSHp3ZHZkdkh2M1VYVFAvTi52MFB5MUY2V0dZdnRzVzQuRVhrdDMzVXVRMHBRV2F1
+      username: cerbos 
+    enabled: true
+
+engine:
+  defaultPolicyVersion: "default"
+
+auxData:
+  jwt:
+    disableVerification: true
+
+storage:
+  driver: "disk"
+  disk:
+    directory: "/data"
+    watchForChanges: true

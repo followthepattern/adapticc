@@ -7,7 +7,7 @@ import (
 	"github.com/followthepattern/adapticc/pkg/models"
 )
 
-func ExpectProduct(mock sqlmock.Sqlmock, userID string, result models.Product) {
+func ExpectProduct(mock sqlmock.Sqlmock, result models.Product) {
 	sqlQuery := fmt.Sprintf(
 		`SELECT
 			"created_at",
@@ -19,84 +19,23 @@ func ExpectProduct(mock sqlmock.Sqlmock, userID string, result models.Product) {
 			"updated_at"
 		FROM
 			"usr"."products"
-		INNER JOIN (SELECT
-				COALESCE(rp.resource_id, up.resource_id) AS "resource_id",
-				COALESCE(rp.permission, 0) | COALESCE(up.permission, 0) AS "permissions"
-			FROM
-				(SELECT
-					"rrp"."resource_id",
-					"rrp"."permission"
-				FROM
-					"usr"."user_role" AS "ur"
-				LEFT JOIN "usr"."roles" AS "r" ON
-					("ur"."role_id" = "r"."id")
-				LEFT JOIN "usr"."role_resource_permissions" AS "rrp" ON
-					("rrp"."role_id" = "ur"."role_id")
-				WHERE
-					(("rrp"."permission" IS NOT NULL)
-						AND ("ur"."user_id" = '%s'))) AS "rp"
-			FULL JOIN (SELECT
-					"urp"."resource_id",
-					"urp"."permission"
-				FROM
-					"usr"."user_resource_permissions" AS "urp"
-				WHERE
-					(("urp"."permission" IS NOT NULL)
-						AND ("urp"."user_id" = '%s'))) AS "up" ON
-				("rp"."resource_id" = "up"."resource_id")) AS "merged_resource_permissions" ON
-			(("merged_resource_permissions"."resource_id" = "products"."id")
-				OR ("merged_resource_permissions"."resource_id" = 'PRODUCT'))
 		WHERE
-			(("id" = '%s')
-				AND (merged_resource_permissions.permissions & 2 > 0))
+			("id" = '%s')
 		LIMIT 1`,
-		userID,
-		userID,
 		*result.ID)
 
 	mock.ExpectQuery(sqlQuery).
 		WillReturnRows(ModelToSQLMockRows(result))
 }
 
-func ExpectProducts(mock sqlmock.Sqlmock, userID string, filter models.ListFilter, page int, pageSize int, result []models.Product) {
+func ExpectProducts(mock sqlmock.Sqlmock, filter models.ListFilter, page int, pageSize int, result []models.Product) {
 	countQuery := fmt.Sprintf(`
 	SELECT
-		COUNT(DISTINCT "products"."id")
+		COUNT(\*) AS "count"
 	FROM
 		"usr"."products"
-	INNER JOIN (SELECT
-			COALESCE(rp.resource_id, up.resource_id) AS "resource_id",
-			COALESCE(rp.permission, 0) | COALESCE(up.permission, 0) AS "permissions"
-		FROM
-			(SELECT
-				"rrp"."resource_id",
-				"rrp"."permission"
-			FROM
-				"usr"."user_role" AS "ur"
-			LEFT JOIN "usr"."roles" AS "r" ON
-				("ur"."role_id" = "r"."id")
-			LEFT JOIN "usr"."role_resource_permissions" AS "rrp" ON
-				("rrp"."role_id" = "ur"."role_id")
-			WHERE
-				(("rrp"."permission" IS NOT NULL)
-					AND ("ur"."user_id" = '%s'))) AS "rp"
-		FULL JOIN (SELECT
-				"urp"."resource_id",
-				"urp"."permission"
-			FROM
-				"usr"."user_resource_permissions" AS "urp"
-			WHERE
-				(("urp"."permission" IS NOT NULL)
-					AND ("urp"."user_id" = '%s'))) AS "up" ON
-			("rp"."resource_id" = "up"."resource_id")) AS "merged_resource_permissions" ON
-		(("merged_resource_permissions"."resource_id" = "products"."id")
-			OR ("merged_resource_permissions"."resource_id" = 'PRODUCT'))
-	WHERE ((("id" LIKE '%%%s%%') OR
-			("title" LIKE '%%%s%%')) AND
-		(merged_resource_permissions.permissions & 2 > 0))
+	WHERE (("id" LIKE '%%%s%%') OR ("title" LIKE '%%%s%%'))
 	LIMIT 1`,
-		userID,
-		userID,
 		*filter.Search,
 		*filter.Search,
 	)
@@ -110,7 +49,7 @@ func ExpectProducts(mock sqlmock.Sqlmock, userID string, filter models.ListFilte
 	}
 
 	sqlQuery := fmt.Sprintf(`
-	SELECT DISTINCT
+	SELECT
 		"created_at",
 		"creation_user_id",
 		"description",
@@ -118,42 +57,9 @@ func ExpectProducts(mock sqlmock.Sqlmock, userID string, filter models.ListFilte
 		"title",
 		"update_user_id",
 		"updated_at"
-	FROM
-		"usr"."products"
-	INNER JOIN (SELECT
-			COALESCE(rp.resource_id, up.resource_id) AS "resource_id",
-			COALESCE(rp.permission, 0) | COALESCE(up.permission, 0) AS "permissions"
-		FROM
-			(SELECT
-				"rrp"."resource_id",
-				"rrp"."permission"
-			FROM
-				"usr"."user_role" AS "ur"
-			LEFT JOIN "usr"."roles" AS "r" ON
-				("ur"."role_id" = "r"."id")
-			LEFT JOIN "usr"."role_resource_permissions" AS "rrp" ON
-				("rrp"."role_id" = "ur"."role_id")
-			WHERE
-				(("rrp"."permission" IS NOT NULL)
-					AND ("ur"."user_id" = '%s'))) AS "rp"
-		FULL JOIN (SELECT
-				"urp"."resource_id",
-				"urp"."permission"
-			FROM
-				"usr"."user_resource_permissions" AS "urp"
-			WHERE
-				(("urp"."permission" IS NOT NULL)
-					AND ("urp"."user_id" = '%s'))) AS "up" ON
-			("rp"."resource_id" = "up"."resource_id")) AS "merged_resource_permissions" ON
-		(("merged_resource_permissions"."resource_id" = "products"."id")
-			OR ("merged_resource_permissions"."resource_id" = 'PRODUCT'))
-	WHERE 
-		((("id" LIKE '%%%s%%') OR
-			("title" LIKE '%%%s%%')) AND
-		(merged_resource_permissions.permissions & 2 > 0))
-	LIMIT %v OFFSET %v`,
-		userID,
-		userID,
+	FROM "usr"."products"
+	WHERE (("id" LIKE '%%%s%%') OR ("title" LIKE '%%%s%%'))
+	LIMIT %d OFFSET %d`,
 		*filter.Search,
 		*filter.Search,
 		page*pageSize,
@@ -165,46 +71,16 @@ func ExpectProducts(mock sqlmock.Sqlmock, userID string, filter models.ListFilte
 }
 
 func CreateProduct(mock sqlmock.Sqlmock, userID string, product models.Product) {
-	countQuery := fmt.Sprintf(`
-	SELECT
-		COUNT(\*) AS "count"
-	FROM (SELECT
-			COALESCE(rp.permission, 0) | COALESCE(up.permission, 0) AS "permissions"
-		FROM
-			(SELECT
-				"rrp"."resource_id",
-				"rrp"."permission"
-			FROM
-				"usr"."user_role" AS "ur"
-			LEFT JOIN "usr"."roles" AS "r" ON
-				("ur"."role_id" = "r"."id")
-			LEFT JOIN "usr"."role_resource_permissions" AS "rrp" ON
-				("rrp"."role_id" = "ur"."role_id")
-			WHERE
-				(("rrp"."permission" IS NOT NULL)
-					AND ("rrp"."resource_id" = 'PRODUCT')
-						AND ("ur"."user_id" = '%s'))) AS "rp"
-		FULL JOIN (SELECT
-				"urp"."resource_id",
-				"urp"."permission"
-			FROM
-				"usr"."user_resource_permissions" AS "urp"
-			WHERE
-				(("urp"."permission" IS NOT NULL)
-					AND ("urp"."user_id" = '%s')
-						AND ("urp"."resource_id" = 'PRODUCT'))) AS "up" ON
-			("rp"."resource_id" = "up"."resource_id")) AS "res"
-	WHERE
-	(res.permissions & 1 > 0)
-	LIMIT 1`,
-		userID,
-		userID)
-
-	mock.ExpectQuery(countQuery).
-		WillReturnRows(sqlmock.NewRows([]string{"count"}).
-			AddRow(1))
-
-	sqlQuery := fmt.Sprintf(`INSERT INTO "usr"."products" ("created_at", "creation_user_id", "description", "id", "title", "update_user_id", "updated_at") VALUES ('.*', '%s', '%s', '.*', '%s', NULL, NULL)`,
+	sqlQuery := fmt.Sprintf(`
+		INSERT INTO "usr"."products"
+			("created_at",
+			"creation_user_id",
+			"description",
+			"id",
+			"title",
+			"update_user_id",
+			"updated_at")
+		VALUES ('.*', '%s', '%s', '.*', '%s', NULL, NULL)`,
 		userID,
 		*product.Description,
 		*product.Title,
@@ -219,46 +95,10 @@ func UpdateProduct(mock sqlmock.Sqlmock, userID string, product models.Product) 
 	UPDATE
 		"usr"."products"
 	SET
-		"description"='%s',"id"='%s',"title"='%s',"update_user_id"='%s',"updated_at"='.*'
-	FROM
-		(SELECT
-			COALESCE(rp.resource_id,
-			up.resource_id) AS "resource_id",
-			COALESCE(rp.permission,
-			0) | COALESCE(up.permission,
-			0) AS "permissions"
-		FROM
-			(SELECT
-				"rrp"."resource_id",
-				"rrp"."permission"
-			FROM
-				"usr"."user_role" AS "ur"
-			LEFT JOIN "usr"."roles" AS "r" ON
-				("ur"."role_id" = "r"."id")
-			LEFT JOIN "usr"."role_resource_permissions" AS "rrp" ON
-				("rrp"."role_id" = "ur"."role_id")
-			WHERE
-				(("rrp"."permission" IS NOT NULL)
-					AND ("ur"."user_id" = '%s'))) AS "rp"
-		FULL JOIN (SELECT
-				"urp"."resource_id",
-				"urp"."permission"
-			FROM
-				"usr"."user_resource_permissions" AS "urp"
-			WHERE
-				(("urp"."permission" IS NOT NULL)
-					AND ("urp"."user_id" = '%s'))) AS "up" ON
-			("rp"."resource_id" = "up"."resource_id")) AS "merged_resource_permissions"
-	WHERE
-		((merged_resource_permissions.permissions & 4 > 0)
-			AND (("merged_resource_permissions"."resource_id" = "products"."id")
-				OR ("merged_resource_permissions"."resource_id" = 'PRODUCT'))
-				AND ("id" = '%s'))`,
+		"description"='%s',"id"='%s',"title"='%s',"update_user_id"='%s',"updated_at"='.*' WHERE ("id" = '%s')`,
 		*product.Description,
 		*product.ID,
 		*product.Title,
-		userID,
-		userID,
 		userID,
 		*product.ID)
 
@@ -266,50 +106,8 @@ func UpdateProduct(mock sqlmock.Sqlmock, userID string, product models.Product) 
 		WillReturnResult(sqlmock.NewResult(1, 1))
 }
 
-func DeleteProduct(mock sqlmock.Sqlmock, userID string, product models.Product) {
-	sqlQuery := fmt.Sprintf(`
-	DELETE FROM
-		"usr"."products"
-	WHERE
-		(("id" IN (SELECT
-			"usr"."products"."id"
-		FROM
-			"usr"."products"
-		INNER JOIN (SELECT
-				COALESCE(rp.resource_id,
-				up.resource_id) AS "resource_id",
-				COALESCE(rp.permission,
-				0) | COALESCE(up.permission,
-				0) AS "permissions"
-			FROM
-				(SELECT
-					"rrp"."resource_id",
-					"rrp"."permission"
-				FROM
-					"usr"."user_role" AS "ur"
-				LEFT JOIN "usr"."roles" AS "r" ON
-					("ur"."role_id" = "r"."id")
-				LEFT JOIN "usr"."role_resource_permissions" AS "rrp" ON
-					("rrp"."role_id" = "ur"."role_id")
-				WHERE
-					(("rrp"."permission" IS NOT NULL)
-						AND ("ur"."user_id" = '%s'))) AS "rp"
-			FULL JOIN (SELECT
-					"urp"."resource_id",
-					"urp"."permission"
-				FROM
-					"usr"."user_resource_permissions" AS "urp"
-				WHERE
-					(("urp"."permission" IS NOT NULL)
-						AND ("urp"."user_id" = '%s'))) AS "up" ON
-				("rp"."resource_id" = "up"."resource_id")) AS "merged_resource_permissions" ON
-			(("merged_resource_permissions"."resource_id" = "usr"."products"."id")
-				OR ("merged_resource_permissions"."resource_id" = 'PRODUCT'))
-		WHERE
-			(merged_resource_permissions.permissions & 8 > 0)))
-			AND ("id" = '%s'))`,
-		userID,
-		userID,
+func DeleteProduct(mock sqlmock.Sqlmock, product models.Product) {
+	sqlQuery := fmt.Sprintf(`DELETE FROM "usr"."products" WHERE ("id" = '%s')`,
 		*product.ID)
 
 	mock.ExpectExec(sqlQuery).

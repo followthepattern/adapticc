@@ -3,26 +3,18 @@ package resolvers
 import (
 	"context"
 
-	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/controllers"
 	"github.com/followthepattern/adapticc/pkg/models"
 )
 
 type AuthMutation struct {
-	auth *controllers.Auth
-	cont *container.Container
+	auth controllers.Auth
 }
 
-func NewAuthMutation(cont *container.Container) (*AuthMutation, error) {
-	ctrl, err := container.Resolve[controllers.Auth](cont)
-	if err != nil {
-		return nil, err
-	}
-
-	return &AuthMutation{
-		cont: cont,
+func NewAuthMutation(ctrl controllers.Auth) AuthMutation {
+	return AuthMutation{
 		auth: ctrl,
-	}, nil
+	}
 }
 
 func (r AuthMutation) Login(ctx context.Context, args struct {

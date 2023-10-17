@@ -10,6 +10,7 @@ type User struct {
 	FirstName *string `db:"first_name"`
 	LastName  *string `db:"last_name"`
 	Active    *bool   `db:"active" goqu:"skipupdate"`
+	Roles     []Role  `db:"-"`
 	Userlog
 }
 

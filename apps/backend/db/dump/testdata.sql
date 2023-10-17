@@ -45,45 +45,18 @@ CREATE TABLE usr.products (
 ALTER TABLE usr.products OWNER TO adapticcuser;
 
 --
--- TOC entry 215 (class 1259 OID 16386)
--- Name: role_resource_permissions; Type: TABLE; Schema: usr; Owner: adapticcuser
---
-
-CREATE TABLE usr.role_resource_permissions (
-    role_id character varying NOT NULL,
-    resource_id character varying NOT NULL,
-    permission integer NOT NULL
-);
-
-
-ALTER TABLE usr.role_resource_permissions OWNER TO adapticcuser;
-
---
 -- TOC entry 216 (class 1259 OID 16391)
 -- Name: roles; Type: TABLE; Schema: usr; Owner: adapticcuser
 --
 
 CREATE TABLE usr.roles (
     id character varying,
+    code character varying,
     name character varying
 );
 
 
 ALTER TABLE usr.roles OWNER TO adapticcuser;
-
---
--- TOC entry 217 (class 1259 OID 16396)
--- Name: user_resource_permissions; Type: TABLE; Schema: usr; Owner: adapticcuser
---
-
-CREATE TABLE usr.user_resource_permissions (
-    user_id character varying NOT NULL,
-    resource_id character varying NOT NULL,
-    permission integer NOT NULL
-);
-
-
-ALTER TABLE usr.user_resource_permissions OWNER TO adapticcuser;
 
 --
 -- TOC entry 218 (class 1259 OID 16401)
@@ -147,19 +120,6 @@ INSERT INTO usr.products VALUES ('0ecdbc3f-ee4e-42f6-831a-217e54b65722', 'Test P
 INSERT INTO usr.products VALUES ('3d0cd537-2de1-4474-9ef2-a0d4581dd407', 'Test Product 36', 'Product Description test 3', '613254df-c779-479c-9d76-b8036e342979', NULL, '2023-07-28 13:23:03.273735', NULL);
 
 
---
--- TOC entry 3347 (class 0 OID 16386)
--- Dependencies: 215
--- Data for Name: role_resource_permissions; Type: TABLE DATA; Schema: usr; Owner: adapticcuser
---
-
-INSERT INTO usr.role_resource_permissions VALUES ('9606f479-a600-4b71-8042-1eddedb448e', 'PRODUCT', 2);
-INSERT INTO usr.role_resource_permissions VALUES ('f5d76752-34a7-41d3-b507-7e0b429574c7', 'PRODUCT', 14);
-INSERT INTO usr.role_resource_permissions VALUES ('f3de1ecb-1e43-4266-ac36-a725bf7b587a', 'PRODUCT', 1);
-INSERT INTO usr.role_resource_permissions VALUES ('0b83bed6-a583-4f27-b844-1610ed21c4ee', 'USER', 14);
-INSERT INTO usr.role_resource_permissions VALUES ('7ee5f80b-67e7-48f8-8d78-41b0e6f01f97', 'USER', 2);
-INSERT INTO usr.role_resource_permissions VALUES ('ad450c24-0e23-46cd-931c-9476d5fcc4d6', 'USER', 1);
-
 
 --
 -- TOC entry 3348 (class 0 OID 16391)
@@ -167,21 +127,9 @@ INSERT INTO usr.role_resource_permissions VALUES ('ad450c24-0e23-46cd-931c-9476d
 -- Data for Name: roles; Type: TABLE DATA; Schema: usr; Owner: adapticcuser
 --
 
-INSERT INTO usr.roles VALUES ('f3de1ecb-1e43-4266-ac36-a725bf7b587a', 'Product Creator');
-INSERT INTO usr.roles VALUES ('9606f479-a600-4b71-8042-1eddedb448e9', 'Product Reader');
-INSERT INTO usr.roles VALUES ('f5d76752-34a7-41d3-b507-7e0b429574c7', 'Product Editor');
-INSERT INTO usr.roles VALUES ('ad450c24-0e23-46cd-931c-9476d5fcc4d6', 'User Creator');
-INSERT INTO usr.roles VALUES ('7ee5f80b-67e7-48f8-8d78-41b0e6f01f97', 'User Reader');
-INSERT INTO usr.roles VALUES ('0b83bed6-a583-4f27-b844-1610ed21c4ee', 'User Editor');
-
-
---
--- TOC entry 3349 (class 0 OID 16396)
--- Dependencies: 217
--- Data for Name: user_resource_permissions; Type: TABLE DATA; Schema: usr; Owner: adapticcuser
---
-
-
+INSERT INTO usr.roles VALUES ('57010e91-b768-49ca-8cac-e681f15ccc0f', 'product:editor', 'Product Editor');
+INSERT INTO usr.roles VALUES ('f55b268a-9940-4d61-99d9-47a6816e1390', 'product:viewer', 'Product Viewer');
+INSERT INTO usr.roles VALUES ('3496e6e7-b56e-4595-9a73-94f7c6ad2bc3', 'user:editor', 'User Editor');
 
 --
 -- TOC entry 3350 (class 0 OID 16401)
@@ -189,12 +137,9 @@ INSERT INTO usr.roles VALUES ('0b83bed6-a583-4f27-b844-1610ed21c4ee', 'User Edit
 -- Data for Name: user_role; Type: TABLE DATA; Schema: usr; Owner: adapticcuser
 --
 
-INSERT INTO usr.user_role VALUES ('8f9b1e8f-d496-4804-942b-5ea29050370b', '7ee5f80b-67e7-48f8-8d78-41b0e6f01f97');
-INSERT INTO usr.user_role VALUES ('613254df-c779-479c-9d76-b8036e342979', '0b83bed6-a583-4f27-b844-1610ed21c4ee');
-INSERT INTO usr.user_role VALUES ('613254df-c779-479c-9d76-b8036e342979', 'ad450c24-0e23-46cd-931c-9476d5fcc4d6');
-INSERT INTO usr.user_role VALUES ('8f9b1e8f-d496-4804-942b-5ea29050370b', '9606f479-a600-4b71-8042-1eddedb448e');
-INSERT INTO usr.user_role VALUES ('613254df-c779-479c-9d76-b8036e342979', 'f5d76752-34a7-41d3-b507-7e0b429574c7');
-INSERT INTO usr.user_role VALUES ('613254df-c779-479c-9d76-b8036e342979', 'f3de1ecb-1e43-4266-ac36-a725bf7b587a');
+INSERT INTO usr.user_role VALUES ('8f9b1e8f-d496-4804-942b-5ea29050370b', 'f55b268a-9940-4d61-99d9-47a6816e1390');
+INSERT INTO usr.user_role VALUES ('613254df-c779-479c-9d76-b8036e342979', '57010e91-b768-49ca-8cac-e681f15ccc0f');
+INSERT INTO usr.user_role VALUES ('613254df-c779-479c-9d76-b8036e342979', '3496e6e7-b56e-4595-9a73-94f7c6ad2bc3');
 
 
 --
@@ -248,4 +193,3 @@ ALTER TABLE ONLY usr.users
 --
 -- PostgreSQL database dump complete
 --
-

@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/followthepattern/adapticc/pkg/config"
-	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/utils"
 	"github.com/golang-jwt/jwt/v4"
@@ -19,10 +18,10 @@ type JWT struct {
 	cfg    config.Config
 }
 
-func NewJWT(cont *container.Container) JWT {
+func NewJWT(logger *zap.Logger, cfg config.Config) JWT {
 	result := JWT{
-		logger: cont.GetLogger(),
-		cfg:    cont.GetConfig(),
+		logger: logger,
+		cfg:    cfg,
 	}
 	return result
 }

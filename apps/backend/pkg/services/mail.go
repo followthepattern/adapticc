@@ -1,34 +1,23 @@
 package services
 
 import (
-	"context"
 	"net/smtp"
 
 	"github.com/followthepattern/adapticc/pkg/config"
-	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/utils"
 )
 
 type Mail struct {
 	cfg   config.Mail
-	ctx   context.Context
 	email utils.Email
 }
 
-func MailDependencyConstructor(cont *container.Container) (*Mail, error) {
-	config := cont.GetConfig().Mail
-
-	if err := config.Validate(); err != nil {
-		return nil, err
-	}
-
-	dependency := Mail{
-		ctx:   cont.GetContext(),
+func NewMail(cfg config.Mail) Mail {
+	return Mail{
+		cfg:   cfg,
 		email: utils.NewEmailWrapper(),
 	}
-
-	return &dependency, nil
 }
 
 func (service Mail) SendMail(mail models.Mail) error {

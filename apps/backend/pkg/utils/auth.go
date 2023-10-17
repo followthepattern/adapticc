@@ -4,7 +4,9 @@ import (
 	"context"
 	"crypto/sha512"
 	"encoding/hex"
+	"errors"
 
+	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/google/uuid"
 )
 
@@ -41,4 +43,19 @@ func GetModelFromContext[T any](ctx context.Context, ctxKey ContextKey) *T {
 	}
 
 	return &model
+}
+
+func GetUserContext(ctx context.Context) (models.User, error) {
+	obj := ctx.Value(CtxUserKey)
+
+	model, ok := obj.(models.User)
+	if !ok {
+		return models.User{}, errors.New("invalid user context")
+	}
+
+	if model.IsDefault() {
+		return models.User{}, errors.New("invalid user context")
+	}
+
+	return model, nil
 }

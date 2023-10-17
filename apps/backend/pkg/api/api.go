@@ -1,20 +1,23 @@
 package api
 
 import (
-	"github.com/followthepattern/adapticc/pkg/api/graphql"
+	"net/http"
+
 	"github.com/followthepattern/adapticc/pkg/api/middlewares"
-	"github.com/followthepattern/adapticc/pkg/api/rest"
-	"github.com/followthepattern/adapticc/pkg/container"
+	"github.com/followthepattern/adapticc/pkg/config"
+	"go.uber.org/zap"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 )
 
-func GetRouter(cont *container.Container) (*chi.Mux, error) {
+func NewHttpApi(cfg config.Config,
+	graphqlHandler http.Handler,
+	restHandler http.Handler,
+	logger *zap.Logger,
+) *chi.Mux {
 	r := chi.NewRouter()
-
-	cfg := cont.GetConfig()
 
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"*"},
@@ -30,23 +33,14 @@ func GetRouter(cont *container.Container) (*chi.Mux, error) {
 	r.Use(middleware.Recoverer)
 	r.Use(middlewares.Heartbeat("/healthcheck", cfg.Version))
 
-	middlewares.AddMiddlewareLogger(r, cont.GetLogger())
+	middlewares.AddMiddlewareLogger(r, logger)
 
-	authMiddleware := middlewares.NewJWT(cont)
-
-	graphqlHandler, err := graphql.NewHandler(cont)
-	if err != nil {
-		return nil, err
-	}
-	restHandler, err := rest.NewHandler(cont)
-	if err != nil {
-		return nil, err
-	}
+	authMiddleware := middlewares.NewJWT(logger, cfg)
 
 	r.Route("/", func(r chi.Router) {
 		r.With(authMiddleware.Authenticate).Post("/graphql", graphqlHandler.ServeHTTP)
 		r.With(authMiddleware.Authenticate).Mount("/", restHandler)
 	})
 
-	return r, nil
+	return r
 }

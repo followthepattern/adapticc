@@ -8,10 +8,12 @@ import (
 	"os"
 	"os/signal"
 
-	internal "github.com/followthepattern/adapticc/pkg"
+	"github.com/followthepattern/adapticc/pkg/accesscontrol"
 	"github.com/followthepattern/adapticc/pkg/api"
+	"github.com/followthepattern/adapticc/pkg/api/graphql"
+	"github.com/followthepattern/adapticc/pkg/api/rest"
 	"github.com/followthepattern/adapticc/pkg/config"
-	"github.com/followthepattern/adapticc/pkg/container"
+	"github.com/followthepattern/adapticc/pkg/controllers"
 	"github.com/followthepattern/adapticc/pkg/hostserver"
 
 	_ "github.com/lib/pq"
@@ -40,24 +42,21 @@ func main() {
 
 	ctx := context.Background()
 
-	cont := container.New(
-		ctx,
-		*cfg,
-		db,
-		logger)
-
-	err = internal.RegisterDependencies(cont)
+	cerbosClient, err := accesscontrol.New(cfg.Cerbos)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatal(err)
 	}
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 
-	router, err := api.GetRouter(cont)
-	if err != nil {
-		log.Fatal(err)
-	}
+	ctrls := controllers.New(ctx, cerbosClient, db, *cfg, logger)
+
+	graphqlHandler := graphql.New(ctrls)
+
+	restHandler := rest.New(ctrls)
+
+	router := api.NewHttpApi(*cfg, graphqlHandler, restHandler, logger)
 
 	server := hostserver.NewServer(router, logger)
 	ctx, cancel := context.WithCancel(ctx)
