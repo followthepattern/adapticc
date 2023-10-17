@@ -57,7 +57,7 @@ func (repo Role) GetRolesByUserID(userID string) ([]models.Role, error) {
 	return data, nil
 }
 
-func (repo Role) GetProfileRolesArray(userID string) ([]string, error) {
+func (repo Role) GetRoleCodes(userID string) ([]string, error) {
 	roles, err := repo.GetRolesByUserID(userID)
 	if err != nil {
 		return nil, err
@@ -66,7 +66,7 @@ func (repo Role) GetProfileRolesArray(userID string) ([]string, error) {
 	result := make([]string, len(roles))
 
 	for i, role := range roles {
-		result[i] = role.Name
+		result[i] = role.Code
 	}
 
 	return result, nil

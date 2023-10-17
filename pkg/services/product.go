@@ -35,7 +35,7 @@ func (service Product) GetByID(ctx context.Context, id string) (*models.Product,
 		return nil, err
 	}
 
-	roles, err := service.roleRepository.GetProfileRolesArray(*ctxu.ID)
+	roles, err := service.roleRepository.GetRoleCodes(*ctxu.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +63,7 @@ func (service Product) Get(ctx context.Context, filter models.ProductListRequest
 		return nil, err
 	}
 
-	roles, err := service.roleRepository.GetProfileRolesArray(*ctxu.ID)
+	roles, err := service.roleRepository.GetRoleCodes(*ctxu.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +82,7 @@ func (service Product) Create(ctx context.Context, value models.Product) error {
 		return nil
 	}
 
-	roles, err := service.roleRepository.GetProfileRolesArray(*ctxu.ID)
+	roles, err := service.roleRepository.GetRoleCodes(*ctxu.ID)
 	if err != nil {
 		return err
 	}
@@ -104,7 +104,7 @@ func (service Product) Update(ctx context.Context, value models.Product) error {
 		return nil
 	}
 
-	roles, err := service.roleRepository.GetProfileRolesArray(*ctxu.ID)
+	roles, err := service.roleRepository.GetRoleCodes(*ctxu.ID)
 	if err != nil {
 		return err
 	}
@@ -123,7 +123,7 @@ func (service Product) Delete(ctx context.Context, id string) error {
 		return nil
 	}
 
-	roles, err := service.roleRepository.GetProfileRolesArray(*ctxu.ID)
+	roles, err := service.roleRepository.GetRoleCodes(*ctxu.ID)
 	if err != nil {
 		return err
 	}

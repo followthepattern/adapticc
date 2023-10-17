@@ -39,7 +39,7 @@ func (service User) GetByID(ctx context.Context, id string) (*models.User, error
 		return nil, err
 	}
 
-	roles, err := service.roleRepository.GetProfileRolesArray(*ctxu.ID)
+	roles, err := service.roleRepository.GetRoleCodes(*ctxu.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +81,7 @@ func (service User) Get(ctx context.Context, filter models.UserListRequestParams
 		return models.UserListResponse{}, err
 	}
 
-	roles, err := service.roleRepository.GetProfileRolesArray(*ctxu.ID)
+	roles, err := service.roleRepository.GetRoleCodes(*ctxu.ID)
 	if err != nil {
 		return models.UserListResponse{}, err
 	}
@@ -105,7 +105,7 @@ func (service User) Create(ctx context.Context, value models.User) error {
 		return nil
 	}
 
-	roles, err := service.roleRepository.GetProfileRolesArray(*ctxu.ID)
+	roles, err := service.roleRepository.GetRoleCodes(*ctxu.ID)
 	if err != nil {
 		return err
 	}
@@ -128,7 +128,7 @@ func (service User) Update(ctx context.Context, value models.User) error {
 		return nil
 	}
 
-	roles, err := service.roleRepository.GetProfileRolesArray(*ctxu.ID)
+	roles, err := service.roleRepository.GetRoleCodes(*ctxu.ID)
 	if err != nil {
 		return err
 	}
@@ -147,7 +147,7 @@ func (service User) Delete(ctx context.Context, id string) error {
 		return err
 	}
 
-	roles, err := service.roleRepository.GetProfileRolesArray(*ctxu.ID)
+	roles, err := service.roleRepository.GetRoleCodes(*ctxu.ID)
 	if err != nil {
 		return err
 	}

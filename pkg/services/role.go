@@ -36,7 +36,7 @@ func (service Role) GetByID(ctx context.Context, id string) (*models.Role, error
 		return nil, err
 	}
 
-	roles, err := service.roleRepository.GetProfileRolesArray(*ctxu.ID)
+	roles, err := service.roleRepository.GetRoleCodes(*ctxu.ID)
 	if err != nil {
 		return nil, err
 	}
