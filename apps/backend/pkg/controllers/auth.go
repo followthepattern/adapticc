@@ -29,9 +29,17 @@ func NewAuth(ctx context.Context, db *sql.DB, cfg config.Config, logger *zap.Log
 }
 
 func (ctrl Auth) Login(ctx context.Context, login models.LoginRequestParams) (*models.LoginResponse, error) {
+	if err := login.Validate(); err != nil {
+		return nil, err
+	}
+
 	return ctrl.authService.Login(ctx, login.Email, login.Password)
 }
 
 func (ctrl Auth) Register(ctx context.Context, register models.RegisterRequestParams) (*models.RegisterResponse, error) {
+	if err := register.Validate(); err != nil {
+		return nil, err
+	}
+
 	return ctrl.authService.Register(ctx, register)
 }

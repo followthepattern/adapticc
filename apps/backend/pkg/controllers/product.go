@@ -10,6 +10,8 @@ import (
 	"github.com/followthepattern/adapticc/pkg/repositories/database"
 	"github.com/followthepattern/adapticc/pkg/services"
 	"go.uber.org/zap"
+
+	validation "github.com/go-ozzo/ozzo-validation"
 )
 
 type Product struct {
@@ -31,6 +33,10 @@ func NewProduct(ctx context.Context, ac accesscontrol.AccessControl, db *sql.DB,
 }
 
 func (ctrl Product) GetByID(ctx context.Context, id string) (*models.Product, error) {
+	if err := validation.Validate(id, Required("productID")); err != nil {
+		return nil, err
+	}
+
 	result, err := ctrl.product.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
@@ -63,5 +69,9 @@ func (ctrl Product) Update(ctx context.Context, value models.Product) error {
 }
 
 func (ctrl Product) Delete(ctx context.Context, id string) error {
+	if err := validation.Validate(id, Required("productID")); err != nil {
+		return err
+	}
+
 	return ctrl.product.Delete(ctx, id)
 }

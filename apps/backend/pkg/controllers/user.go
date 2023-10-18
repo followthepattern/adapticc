@@ -8,6 +8,7 @@ import (
 	"github.com/followthepattern/adapticc/pkg/config"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/services"
+	validation "github.com/go-ozzo/ozzo-validation"
 	"go.uber.org/zap"
 )
 
@@ -30,6 +31,10 @@ func NewUser(ctx context.Context, cerbosClient accesscontrol.AccessControl, db *
 }
 
 func (ctrl User) GetByID(ctx context.Context, id string) (*models.User, error) {
+	if err := validation.Validate(id, Required("userID")); err != nil {
+		return nil, err
+	}
+
 	result, err := ctrl.userService.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
@@ -60,14 +65,26 @@ func (ctrl User) Get(ctx context.Context, filter models.UserListRequestParams) (
 	return result, nil
 }
 
-func (ctrl User) Create(ctx context.Context, user models.User) error {
-	return ctrl.userService.Create(ctx, user)
+func (ctrl User) Create(ctx context.Context, value models.User) error {
+	if err := value.CreateValidate(); err != nil {
+		return err
+	}
+
+	return ctrl.userService.Create(ctx, value)
 }
 
-func (ctrl User) Update(ctx context.Context, user models.User) error {
-	return ctrl.userService.Update(ctx, user)
+func (ctrl User) Update(ctx context.Context, value models.User) error {
+	if err := value.UpdateValidate(); err != nil {
+		return err
+	}
+
+	return ctrl.userService.Update(ctx, value)
 }
 
 func (ctrl User) Delete(ctx context.Context, id string) error {
+	if err := validation.Validate(id, Required("userID")); err != nil {
+		return err
+	}
+
 	return ctrl.userService.Delete(ctx, id)
 }

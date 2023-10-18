@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/followthepattern/adapticc/pkg/utils/pointers"
+	validation "github.com/go-ozzo/ozzo-validation"
 )
 
 type User struct {
@@ -12,6 +13,20 @@ type User struct {
 	Active    *bool   `db:"active" goqu:"skipupdate"`
 	Roles     []Role  `db:"-"`
 	Userlog
+}
+
+func (u User) CreateValidate() error {
+	return validation.ValidateStruct(&u,
+		validation.Field(&u.Email, validation.Required),
+		validation.Field(&u.FirstName, validation.Required),
+		validation.Field(&u.LastName, validation.Required),
+	)
+}
+
+func (u User) UpdateValidate() error {
+	return validation.ValidateStruct(&u,
+		validation.Field(&u.ID, validation.Required),
+	)
 }
 
 func (u User) IsNil() bool {
