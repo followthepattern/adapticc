@@ -7,8 +7,11 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"regexp"
 	"strings"
+
+	"log/slog"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/followthepattern/adapticc/pkg/accesscontrol"
@@ -17,7 +20,6 @@ import (
 	"github.com/followthepattern/adapticc/pkg/api/rest"
 	"github.com/followthepattern/adapticc/pkg/config"
 	"github.com/followthepattern/adapticc/pkg/controllers"
-	"go.uber.org/zap"
 )
 
 const graphqlURL = "/graphql"
@@ -40,7 +42,7 @@ func runRequest(srv http.Handler, r *http.Request, data interface{}) (int, error
 }
 
 func NewMockHandler(ctx context.Context, ac accesscontrol.AccessControl, db *sql.DB, cfg config.Config) http.Handler {
-	logger := zap.NewExample()
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
 	ctrls := controllers.New(ctx, ac, db, cfg, logger)
 

@@ -1,6 +1,8 @@
 package middlewares
 
 import (
+	"log/slog"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"go.uber.org/zap"
@@ -16,7 +18,7 @@ func (f logPrinter) Print(v ...interface{}) {
 	f(v)
 }
 
-func AddMiddlewareLogger(r *chi.Mux, logger *zap.Logger) {
+func AddMiddlewareLogger(r *chi.Mux, logger *slog.Logger) {
 	logFunc := logPrinter(func(values ...interface{}) {
 		logger.Debug("HTTP", zap.Any("values", values))
 	})

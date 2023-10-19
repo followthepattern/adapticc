@@ -3,22 +3,21 @@ package middlewares
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/followthepattern/adapticc/pkg/config"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/utils"
 	"github.com/golang-jwt/jwt/v4"
-
-	"go.uber.org/zap"
 )
 
 type JWT struct {
-	logger *zap.Logger
+	logger *slog.Logger
 	cfg    config.Config
 }
 
-func NewJWT(logger *zap.Logger, cfg config.Config) JWT {
+func NewJWT(logger *slog.Logger, cfg config.Config) JWT {
 	result := JWT{
 		logger: logger,
 		cfg:    cfg,

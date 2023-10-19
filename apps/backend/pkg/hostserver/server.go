@@ -4,19 +4,20 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
-	"go.uber.org/zap"
+	"log/slog"
 )
 
 const serveShutDownTimeout = 5
 
 type Server struct {
-	logger *zap.Logger
+	logger *slog.Logger
 	router http.Handler
 }
 
-func NewServer(router http.Handler, logger *zap.Logger) *Server {
+func NewServer(router http.Handler, logger *slog.Logger) *Server {
 	return &Server{
 		logger: logger,
 		router: router,
@@ -31,7 +32,8 @@ func (s Server) Serve(ctx context.Context, host string, port string) (err error)
 
 	go func() {
 		if err = srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			s.logger.Fatal("server listen err:", zap.Error(err))
+			s.logger.Error("server listen err:", err)
+			os.Exit(1)
 		}
 	}()
 
@@ -45,7 +47,7 @@ func (s Server) Serve(ctx context.Context, host string, port string) (err error)
 	defer cancel()
 
 	if err = srv.Shutdown(ctxShutDown); err != nil {
-		s.logger.Fatal("Server Shutdown Failed: ", zap.Error(err))
+		s.logger.Error("Server Shutdown Failed: ", err)
 	}
 	s.logger.Info("Server Graceful shutdown success")
 

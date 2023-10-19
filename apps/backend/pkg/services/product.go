@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"log/slog"
 
 	"github.com/followthepattern/adapticc/pkg/accesscontrol"
 	"github.com/followthepattern/adapticc/pkg/config"
@@ -10,7 +11,6 @@ import (
 	"github.com/followthepattern/adapticc/pkg/utils"
 	"github.com/followthepattern/adapticc/pkg/utils/pointers"
 	"github.com/google/uuid"
-	"go.uber.org/zap"
 )
 
 type Product struct {
@@ -19,7 +19,7 @@ type Product struct {
 	roleRepository    database.Role
 }
 
-func NewProduct(ctx context.Context, accesscontrol accesscontrol.AccessControl, productRepository database.Product, roleRepository database.Role, cfg config.Config, logger *zap.Logger) Product {
+func NewProduct(ctx context.Context, accesscontrol accesscontrol.AccessControl, productRepository database.Product, roleRepository database.Role, cfg config.Config, logger *slog.Logger) Product {
 	product := Product{
 		ac:                accesscontrol.WithKind("product"),
 		productRepository: productRepository,

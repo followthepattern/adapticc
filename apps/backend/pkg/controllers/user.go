@@ -4,22 +4,23 @@ import (
 	"context"
 	"database/sql"
 
+	"log/slog"
+
 	"github.com/followthepattern/adapticc/pkg/accesscontrol"
 	"github.com/followthepattern/adapticc/pkg/config"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/services"
 	validation "github.com/go-ozzo/ozzo-validation"
-	"go.uber.org/zap"
 )
 
 type User struct {
 	cfg         config.Config
-	logger      *zap.Logger
+	logger      *slog.Logger
 	ctx         context.Context
 	userService services.User
 }
 
-func NewUser(ctx context.Context, cerbosClient accesscontrol.AccessControl, db *sql.DB, cfg config.Config, logger *zap.Logger) User {
+func NewUser(ctx context.Context, cerbosClient accesscontrol.AccessControl, db *sql.DB, cfg config.Config, logger *slog.Logger) User {
 	userService := services.NewUser(ctx, cerbosClient, db, cfg, logger)
 
 	return User{

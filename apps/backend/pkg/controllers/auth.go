@@ -3,21 +3,21 @@ package controllers
 import (
 	"context"
 	"database/sql"
+	"log/slog"
 
 	"github.com/followthepattern/adapticc/pkg/config"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/repositories/database"
 	"github.com/followthepattern/adapticc/pkg/services"
-	"go.uber.org/zap"
 )
 
 type Auth struct {
-	logger      *zap.Logger
+	logger      *slog.Logger
 	cfg         config.Config
 	authService services.Auth
 }
 
-func NewAuth(ctx context.Context, db *sql.DB, cfg config.Config, logger *zap.Logger) Auth {
+func NewAuth(ctx context.Context, db *sql.DB, cfg config.Config, logger *slog.Logger) Auth {
 	auth := database.NewAuth(ctx, db, logger)
 	authService := services.NewAuth(cfg, auth)
 

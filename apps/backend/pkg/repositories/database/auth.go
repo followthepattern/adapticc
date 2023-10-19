@@ -5,11 +5,11 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/followthepattern/adapticc/pkg/models"
-	"github.com/followthepattern/adapticc/pkg/utils/pointers"
-	"go.uber.org/zap"
+	"log/slog"
 
 	. "github.com/doug-martin/goqu/v9"
+	"github.com/followthepattern/adapticc/pkg/models"
+	"github.com/followthepattern/adapticc/pkg/utils/pointers"
 )
 
 type Auth struct {
@@ -17,7 +17,7 @@ type Auth struct {
 	ctx context.Context
 }
 
-func NewAuth(ctx context.Context, database *sql.DB, logger *zap.Logger) Auth {
+func NewAuth(ctx context.Context, database *sql.DB, logger *slog.Logger) Auth {
 	db := New("postgres", database)
 
 	return Auth{

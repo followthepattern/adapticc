@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 
+	"log/slog"
+
 	"github.com/followthepattern/adapticc/pkg/accesscontrol"
 	"github.com/followthepattern/adapticc/pkg/config"
 	"github.com/followthepattern/adapticc/pkg/models"
@@ -11,7 +13,6 @@ import (
 	"github.com/followthepattern/adapticc/pkg/utils"
 	"github.com/followthepattern/adapticc/pkg/utils/pointers"
 	"github.com/google/uuid"
-	"go.uber.org/zap"
 )
 
 type User struct {
@@ -20,7 +21,7 @@ type User struct {
 	ac             accesscontrol.AccessControl
 }
 
-func NewUser(ctx context.Context, ac accesscontrol.AccessControl, db *sql.DB, cfg config.Config, logger *zap.Logger) User {
+func NewUser(ctx context.Context, ac accesscontrol.AccessControl, db *sql.DB, cfg config.Config, logger *slog.Logger) User {
 	repository := database.NewUser(ctx, db)
 	roleRepository := database.NewRole(ctx, db)
 

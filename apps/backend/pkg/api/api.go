@@ -3,9 +3,10 @@ package api
 import (
 	"net/http"
 
+	"log/slog"
+
 	"github.com/followthepattern/adapticc/pkg/api/middlewares"
 	"github.com/followthepattern/adapticc/pkg/config"
-	"go.uber.org/zap"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -15,7 +16,7 @@ import (
 func NewHttpApi(cfg config.Config,
 	graphqlHandler http.Handler,
 	restHandler http.Handler,
-	logger *zap.Logger,
+	logger *slog.Logger,
 ) *chi.Mux {
 	r := chi.NewRouter()
 

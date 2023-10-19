@@ -3,10 +3,10 @@ package controllers
 import (
 	"context"
 	"database/sql"
+	"log/slog"
 
 	"github.com/followthepattern/adapticc/pkg/accesscontrol"
 	"github.com/followthepattern/adapticc/pkg/config"
-	"go.uber.org/zap"
 )
 
 type Controllers struct {
@@ -15,7 +15,7 @@ type Controllers struct {
 	product Product
 }
 
-func New(ctx context.Context, ac accesscontrol.AccessControl, db *sql.DB, cfg config.Config, logger *zap.Logger) Controllers {
+func New(ctx context.Context, ac accesscontrol.AccessControl, db *sql.DB, cfg config.Config, logger *slog.Logger) Controllers {
 	return Controllers{
 		user:    NewUser(ctx, ac, db, cfg, logger),
 		auth:    NewAuth(ctx, db, cfg, logger),

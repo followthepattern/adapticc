@@ -8,6 +8,8 @@ import (
 	"os"
 	"os/signal"
 
+	"log/slog"
+
 	"github.com/followthepattern/adapticc/pkg/accesscontrol"
 	"github.com/followthepattern/adapticc/pkg/api"
 	"github.com/followthepattern/adapticc/pkg/api/graphql"
@@ -18,7 +20,6 @@ import (
 
 	_ "github.com/lib/pq"
 	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 )
 
 func main() {
@@ -32,10 +33,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	logConfig := zap.NewProductionConfig()
-	logConfig.Level = zap.NewAtomicLevelAt(zapcore.Level(cfg.Server.LogLevel))
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
-	logger, err := logConfig.Build()
 	if err != nil {
 		log.Fatal(err)
 	}
