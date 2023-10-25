@@ -11,32 +11,11 @@ type Resolver struct {
 	authMutation AuthMutation
 }
 
-type ResolverConfig struct {
-	userController    controllers.User
-	authController    controllers.Auth
-	productController controllers.Product
-	roleController    controllers.Role
-}
-
-func NewResolverConfig(
-	userController controllers.User,
-	authController controllers.Auth,
-	productController controllers.Product,
-	roleController controllers.Role,
-) ResolverConfig {
-	return ResolverConfig{
-		userController:    userController,
-		authController:    authController,
-		productController: productController,
-		roleController:    roleController,
-	}
-}
-
-func New(rc ResolverConfig) Resolver {
-	uq := NewUserQuery(rc.userController)
-	am := NewAuthMutation(rc.authController)
-	pq := NewProductQuery(rc.productController)
-	rq := NewRoleQuery(rc.roleController)
+func New(controllers controllers.Controllers) Resolver {
+	uq := NewUserQuery(controllers.User())
+	am := NewAuthMutation(controllers.Auth())
+	pq := NewProductQuery(controllers.Product())
+	rq := NewRoleQuery(controllers.Role())
 
 	resolver := Resolver{
 		users:        uq,
