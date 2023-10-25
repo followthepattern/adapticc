@@ -52,7 +52,11 @@ ALTER TABLE usr.products OWNER TO adapticcuser;
 CREATE TABLE usr.roles (
     id character varying,
     code character varying,
-    name character varying
+    name character varying,
+    creation_user_id character varying,
+    update_user_id character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp
 );
 
 
@@ -127,9 +131,9 @@ INSERT INTO usr.products VALUES ('3d0cd537-2de1-4474-9ef2-a0d4581dd407', 'Test P
 -- Data for Name: roles; Type: TABLE DATA; Schema: usr; Owner: adapticcuser
 --
 
-INSERT INTO usr.roles VALUES ('57010e91-b768-49ca-8cac-e681f15ccc0f', 'product:editor', 'Product Editor');
-INSERT INTO usr.roles VALUES ('f55b268a-9940-4d61-99d9-47a6816e1390', 'product:viewer', 'Product Viewer');
-INSERT INTO usr.roles VALUES ('3496e6e7-b56e-4595-9a73-94f7c6ad2bc3', 'user:editor', 'User Editor');
+INSERT INTO usr.roles VALUES ('57010e91-b768-49ca-8cac-e681f15ccc0f', 'product:editor', 'Product Editor', '613254df-c779-479c-9d76-b8036e342979', NULL, '2023-07-28 13:23:03.273735', NULL);
+INSERT INTO usr.roles VALUES ('f55b268a-9940-4d61-99d9-47a6816e1390', 'product:viewer', 'Product Viewer', '613254df-c779-479c-9d76-b8036e342979', NULL, '2023-07-28 13:23:03.273735', NULL);
+INSERT INTO usr.roles VALUES ('3496e6e7-b56e-4595-9a73-94f7c6ad2bc3', 'user:editor', 'User Editor', '613254df-c779-479c-9d76-b8036e342979', NULL, '2023-07-28 13:23:03.273735', NULL);
 
 --
 -- TOC entry 3350 (class 0 OID 16401)

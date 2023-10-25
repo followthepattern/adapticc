@@ -13,6 +13,7 @@ type Controllers struct {
 	user    User
 	auth    Auth
 	product Product
+	role    Role
 }
 
 func New(ctx context.Context, ac accesscontrol.AccessControl, db *sql.DB, cfg config.Config, logger *slog.Logger) Controllers {
@@ -20,6 +21,7 @@ func New(ctx context.Context, ac accesscontrol.AccessControl, db *sql.DB, cfg co
 		user:    NewUser(ctx, ac, db, cfg, logger),
 		auth:    NewAuth(ctx, db, cfg, logger),
 		product: NewProduct(ctx, ac, db, cfg, logger),
+		role:    NewRole(ctx, ac, db, cfg, logger),
 	}
 }
 
@@ -33,4 +35,8 @@ func (c Controllers) Auth() Auth {
 
 func (c Controllers) Product() Product {
 	return c.product
+}
+
+func (c Controllers) Role() Role {
+	return c.role
 }

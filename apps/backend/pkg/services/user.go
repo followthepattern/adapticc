@@ -139,7 +139,9 @@ func (service User) Update(ctx context.Context, value models.User) error {
 		return err
 	}
 
-	return service.userRepository.Update(*ctxu.ID, value)
+	value.UpdateUserID = ctxu.ID
+
+	return service.userRepository.Update(value)
 }
 
 func (service User) Delete(ctx context.Context, id string) error {
@@ -158,5 +160,5 @@ func (service User) Delete(ctx context.Context, id string) error {
 		return err
 	}
 
-	return service.userRepository.Delete(*ctxu.ID, id)
+	return service.userRepository.Delete(id)
 }

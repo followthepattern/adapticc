@@ -70,6 +70,23 @@ type ProductListResponse {
 	data: [Product!]!
 }
 
+type Role {
+	id: String!
+	code: String!
+	name: String!
+	creationUserID: String
+	updateUserID: String
+	createdAt: Time
+	updatedAt: Time
+}
+
+type RoleListResponse {
+	count: Int64!
+	pageSize: Uint
+	page: Uint
+	data: [Role!]!
+}
+
 type LoginResponse {
 	jwt: String!
 	expires_at: Time!
@@ -89,6 +106,7 @@ schema {
 type Query {
 	users: UserQuery!
 	products: ProductQuery!
+	roles: RoleQuery!
 }
 
 type Mutation {
@@ -106,6 +124,11 @@ type UserQuery {
 type ProductQuery {
 	single(id: String!): Product
 	list(pagination: Pagination, filter: ListFilter, orderBy: [OrderBy!]): ProductListResponse
+}
+
+type RoleQuery {
+	single(id: String!): Role
+	list(pagination: Pagination, filter: ListFilter, orderBy: [OrderBy!]): RoleListResponse
 }
 
 type UserMutation {

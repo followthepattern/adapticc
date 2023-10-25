@@ -14,7 +14,8 @@ func New(controllers controllers.Controllers) http.Handler {
 	resolverConfig := resolvers.NewResolverConfig(
 		controllers.User(),
 		controllers.Auth(),
-		controllers.Product())
+		controllers.Product(),
+		controllers.Role())
 
 	resolver := resolvers.New(resolverConfig)
 

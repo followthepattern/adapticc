@@ -46,9 +46,7 @@ func (resolver ProductResolver) List(ctx context.Context, args struct {
 	}
 
 	if args.Filter != nil {
-		request.Filter = models.ListFilter{
-			Search: args.Filter.Search,
-		}
+		request.Filter = *args.Filter
 	}
 
 	if args.OrderBy != nil {

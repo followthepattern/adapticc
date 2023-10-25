@@ -2,14 +2,12 @@ package services
 
 import (
 	"context"
-	"database/sql"
+	"log/slog"
 
 	"github.com/followthepattern/adapticc/pkg/accesscontrol"
-	"github.com/followthepattern/adapticc/pkg/config"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/repositories/database"
 	"github.com/followthepattern/adapticc/pkg/utils"
-	"go.uber.org/zap"
 )
 
 type Role struct {
@@ -17,22 +15,16 @@ type Role struct {
 	ac             accesscontrol.AccessControl
 }
 
-func NewRole(ctx context.Context, ac accesscontrol.AccessControl, db *sql.DB, cfg config.Config, logger *zap.Logger) User {
-	repository := database.NewUser(ctx, db)
-	roleRepository := database.NewRole(ctx, db)
-
-	user := User{
-		userRepository: repository,
+func NewRole(ctx context.Context, ac accesscontrol.AccessControl, roleRepository database.Role, logger *slog.Logger) Role {
+	return Role{
 		roleRepository: roleRepository,
-		ac:             ac,
+		ac:             ac.WithKind("role"),
 	}
-
-	return user
 }
 
 func (service Role) GetByID(ctx context.Context, id string) (*models.Role, error) {
 	ctxu, err := utils.GetUserContext(ctx)
-	if err == nil {
+	if err != nil {
 		return nil, err
 	}
 
@@ -52,4 +44,23 @@ func (service Role) GetByID(ctx context.Context, id string) (*models.Role, error
 	}
 
 	return result, nil
+}
+
+func (service Role) Get(ctx context.Context, filter models.RoleListRequestParams) (*models.RoleListResponse, error) {
+	ctxu, err := utils.GetUserContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	roles, err := service.roleRepository.GetRoleCodes(*ctxu.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	err = service.ac.Authorize(ctx, *ctxu.ID, accesscontrol.READ, accesscontrol.ALLRESOURCE, roles...)
+	if err != nil {
+		return nil, err
+	}
+
+	return service.roleRepository.Get(filter)
 }

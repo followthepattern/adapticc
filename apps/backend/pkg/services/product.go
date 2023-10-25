@@ -114,7 +114,9 @@ func (service Product) Update(ctx context.Context, value models.Product) error {
 		return err
 	}
 
-	return service.productRepository.Update(*ctxu.ID, value)
+	value.UpdateUserID = ctxu.ID
+
+	return service.productRepository.Update(value)
 }
 
 func (service Product) Delete(ctx context.Context, id string) error {

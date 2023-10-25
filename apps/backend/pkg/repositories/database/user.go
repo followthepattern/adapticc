@@ -113,8 +113,8 @@ func (repo User) Get(request models.UserListRequestParams) (*models.UserListResp
 	return &result, nil
 }
 
-func (repo User) Update(userID string, user models.User) error {
-	user.Userlog = setUpdateUserlog(userID, time.Now())
+func (repo User) Update(user models.User) error {
+	user.Userlog.UpdatedAt = pointers.ToPtr(time.Now())
 
 	query := repo.db.Update(repo.tableName()).
 		Set(user).
@@ -124,7 +124,7 @@ func (repo User) Update(userID string, user models.User) error {
 	return err
 }
 
-func (repo User) Delete(userID, id string) error {
+func (repo User) Delete(id string) error {
 	query := repo.db.Delete(repo.tableName()).
 		Where(C("id").Eq(id))
 

@@ -116,8 +116,8 @@ func (repo Product) Get(request models.ProductListRequestParams) (*models.Produc
 	return &result, nil
 }
 
-func (repo Product) Update(userID string, model models.Product) error {
-	model.Userlog = setUpdateUserlog(userID, time.Now())
+func (repo Product) Update(model models.Product) error {
+	model.Userlog.UpdatedAt = pointers.ToPtr(time.Now())
 
 	_, err := repo.db.Update(productTable).
 		Set(model).
