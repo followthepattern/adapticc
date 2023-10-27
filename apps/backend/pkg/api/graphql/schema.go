@@ -113,6 +113,7 @@ type Mutation {
 	authentication: AuthMutation!
 	users: UserMutation!
 	products: ProductMutation!
+	roles: RoleMutation!
 }
 
 type UserQuery {
@@ -147,5 +148,10 @@ type ProductMutation {
 type AuthMutation {
 	login(email: String!, password: String!): LoginResponse
 	register(email: String!, firstName: String!, lastName: String!, password: String!): RegisterResponse
+}
+
+type RoleMutation {
+	addRoleToUser(userID: String!, roleID: String!): ResponseStatus
+	deleteRoleFromUser(userID: String!, roleID: String!): ResponseStatus
 }
 `

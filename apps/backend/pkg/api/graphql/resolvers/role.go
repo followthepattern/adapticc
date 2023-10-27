@@ -60,3 +60,29 @@ func (resolver RoleResolver) List(ctx context.Context, args struct {
 
 	return &response, err
 }
+
+func (resolver RoleResolver) AddRoleToUser(ctx context.Context, args struct {
+	UserID string
+	RoleID string
+}) (*ResponseStatus, error) {
+	err := resolver.ctrl.AddRoleToUser(ctx, models.UserRole{UserID: args.UserID, RoleID: args.RoleID})
+	if err != nil {
+		return nil, err
+	}
+	return &ResponseStatus{
+		Code: NewUint(200),
+	}, nil
+}
+
+func (resolver RoleResolver) DeleteRoleFromUser(ctx context.Context, args struct {
+	UserID string
+	RoleID string
+}) (*ResponseStatus, error) {
+	err := resolver.ctrl.DeleteRoleFromUser(ctx, models.UserRole{UserID: args.UserID, RoleID: args.RoleID})
+	if err != nil {
+		return nil, err
+	}
+	return &ResponseStatus{
+		Code: NewUint(200),
+	}, nil
+}

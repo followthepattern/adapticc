@@ -79,7 +79,7 @@ func (service Product) Get(ctx context.Context, filter models.ProductListRequest
 func (service Product) Create(ctx context.Context, value models.Product) error {
 	ctxu, err := utils.GetUserContext(ctx)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	roles, err := service.roleRepository.GetRoleCodes(*ctxu.ID)
@@ -101,7 +101,7 @@ func (service Product) Create(ctx context.Context, value models.Product) error {
 func (service Product) Update(ctx context.Context, value models.Product) error {
 	ctxu, err := utils.GetUserContext(ctx)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	roles, err := service.roleRepository.GetRoleCodes(*ctxu.ID)
@@ -122,7 +122,7 @@ func (service Product) Update(ctx context.Context, value models.Product) error {
 func (service Product) Delete(ctx context.Context, id string) error {
 	ctxu, err := utils.GetUserContext(ctx)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	roles, err := service.roleRepository.GetRoleCodes(*ctxu.ID)

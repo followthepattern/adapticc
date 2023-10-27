@@ -3,7 +3,9 @@ package database
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
+	"time"
 
 	. "github.com/doug-martin/goqu/v9"
 	"github.com/doug-martin/goqu/v9/exp"
@@ -112,6 +114,7 @@ func (repo Role) GetRolesByUserID(userID string) ([]models.Role, error) {
 		Join(roleTableName.As("r"),
 			On(Ex{"r.id": I("ur.role_id")})).
 		Where(Ex{"user_id": userID}).
+		Select(T("r").Col(exp.Star())).
 		ScanStructs(&data)
 
 	if err != nil {
@@ -119,6 +122,42 @@ func (repo Role) GetRolesByUserID(userID string) ([]models.Role, error) {
 	}
 
 	return data, nil
+}
+
+func (repo Role) AddRoleToUser(values []models.UserRole) error {
+	for i, _ := range values {
+		values[i].Userlog.CreatedAt = pointers.ToPtr(time.Now())
+	}
+
+	insertion := repo.db.Insert(userRoleTableName)
+
+	_, err := insertion.Rows(values).Executor().Exec()
+	return err
+}
+
+func (repo Role) RemoveRoleFromUser(value models.UserRole) error {
+	res, err := repo.db.
+		Delete(userRoleTableName).
+		Where(Ex{
+			"user_id": value.UserID,
+			"role_id": value.RoleID}).
+		Executor().
+		Exec()
+
+	if err != nil {
+		return err
+	}
+
+	rows, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows < 1 {
+		return errors.New("no rows been deleted")
+	}
+
+	return err
 }
 
 func (repo Role) GetRoleCodes(userID string) ([]string, error) {

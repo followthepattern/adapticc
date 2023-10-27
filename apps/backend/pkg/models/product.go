@@ -15,16 +15,16 @@ func (m *Product) IsNil() bool {
 	return m == nil || m.ID == nil
 }
 
-func (e Product) CreateValidate() error {
-	return validation.ValidateStruct(&e,
-		validation.Field(&e.Title, validation.Required),
-		validation.Field(&e.Description, validation.Required),
+func (m Product) CreateValidate() error {
+	return validation.ValidateStruct(&m,
+		validation.Field(&m.Title, validation.Required),
+		validation.Field(&m.Description, validation.Required),
 	)
 }
 
-func (e Product) UpdateValidate() error {
-	return validation.ValidateStruct(&e,
-		validation.Field(&e.ID, validation.Required),
+func (m Product) UpdateValidate() error {
+	return validation.ValidateStruct(&m,
+		validation.Field(&m.ID, validation.Required),
 	)
 }
 

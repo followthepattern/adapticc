@@ -51,3 +51,19 @@ func (ctrl Role) GetByID(ctx context.Context, id string) (*models.Role, error) {
 func (ctrl Role) Get(ctx context.Context, filter models.RoleListRequestParams) (*models.RoleListResponse, error) {
 	return ctrl.roleService.Get(ctx, filter)
 }
+
+func (ctrl Role) AddRoleToUser(ctx context.Context, value models.UserRole) error {
+	if err := value.Validate(); err != nil {
+		return err
+	}
+
+	return ctrl.roleService.AddRoleToUser(ctx, value)
+}
+
+func (ctrl Role) DeleteRoleFromUser(ctx context.Context, value models.UserRole) error {
+	if err := value.Validate(); err != nil {
+		return err
+	}
+
+	return ctrl.roleService.RemoveRoleFromUser(ctx, value)
+}

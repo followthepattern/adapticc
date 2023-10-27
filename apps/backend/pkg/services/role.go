@@ -64,3 +64,45 @@ func (service Role) Get(ctx context.Context, filter models.RoleListRequestParams
 
 	return service.roleRepository.Get(filter)
 }
+
+func (service Role) AddRoleToUser(ctx context.Context, value models.UserRole) error {
+	ctxu, err := utils.GetUserContext(ctx)
+	if err != nil {
+		return err
+	}
+
+	roles, err := service.roleRepository.GetRoleCodes(*ctxu.ID)
+	if err != nil {
+		return err
+	}
+
+	err = service.ac.Authorize(ctx, *ctxu.ID, accesscontrol.CREATE, accesscontrol.NEW, roles...)
+	if err != nil {
+		return err
+	}
+
+	value.Userlog.CreationUserID = ctxu.ID
+
+	return service.roleRepository.AddRoleToUser([]models.UserRole{value})
+}
+
+func (service Role) RemoveRoleFromUser(ctx context.Context, value models.UserRole) error {
+	ctxu, err := utils.GetUserContext(ctx)
+	if err != nil {
+		return err
+	}
+
+	roles, err := service.roleRepository.GetRoleCodes(*ctxu.ID)
+	if err != nil {
+		return err
+	}
+
+	err = service.ac.Authorize(ctx, *ctxu.ID, accesscontrol.CREATE, accesscontrol.NEW, roles...)
+	if err != nil {
+		return err
+	}
+
+	value.Userlog.CreationUserID = ctxu.ID
+
+	return service.roleRepository.RemoveRoleFromUser(value)
+}

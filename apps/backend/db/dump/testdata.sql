@@ -69,7 +69,11 @@ ALTER TABLE usr.roles OWNER TO adapticcuser;
 
 CREATE TABLE usr.user_role (
     user_id character varying,
-    role_id character varying
+    role_id character varying,
+    creation_user_id character varying,
+    update_user_id character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp
 );
 
 
@@ -134,6 +138,7 @@ INSERT INTO usr.products VALUES ('3d0cd537-2de1-4474-9ef2-a0d4581dd407', 'Test P
 INSERT INTO usr.roles VALUES ('57010e91-b768-49ca-8cac-e681f15ccc0f', 'product:editor', 'Product Editor', '613254df-c779-479c-9d76-b8036e342979', NULL, '2023-07-28 13:23:03.273735', NULL);
 INSERT INTO usr.roles VALUES ('f55b268a-9940-4d61-99d9-47a6816e1390', 'product:viewer', 'Product Viewer', '613254df-c779-479c-9d76-b8036e342979', NULL, '2023-07-28 13:23:03.273735', NULL);
 INSERT INTO usr.roles VALUES ('3496e6e7-b56e-4595-9a73-94f7c6ad2bc3', 'user:editor', 'User Editor', '613254df-c779-479c-9d76-b8036e342979', NULL, '2023-07-28 13:23:03.273735', NULL);
+INSERT INTO usr.roles VALUES ('c5d0f7a9-53fe-450a-bbb9-94d5e12b536e', 'role:editor', 'Role Editor', '613254df-c779-479c-9d76-b8036e342979', NULL, '2023-07-28 13:23:03.273735', NULL);
 
 --
 -- TOC entry 3350 (class 0 OID 16401)
@@ -141,9 +146,10 @@ INSERT INTO usr.roles VALUES ('3496e6e7-b56e-4595-9a73-94f7c6ad2bc3', 'user:edit
 -- Data for Name: user_role; Type: TABLE DATA; Schema: usr; Owner: adapticcuser
 --
 
-INSERT INTO usr.user_role VALUES ('8f9b1e8f-d496-4804-942b-5ea29050370b', 'f55b268a-9940-4d61-99d9-47a6816e1390');
-INSERT INTO usr.user_role VALUES ('613254df-c779-479c-9d76-b8036e342979', '57010e91-b768-49ca-8cac-e681f15ccc0f');
-INSERT INTO usr.user_role VALUES ('613254df-c779-479c-9d76-b8036e342979', '3496e6e7-b56e-4595-9a73-94f7c6ad2bc3');
+INSERT INTO usr.user_role VALUES ('8f9b1e8f-d496-4804-942b-5ea29050370b', 'f55b268a-9940-4d61-99d9-47a6816e1390', '613254df-c779-479c-9d76-b8036e342979', NULL, '2023-07-28 13:23:03.273735', NULL);
+INSERT INTO usr.user_role VALUES ('613254df-c779-479c-9d76-b8036e342979', '57010e91-b768-49ca-8cac-e681f15ccc0f', '613254df-c779-479c-9d76-b8036e342979', NULL, '2023-07-28 13:23:03.273735', NULL);
+INSERT INTO usr.user_role VALUES ('613254df-c779-479c-9d76-b8036e342979', '3496e6e7-b56e-4595-9a73-94f7c6ad2bc3', '613254df-c779-479c-9d76-b8036e342979', NULL, '2023-07-28 13:23:03.273735', NULL);
+INSERT INTO usr.user_role VALUES ('613254df-c779-479c-9d76-b8036e342979', 'c5d0f7a9-53fe-450a-bbb9-94d5e12b536e', '613254df-c779-479c-9d76-b8036e342979', NULL, '2023-07-28 13:23:03.273735', NULL);
 
 
 --
