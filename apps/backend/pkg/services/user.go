@@ -144,6 +144,10 @@ func (service User) Update(ctx context.Context, value models.User) error {
 	return service.userRepository.Update(value)
 }
 
+func (service User) ActivateUser(ctx context.Context, userID string) error {
+	return service.userRepository.ActivateUser(userID)
+}
+
 func (service User) Delete(ctx context.Context, id string) error {
 	ctxu, err := utils.GetUserContext(ctx)
 	if err != nil {

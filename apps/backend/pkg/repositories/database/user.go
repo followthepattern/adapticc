@@ -18,9 +18,9 @@ type User struct {
 	ctx context.Context
 }
 
-func (User) tableName() string {
-	return "usr.users"
-}
+var (
+	userTableName = S("usr").Table("users")
+)
 
 func NewUser(ctx context.Context, database *sql.DB) User {
 	db := New("postgres", database)
@@ -35,14 +35,14 @@ func (repo User) Create(users []models.User) (err error) {
 	for i := range users {
 		users[i].Userlog.CreatedAt = pointers.ToPtr(time.Now())
 	}
-	_, err = repo.db.Insert(repo.tableName()).Rows(users).Executor().Exec()
+	_, err = repo.db.Insert(userTableName).Rows(users).Executor().Exec()
 	return
 }
 
 func (repo User) GetByID(id string) (*models.User, error) {
 	user := models.User{}
 
-	query := repo.db.From(repo.tableName()).Where(Ex{"id": id})
+	query := repo.db.From(userTableName).Where(Ex{"id": id})
 
 	_, err := query.ScanStruct(&user)
 	if err != nil {
@@ -55,7 +55,7 @@ func (repo User) GetByID(id string) (*models.User, error) {
 func (repo User) GetByEmail(email string) (*models.User, error) {
 	user := models.User{}
 
-	query := repo.db.From(repo.tableName()).Where(Ex{"email": email})
+	query := repo.db.From(userTableName).Where(Ex{"email": email})
 
 	_, err := query.ScanStruct(&user)
 	if err != nil {
@@ -67,7 +67,7 @@ func (repo User) GetByEmail(email string) (*models.User, error) {
 func (repo User) Get(request models.UserListRequestParams) (*models.UserListResponse, error) {
 	data := []models.User{}
 
-	query := repo.db.From(repo.tableName())
+	query := repo.db.From(userTableName)
 
 	if request.Filter.Search != nil {
 		pattern := fmt.Sprintf("%%%s%%", *request.Filter.Search)
@@ -116,7 +116,7 @@ func (repo User) Get(request models.UserListRequestParams) (*models.UserListResp
 func (repo User) Update(user models.User) error {
 	user.Userlog.UpdatedAt = pointers.ToPtr(time.Now())
 
-	query := repo.db.Update(repo.tableName()).
+	query := repo.db.Update(userTableName).
 		Set(user).
 		Where(C("id").Eq(*user.ID))
 
@@ -124,8 +124,29 @@ func (repo User) Update(user models.User) error {
 	return err
 }
 
+func (repo User) ActivateUser(userID string) error {
+	result, err := repo.db.Update(userTableName).
+		Set(Record{"active": true}).
+		Where(Ex{"id": userID, "active": false}).
+		Executor().Exec()
+	if err != nil {
+		return err
+	}
+
+	effectedRows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if effectedRows == 0 {
+		return fmt.Errorf("there is no existing inactive user with ID: %s", userID)
+	}
+
+	return nil
+}
+
 func (repo User) Delete(id string) error {
-	query := repo.db.Delete(repo.tableName()).
+	query := repo.db.Delete(userTableName).
 		Where(C("id").Eq(id))
 
 	result, err := query.Executor().Exec()
@@ -142,5 +163,5 @@ func (repo User) Delete(id string) error {
 		return errors.New("no rows have been effected")
 	}
 
-	return err
+	return nil
 }

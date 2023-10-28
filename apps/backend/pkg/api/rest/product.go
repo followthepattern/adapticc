@@ -32,5 +32,5 @@ func (service Product) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	Success(w, "Created")
+	Created(w)
 }

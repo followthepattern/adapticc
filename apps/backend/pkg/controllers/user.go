@@ -31,12 +31,12 @@ func NewUser(ctx context.Context, cerbosClient accesscontrol.AccessControl, db *
 	}
 }
 
-func (ctrl User) GetByID(ctx context.Context, id string) (*models.User, error) {
-	if err := validation.Validate(id, Required("userID")); err != nil {
+func (ctrl User) GetByID(ctx context.Context, userID string) (*models.User, error) {
+	if err := validation.Validate(userID, Required("userID")); err != nil {
 		return nil, err
 	}
 
-	result, err := ctrl.userService.GetByID(ctx, id)
+	result, err := ctrl.userService.GetByID(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -82,10 +82,18 @@ func (ctrl User) Update(ctx context.Context, value models.User) error {
 	return ctrl.userService.Update(ctx, value)
 }
 
-func (ctrl User) Delete(ctx context.Context, id string) error {
-	if err := validation.Validate(id, Required("userID")); err != nil {
+func (ctrl User) ActivateUser(ctx context.Context, userID string) error {
+	if err := validation.Validate(userID, Required("userID")); err != nil {
 		return err
 	}
 
-	return ctrl.userService.Delete(ctx, id)
+	return ctrl.userService.ActivateUser(ctx, userID)
+}
+
+func (ctrl User) Delete(ctx context.Context, userID string) error {
+	if err := validation.Validate(userID, Required("userID")); err != nil {
+		return err
+	}
+
+	return ctrl.userService.Delete(ctx, userID)
 }
