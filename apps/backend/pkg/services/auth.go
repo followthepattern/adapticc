@@ -21,12 +21,14 @@ const EMAIL_IS_ALREADY_IN_USE_PATTERN = "%v is already in use, please try a diff
 type Auth struct {
 	repository database.Auth
 	cfg        config.Config
+	mail       Mail
 }
 
 func NewAuth(cfg config.Config, repository database.Auth) Auth {
 	return Auth{
 		cfg:        cfg,
 		repository: repository,
+		mail:       NewMail(cfg.Mail),
 	}
 }
 
@@ -103,11 +105,33 @@ func (service Auth) Register(ctx context.Context, register models.RegisterReques
 		return nil, err
 	}
 
+	mail := service.getActivationMail(*creationUser.ID, *creationUser.Email)
+
+	err = service.mail.SendMail(mail)
+	if err != nil {
+		return nil, err
+	}
+
 	return &models.RegisterResponse{
 		Email:     creationUser.Email,
 		FirstName: creationUser.FirstName,
 		LastName:  creationUser.LastName,
 	}, nil
+}
+
+func (service Auth) getActivationMail(userID string, email string) models.Mail {
+	activationLink := fmt.Sprintf("%s/users/activate/%s", service.cfg.Organization.Url, userID)
+
+	from := fmt.Sprintf("%s <%s>", service.cfg.Organization.Name, service.cfg.Organization.Email)
+
+	m := models.Mail{
+		From:    from,
+		To:      []string{email},
+		Subject: "Activate your email address",
+		Text:    []byte(fmt.Sprintf("your activation link: %s", activationLink)),
+	}
+
+	return m
 }
 
 func GenerateTokenStringFromUser(model models.User, secret []byte) (string, error) {

@@ -9,11 +9,12 @@ import (
 )
 
 type Config struct {
-	Version string `mapstructure:"version"`
-	Server  Server `mapstructure:"server"`
-	DB      DB     `mapstructure:"db"`
-	Mail    Mail   `mapstructure:"mail"`
-	Cerbos  Cerbos `mapstructure:"cerbos"`
+	Version      string       `mapstructure:"version"`
+	Server       Server       `mapstructure:"server"`
+	DB           DB           `mapstructure:"db"`
+	Mail         Mail         `mapstructure:"mail"`
+	Organization Organization `mapstructure:"organization"`
+	Cerbos       Cerbos       `mapstructure:"cerbos"`
 }
 
 func (cfg *Config) Validate() error {
@@ -21,6 +22,7 @@ func (cfg *Config) Validate() error {
 		validation.Field(&cfg.Server, validation.Required),
 		validation.Field(&cfg.DB, validation.Required),
 		validation.Field(&cfg.Mail, validation.Required),
+		validation.Field(&cfg.Organization, validation.Required),
 	)
 }
 
