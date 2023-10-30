@@ -17,6 +17,7 @@ import (
 	"github.com/followthepattern/adapticc/pkg/config"
 	"github.com/followthepattern/adapticc/pkg/controllers"
 	"github.com/followthepattern/adapticc/pkg/hostserver"
+	"github.com/followthepattern/adapticc/pkg/repositories/email"
 
 	_ "github.com/lib/pq"
 	"go.uber.org/zap"
@@ -46,10 +47,12 @@ func main() {
 		log.Fatal(err)
 	}
 
+	emailClient := email.NewClient()
+
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 
-	ctrls := controllers.New(ctx, cerbosClient, db, *cfg, logger)
+	ctrls := controllers.New(ctx, cerbosClient, emailClient, db, *cfg, logger)
 
 	graphqlHandler := graphql.New(ctrls)
 

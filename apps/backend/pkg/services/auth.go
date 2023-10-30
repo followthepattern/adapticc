@@ -9,6 +9,7 @@ import (
 	"github.com/followthepattern/adapticc/pkg/config"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/repositories/database"
+	"github.com/followthepattern/adapticc/pkg/repositories/email"
 	"github.com/followthepattern/adapticc/pkg/utils"
 	"github.com/followthepattern/adapticc/pkg/utils/pointers"
 	"github.com/golang-jwt/jwt/v4"
@@ -24,11 +25,11 @@ type Auth struct {
 	mail       Mail
 }
 
-func NewAuth(cfg config.Config, repository database.Auth) Auth {
+func NewAuth(cfg config.Config, repository database.Auth, emailClient email.Email) Auth {
 	return Auth{
 		cfg:        cfg,
 		repository: repository,
-		mail:       NewMail(cfg.Mail),
+		mail:       NewMail(cfg.Mail, emailClient),
 	}
 }
 
@@ -105,7 +106,7 @@ func (service Auth) Register(ctx context.Context, register models.RegisterReques
 		return nil, err
 	}
 
-	mail := service.getActivationMail(*creationUser.ID, *creationUser.Email)
+	mail := GetActivationMailTemplate(service.cfg, *creationUser.ID, *creationUser.Email)
 
 	err = service.mail.SendMail(mail)
 	if err != nil {
@@ -119,10 +120,10 @@ func (service Auth) Register(ctx context.Context, register models.RegisterReques
 	}, nil
 }
 
-func (service Auth) getActivationMail(userID string, email string) models.Mail {
-	activationLink := fmt.Sprintf("%s/users/activate/%s", service.cfg.Organization.Url, userID)
+func GetActivationMailTemplate(cfg config.Config, userID string, email string) models.Mail {
+	activationLink := fmt.Sprintf("%s/users/activate/%s", cfg.Organization.Url, userID)
 
-	from := fmt.Sprintf("%s <%s>", service.cfg.Organization.Name, service.cfg.Organization.Email)
+	from := fmt.Sprintf("%s <%s>", cfg.Organization.Name, cfg.Organization.Email)
 
 	m := models.Mail{
 		From:    from,

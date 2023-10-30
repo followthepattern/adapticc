@@ -8,13 +8,16 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"net/smtp"
 
+	"github.com/followthepattern/adapticc/mocks"
 	"github.com/followthepattern/adapticc/pkg/accesscontrol"
 	"github.com/followthepattern/adapticc/pkg/config"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/services"
 	"github.com/followthepattern/adapticc/pkg/tests/datagenerator"
 	"github.com/followthepattern/adapticc/pkg/tests/sqlexpectations"
+	"github.com/golang/mock/gomock"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/followthepattern/graphql-go/errors"
@@ -45,6 +48,9 @@ var _ = Describe("Authentication", func() {
 		cfg     config.Config
 		handler http.Handler
 
+		mockCtrl  *gomock.Controller
+		mockEmail *mocks.MockEmail
+
 		testResponse  *graphqlAuthResponse
 		generatedUser models.AuthUser
 		password      string
@@ -59,11 +65,19 @@ var _ = Describe("Authentication", func() {
 			Server: config.Server{
 				HmacSecret: "test",
 			},
+			Mail: config.Mail{
+				Addr:     "addr",
+				Host:     "host",
+				Username: "test-username",
+				Password: "test-password",
+			},
 		}
 
 		ac := accesscontrol.Config{}.Build()
+		mockCtrl = gomock.NewController(GinkgoT())
+		mockEmail = mocks.NewMockEmail(mockCtrl)
 
-		handler = NewMockHandler(ctx, ac, mdb, cfg)
+		handler = NewMockHandler(ctx, ac, mockEmail, mdb, cfg)
 
 		testResponse = &graphqlAuthResponse{}
 		password = datagenerator.String(13)
@@ -142,6 +156,20 @@ var _ = Describe("Authentication", func() {
 			sqlexpectations.ExpectVerifyEmail(mock, 0, *generatedUser.Email)
 
 			sqlexpectations.ExpectCreateAuthUser(mock, "", generatedUser)
+
+			mailTemplate := services.GetActivationMailTemplate(cfg, "", *generatedUser.Email)
+
+			mockEmail.EXPECT().SetFrom(gomock.Any())
+			mockEmail.EXPECT().SetTo(mailTemplate.To)
+			mockEmail.EXPECT().SetSubject(mailTemplate.Subject)
+			mockEmail.EXPECT().SetText(gomock.Any())
+			mockEmail.EXPECT().SetHTML(gomock.Any())
+			mockEmail.EXPECT().Send(cfg.Mail.Addr,
+				smtp.PlainAuth(
+					"",
+					cfg.Mail.Username,
+					cfg.Mail.Password,
+					cfg.Mail.Host))
 
 			code, err := runRequest(handler, httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request)), testResponse)
 			Expect(err).To(BeNil())

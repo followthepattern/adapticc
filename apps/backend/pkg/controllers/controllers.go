@@ -7,6 +7,7 @@ import (
 
 	"github.com/followthepattern/adapticc/pkg/accesscontrol"
 	"github.com/followthepattern/adapticc/pkg/config"
+	"github.com/followthepattern/adapticc/pkg/repositories/email"
 )
 
 type Controllers struct {
@@ -16,10 +17,10 @@ type Controllers struct {
 	role    Role
 }
 
-func New(ctx context.Context, ac accesscontrol.AccessControl, db *sql.DB, cfg config.Config, logger *slog.Logger) Controllers {
+func New(ctx context.Context, ac accesscontrol.AccessControl, emailClient email.Email, db *sql.DB, cfg config.Config, logger *slog.Logger) Controllers {
 	return Controllers{
 		user:    NewUser(ctx, ac, db, cfg, logger),
-		auth:    NewAuth(ctx, db, cfg, logger),
+		auth:    NewAuth(ctx, db, emailClient, cfg, logger),
 		product: NewProduct(ctx, ac, db, cfg, logger),
 		role:    NewRole(ctx, ac, db, cfg, logger),
 	}

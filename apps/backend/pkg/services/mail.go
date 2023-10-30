@@ -5,18 +5,18 @@ import (
 
 	"github.com/followthepattern/adapticc/pkg/config"
 	"github.com/followthepattern/adapticc/pkg/models"
-	"github.com/followthepattern/adapticc/pkg/utils"
+	"github.com/followthepattern/adapticc/pkg/repositories/email"
 )
 
 type Mail struct {
 	cfg   config.Mail
-	email utils.Email
+	email email.Email
 }
 
-func NewMail(cfg config.Mail) Mail {
+func NewMail(cfg config.Mail, emailClient email.Email) Mail {
 	return Mail{
 		cfg:   cfg,
-		email: utils.NewEmailWrapper(),
+		email: emailClient,
 	}
 }
 

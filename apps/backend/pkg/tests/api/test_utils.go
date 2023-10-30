@@ -20,6 +20,7 @@ import (
 	"github.com/followthepattern/adapticc/pkg/api/rest"
 	"github.com/followthepattern/adapticc/pkg/config"
 	"github.com/followthepattern/adapticc/pkg/controllers"
+	"github.com/followthepattern/adapticc/pkg/repositories/email"
 )
 
 const graphqlURL = "/graphql"
@@ -41,10 +42,10 @@ func runRequest(srv http.Handler, r *http.Request, data interface{}) (int, error
 	return response.Code, nil
 }
 
-func NewMockHandler(ctx context.Context, ac accesscontrol.AccessControl, db *sql.DB, cfg config.Config) http.Handler {
+func NewMockHandler(ctx context.Context, ac accesscontrol.AccessControl, emailClient email.Email, db *sql.DB, cfg config.Config) http.Handler {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
-	ctrls := controllers.New(ctx, ac, db, cfg, logger)
+	ctrls := controllers.New(ctx, ac, emailClient, db, cfg, logger)
 
 	graphqlHandler := graphql.New(ctrls)
 

@@ -8,6 +8,7 @@ import (
 	"github.com/followthepattern/adapticc/pkg/config"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/repositories/database"
+	"github.com/followthepattern/adapticc/pkg/repositories/email"
 	"github.com/followthepattern/adapticc/pkg/services"
 )
 
@@ -17,9 +18,9 @@ type Auth struct {
 	authService services.Auth
 }
 
-func NewAuth(ctx context.Context, db *sql.DB, cfg config.Config, logger *slog.Logger) Auth {
+func NewAuth(ctx context.Context, db *sql.DB, emailClient email.Email, cfg config.Config, logger *slog.Logger) Auth {
 	auth := database.NewAuth(ctx, db, logger)
-	authService := services.NewAuth(cfg, auth)
+	authService := services.NewAuth(cfg, auth, emailClient)
 
 	return Auth{
 		authService: authService,

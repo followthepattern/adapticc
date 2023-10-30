@@ -69,12 +69,13 @@ var _ = Describe("User graphql queries", func() {
 
 		mockCtrl = gomock.NewController(GinkgoT())
 		mockCerbos = mocks.NewMockClient(mockCtrl)
+
 		ac := accesscontrol.Config{
 			Kind:   "user",
 			Cerbos: mockCerbos,
 		}.Build()
 
-		handler = NewMockHandler(ctx, ac, mdb, cfg)
+		handler = NewMockHandler(ctx, ac, nil, mdb, cfg)
 
 	})
 

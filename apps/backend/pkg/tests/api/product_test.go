@@ -73,7 +73,7 @@ var _ = Describe("Product Test", func() {
 			Cerbos: mockCerbos,
 		}.Build()
 
-		handler = NewMockHandler(ctx, ac, mdb, cfg)
+		handler = NewMockHandler(ctx, ac, nil, mdb, cfg)
 
 	})
 

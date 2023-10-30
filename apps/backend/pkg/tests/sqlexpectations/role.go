@@ -10,8 +10,7 @@ import (
 func ExpectRolesByUserID(mock sqlmock.Sqlmock, result []models.Role, userID string) {
 	sqlQuery := fmt.Sprintf(`
 	SELECT
-		"id",
-		"name"
+		"r".\*
 	FROM
 		"usr"."user_role" AS "ur"
 	INNER JOIN
