@@ -2,12 +2,9 @@ package services
 
 import (
 	"context"
-	"database/sql"
-
-	"log/slog"
 
 	"github.com/followthepattern/adapticc/pkg/accesscontrol"
-	"github.com/followthepattern/adapticc/pkg/config"
+	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/repositories/database"
 	"github.com/followthepattern/adapticc/pkg/utils"
@@ -21,14 +18,14 @@ type User struct {
 	ac             accesscontrol.AccessControl
 }
 
-func NewUser(ctx context.Context, ac accesscontrol.AccessControl, db *sql.DB, cfg config.Config, logger *slog.Logger) User {
-	repository := database.NewUser(ctx, db)
-	roleRepository := database.NewRole(ctx, db)
+func NewUser(cont container.Container) User {
+	repository := database.NewUser(cont.GetDB())
+	roleRepository := database.NewRole(cont.GetDB())
 
 	user := User{
 		userRepository: repository,
 		roleRepository: roleRepository,
-		ac:             ac.WithKind("user"),
+		ac:             cont.GetAccessControl().WithKind("user"),
 	}
 
 	return user

@@ -15,6 +15,7 @@ import (
 	"github.com/followthepattern/adapticc/pkg/api/graphql"
 	"github.com/followthepattern/adapticc/pkg/api/rest"
 	"github.com/followthepattern/adapticc/pkg/config"
+	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/controllers"
 	"github.com/followthepattern/adapticc/pkg/hostserver"
 	"github.com/followthepattern/adapticc/pkg/repositories/email"
@@ -52,7 +53,9 @@ func main() {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 
-	ctrls := controllers.New(ctx, cerbosClient, emailClient, db, *cfg, logger)
+	cont := container.New(cerbosClient, emailClient, db, *cfg, logger)
+
+	ctrls := controllers.New(cont)
 
 	graphqlHandler := graphql.New(ctrls)
 

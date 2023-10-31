@@ -1,7 +1,6 @@
 package database
 
 import (
-	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -17,16 +16,14 @@ import (
 var productTable = S("usr").Table("products")
 
 type Product struct {
-	db  *Database
-	ctx context.Context
+	db *Database
 }
 
-func NewProduct(ctx context.Context, database *sql.DB) Product {
+func NewProduct(database *sql.DB) Product {
 	db := New("postgres", database)
 
 	return Product{
-		ctx: ctx,
-		db:  db,
+		db: db,
 	}
 }
 

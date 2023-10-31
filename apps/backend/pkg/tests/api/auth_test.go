@@ -2,7 +2,6 @@ package test_api
 
 import (
 	"bytes"
-	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -44,7 +43,6 @@ var _ = Describe("Authentication", func() {
 	var (
 		mdb     *sql.DB
 		mock    sqlmock.Sqlmock
-		ctx     context.Context
 		cfg     config.Config
 		handler http.Handler
 
@@ -57,7 +55,6 @@ var _ = Describe("Authentication", func() {
 	)
 
 	BeforeEach(func() {
-		ctx = context.Background()
 		var err error
 		mdb, mock, err = sqlmock.New()
 		Expect(err).To(BeNil())
@@ -77,7 +74,7 @@ var _ = Describe("Authentication", func() {
 		mockCtrl = gomock.NewController(GinkgoT())
 		mockEmail = mocks.NewMockEmail(mockCtrl)
 
-		handler = NewMockHandler(ctx, ac, mockEmail, mdb, cfg)
+		handler = NewMockHandler(ac, mockEmail, mdb, cfg)
 
 		testResponse = &graphqlAuthResponse{}
 		password = datagenerator.String(13)

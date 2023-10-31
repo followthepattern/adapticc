@@ -5,7 +5,7 @@ import (
 	"log/slog"
 
 	"github.com/followthepattern/adapticc/pkg/accesscontrol"
-	"github.com/followthepattern/adapticc/pkg/config"
+	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/repositories/database"
 	"github.com/followthepattern/adapticc/pkg/utils"
@@ -15,15 +15,17 @@ import (
 
 type Product struct {
 	ac                accesscontrol.AccessControl
+	logger            *slog.Logger
 	productRepository database.Product
 	roleRepository    database.Role
 }
 
-func NewProduct(ctx context.Context, accesscontrol accesscontrol.AccessControl, productRepository database.Product, roleRepository database.Role, cfg config.Config, logger *slog.Logger) Product {
+func NewProduct(cont container.Container, productRepository database.Product, roleRepository database.Role) Product {
 	product := Product{
-		ac:                accesscontrol.WithKind("product"),
+		ac:                cont.GetAccessControl().WithKind("product"),
 		productRepository: productRepository,
 		roleRepository:    roleRepository,
+		logger:            cont.GetLogger(),
 	}
 
 	return product

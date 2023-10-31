@@ -1,7 +1,6 @@
 package database
 
 import (
-	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -14,20 +13,18 @@ import (
 )
 
 type User struct {
-	db  *Database
-	ctx context.Context
+	db *Database
 }
 
 var (
 	userTableName = S("usr").Table("users")
 )
 
-func NewUser(ctx context.Context, database *sql.DB) User {
+func NewUser(database *sql.DB) User {
 	db := New("postgres", database)
 
 	return User{
-		ctx: ctx,
-		db:  db,
+		db: db,
 	}
 }
 

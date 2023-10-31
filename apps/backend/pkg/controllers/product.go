@@ -2,11 +2,10 @@ package controllers
 
 import (
 	"context"
-	"database/sql"
 	"log/slog"
 
-	"github.com/followthepattern/adapticc/pkg/accesscontrol"
 	"github.com/followthepattern/adapticc/pkg/config"
+	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/repositories/database"
 	"github.com/followthepattern/adapticc/pkg/services"
@@ -20,15 +19,15 @@ type Product struct {
 	cfg     config.Config
 }
 
-func NewProduct(ctx context.Context, ac accesscontrol.AccessControl, db *sql.DB, cfg config.Config, logger *slog.Logger) Product {
-	productRepository := database.NewProduct(ctx, db)
-	roleRepository := database.NewRole(ctx, db)
-	productService := services.NewProduct(ctx, ac, productRepository, roleRepository, cfg, logger)
+func NewProduct(cont container.Container) Product {
+	productRepository := database.NewProduct(cont.GetDB())
+	roleRepository := database.NewRole(cont.GetDB())
+	productService := services.NewProduct(cont, productRepository, roleRepository)
 
 	return Product{
 		product: productService,
-		logger:  logger,
-		cfg:     cfg,
+		logger:  cont.GetLogger(),
+		cfg:     cont.GetConfig(),
 	}
 }
 

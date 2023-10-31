@@ -1,7 +1,6 @@
 package test_api
 
 import (
-	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -19,6 +18,7 @@ import (
 	"github.com/followthepattern/adapticc/pkg/api/graphql"
 	"github.com/followthepattern/adapticc/pkg/api/rest"
 	"github.com/followthepattern/adapticc/pkg/config"
+	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/controllers"
 	"github.com/followthepattern/adapticc/pkg/repositories/email"
 )
@@ -42,10 +42,12 @@ func runRequest(srv http.Handler, r *http.Request, data interface{}) (int, error
 	return response.Code, nil
 }
 
-func NewMockHandler(ctx context.Context, ac accesscontrol.AccessControl, emailClient email.Email, db *sql.DB, cfg config.Config) http.Handler {
+func NewMockHandler(ac accesscontrol.AccessControl, emailClient email.Email, db *sql.DB, cfg config.Config) http.Handler {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
-	ctrls := controllers.New(ctx, ac, emailClient, db, cfg, logger)
+	cont := container.New(ac, emailClient, db, cfg, logger)
+
+	ctrls := controllers.New(cont)
 
 	graphqlHandler := graphql.New(ctrls)
 

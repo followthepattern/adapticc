@@ -1,7 +1,6 @@
 package database
 
 import (
-	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -19,16 +18,14 @@ var (
 )
 
 type Role struct {
-	db  *Database
-	ctx context.Context
+	db *Database
 }
 
-func NewRole(ctx context.Context, database *sql.DB) Role {
+func NewRole(database *sql.DB) Role {
 	db := New("postgres", database)
 
 	return Role{
-		ctx: ctx,
-		db:  db,
+		db: db,
 	}
 }
 

@@ -2,9 +2,9 @@ package services
 
 import (
 	"context"
-	"log/slog"
 
 	"github.com/followthepattern/adapticc/pkg/accesscontrol"
+	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/repositories/database"
 	"github.com/followthepattern/adapticc/pkg/utils"
@@ -15,10 +15,10 @@ type Role struct {
 	ac             accesscontrol.AccessControl
 }
 
-func NewRole(ctx context.Context, ac accesscontrol.AccessControl, roleRepository database.Role, logger *slog.Logger) Role {
+func NewRole(cont container.Container, roleRepository database.Role) Role {
 	return Role{
 		roleRepository: roleRepository,
-		ac:             ac.WithKind("role"),
+		ac:             cont.GetAccessControl().WithKind("role"),
 	}
 }
 

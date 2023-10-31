@@ -2,12 +2,11 @@ package controllers
 
 import (
 	"context"
-	"database/sql"
 
 	"log/slog"
 
-	"github.com/followthepattern/adapticc/pkg/accesscontrol"
 	"github.com/followthepattern/adapticc/pkg/config"
+	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/services"
 	validation "github.com/go-ozzo/ozzo-validation"
@@ -16,17 +15,15 @@ import (
 type User struct {
 	cfg         config.Config
 	logger      *slog.Logger
-	ctx         context.Context
 	userService services.User
 }
 
-func NewUser(ctx context.Context, cerbosClient accesscontrol.AccessControl, db *sql.DB, cfg config.Config, logger *slog.Logger) User {
-	userService := services.NewUser(ctx, cerbosClient, db, cfg, logger)
+func NewUser(cont container.Container) User {
+	userService := services.NewUser(cont)
 
 	return User{
-		ctx:         ctx,
-		cfg:         cfg,
-		logger:      logger,
+		cfg:         cont.GetConfig(),
+		logger:      cont.GetLogger(),
 		userService: userService,
 	}
 }

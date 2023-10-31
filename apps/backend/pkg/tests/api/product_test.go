@@ -2,7 +2,6 @@ package test_api
 
 import (
 	"bytes"
-	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -46,7 +45,6 @@ var _ = Describe("Product Test", func() {
 	var (
 		mdb        *sql.DB
 		mock       sqlmock.Sqlmock
-		ctx        context.Context
 		cfg        config.Config
 		handler    http.Handler
 		mockCtrl   *gomock.Controller
@@ -54,7 +52,6 @@ var _ = Describe("Product Test", func() {
 	)
 
 	BeforeEach(func() {
-		ctx = context.Background()
 		cfg = config.Config{
 			Server: config.Server{
 				HmacSecret: "test",
@@ -73,7 +70,7 @@ var _ = Describe("Product Test", func() {
 			Cerbos: mockCerbos,
 		}.Build()
 
-		handler = NewMockHandler(ctx, ac, nil, mdb, cfg)
+		handler = NewMockHandler(ac, nil, mdb, cfg)
 
 	})
 

@@ -2,13 +2,12 @@ package controllers
 
 import (
 	"context"
-	"database/sql"
 	"log/slog"
 
 	"github.com/followthepattern/adapticc/pkg/config"
+	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/repositories/database"
-	"github.com/followthepattern/adapticc/pkg/repositories/email"
 	"github.com/followthepattern/adapticc/pkg/services"
 )
 
@@ -18,14 +17,14 @@ type Auth struct {
 	authService services.Auth
 }
 
-func NewAuth(ctx context.Context, db *sql.DB, emailClient email.Email, cfg config.Config, logger *slog.Logger) Auth {
-	auth := database.NewAuth(ctx, db, logger)
-	authService := services.NewAuth(cfg, auth, emailClient)
+func NewAuth(cont container.Container) Auth {
+	auth := database.NewAuth(cont.GetDB(), cont.GetLogger())
+	authService := services.NewAuth(cont.GetConfig(), auth, cont.GetEmail())
 
 	return Auth{
 		authService: authService,
-		cfg:         cfg,
-		logger:      logger,
+		cfg:         cont.GetConfig(),
+		logger:      cont.GetLogger(),
 	}
 }
 

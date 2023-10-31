@@ -1,7 +1,6 @@
 package database
 
 import (
-	"context"
 	"database/sql"
 	"time"
 
@@ -13,16 +12,14 @@ import (
 )
 
 type Auth struct {
-	db  *Database
-	ctx context.Context
+	db *Database
 }
 
-func NewAuth(ctx context.Context, database *sql.DB, logger *slog.Logger) Auth {
+func NewAuth(database *sql.DB, logger *slog.Logger) Auth {
 	db := New("postgres", database)
 
 	return Auth{
-		ctx: ctx,
-		db:  db,
+		db: db,
 	}
 }
 
