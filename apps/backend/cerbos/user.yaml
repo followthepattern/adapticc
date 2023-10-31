@@ -8,12 +8,6 @@ resourcePolicy:
       effect: EFFECT_ALLOW
       roles:
         - user:viewer
-      
-    - actions:
-        - create
-      effect: EFFECT_ALLOW
-      roles:
-        - user:creator
 
     - actions:
         - create
@@ -23,13 +17,3 @@ resourcePolicy:
       effect: EFFECT_ALLOW
       roles:
         - user:editor
-   
-    - actions:
-        - read
-        - update
-        - delete
-      effect: EFFECT_ALLOW
-      roles: ["*"]
-      condition:
-        match:
-          expr: R.attr.creationId == P.id
