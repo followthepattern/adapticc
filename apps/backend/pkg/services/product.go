@@ -37,12 +37,12 @@ func (service Product) GetByID(ctx context.Context, id string) (*models.Product,
 		return nil, err
 	}
 
-	roles, err := service.roleRepository.GetRoleCodes(*ctxu.ID)
+	roles, err := service.roleRepository.GetRoleCodes(ctxu.ID)
 	if err != nil {
 		return nil, err
 	}
 
-	err = service.ac.Authorize(ctx, *ctxu.ID, accesscontrol.READ, id, roles...)
+	err = service.ac.Authorize(ctx, ctxu.ID, accesscontrol.READ, id, roles...)
 	if err != nil {
 		return nil, err
 	}
@@ -65,12 +65,12 @@ func (service Product) Get(ctx context.Context, filter models.ProductListRequest
 		return nil, err
 	}
 
-	roles, err := service.roleRepository.GetRoleCodes(*ctxu.ID)
+	roles, err := service.roleRepository.GetRoleCodes(ctxu.ID)
 	if err != nil {
 		return nil, err
 	}
 
-	err = service.ac.Authorize(ctx, *ctxu.ID, accesscontrol.READ, accesscontrol.ALLRESOURCE, roles...)
+	err = service.ac.Authorize(ctx, ctxu.ID, accesscontrol.READ, accesscontrol.ALLRESOURCE, roles...)
 	if err != nil {
 		return nil, err
 	}
@@ -84,12 +84,12 @@ func (service Product) Create(ctx context.Context, value models.Product) error {
 		return err
 	}
 
-	roles, err := service.roleRepository.GetRoleCodes(*ctxu.ID)
+	roles, err := service.roleRepository.GetRoleCodes(ctxu.ID)
 	if err != nil {
 		return err
 	}
 
-	err = service.ac.Authorize(ctx, *ctxu.ID, accesscontrol.CREATE, accesscontrol.NEW, roles...)
+	err = service.ac.Authorize(ctx, ctxu.ID, accesscontrol.CREATE, accesscontrol.NEW, roles...)
 	if err != nil {
 		return err
 	}
@@ -106,12 +106,12 @@ func (service Product) Update(ctx context.Context, value models.Product) error {
 		return err
 	}
 
-	roles, err := service.roleRepository.GetRoleCodes(*ctxu.ID)
+	roles, err := service.roleRepository.GetRoleCodes(ctxu.ID)
 	if err != nil {
 		return err
 	}
 
-	err = service.ac.Authorize(ctx, *ctxu.ID, accesscontrol.UPDATE, *value.ID, roles...)
+	err = service.ac.Authorize(ctx, ctxu.ID, accesscontrol.UPDATE, *value.ID, roles...)
 	if err != nil {
 		return err
 	}
@@ -127,12 +127,12 @@ func (service Product) Delete(ctx context.Context, id string) error {
 		return err
 	}
 
-	roles, err := service.roleRepository.GetRoleCodes(*ctxu.ID)
+	roles, err := service.roleRepository.GetRoleCodes(ctxu.ID)
 	if err != nil {
 		return err
 	}
 
-	err = service.ac.Authorize(ctx, *ctxu.ID, accesscontrol.DELETE, id, roles...)
+	err = service.ac.Authorize(ctx, ctxu.ID, accesscontrol.DELETE, id, roles...)
 	if err != nil {
 		return err
 	}

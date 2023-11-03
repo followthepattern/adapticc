@@ -52,10 +52,10 @@ func getAuthorizedUserFromClaims(claims jwt.MapClaims) (*models.User, error) {
 	}
 
 	return &models.User{
-		ID:        &id,
-		Email:     &email,
-		FirstName: &firstName,
-		LastName:  &lastName,
+		ID:        id,
+		Email:     email,
+		FirstName: firstName,
+		LastName:  lastName,
 	}, nil
 }
 

@@ -27,7 +27,7 @@ func NewJWT(logger *slog.Logger, cfg config.Config) JWT {
 
 func (a JWT) Authenticate(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
-		var userContext models.User = models.UnAuthorizedUser
+		var userContext models.User
 
 		defer func() {
 			ctx := context.WithValue(r.Context(), utils.CtxUserKey, userContext)

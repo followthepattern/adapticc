@@ -18,17 +18,17 @@ func ExpectGetAuthUserByEmail(mock sqlmock.Sqlmock, result models.AuthUser, emai
 	rows := sqlmock.NewRows(columns)
 
 	values := []driver.Value{
-		*result.Active,
-		*result.CreatedAt,
-		*result.CreationUserID,
-		*result.Email,
-		*result.FirstName,
-		*result.ID,
-		*result.LastName,
+		result.Active,
+		result.CreatedAt,
+		result.CreationUserID,
+		result.Email,
+		result.FirstName,
+		result.ID,
+		result.LastName,
 		result.PasswordHash,
 		result.Salt,
-		*result.UpdateUserID,
-		*result.UpdatedAt,
+		result.UpdateUserID,
+		result.UpdatedAt,
 	}
 
 	rows.AddRow(values...)
@@ -44,11 +44,20 @@ func ExpectVerifyEmail(mock sqlmock.Sqlmock, count int, email string) {
 		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(count))
 }
 
-func ExpectCreateAuthUser(mock sqlmock.Sqlmock, userID string, insert models.AuthUser) {
-	sqlQuery := fmt.Sprintf(`INSERT INTO "usr"."users" ("active", "created_at", "creation_user_id", "email", "first_name", "id", "last_name", "password_hash", "salt", "update_user_id", "updated_at") VALUES (FALSE, '.*', NULL, '%v', '%v', '.*', '%v', '.*', '.*', NULL, NULL)`,
-		*insert.Email,
-		*insert.FirstName,
-		*insert.LastName,
+func ExpectCreateAuthUser(mock sqlmock.Sqlmock, insert models.AuthUser) {
+	sqlQuery := fmt.Sprintf(`
+	INSERT INTO
+		"usr"."users" ("created_at",
+		"email",
+		"first_name",
+		"id",
+		"last_name",
+		"password_hash",
+		"salt")
+	VALUES ('.*', '%s', '%s', '.*', '%s', '.*', '.*')`,
+		insert.Email,
+		insert.FirstName,
+		insert.LastName,
 	)
 
 	mock.ExpectExec(sqlQuery).

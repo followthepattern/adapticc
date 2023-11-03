@@ -6,9 +6,8 @@ import (
 
 	"log/slog"
 
-	. "github.com/doug-martin/goqu/v9"
 	"github.com/followthepattern/adapticc/pkg/models"
-	"github.com/followthepattern/adapticc/pkg/utils/pointers"
+	. "github.com/followthepattern/goqu/v9"
 )
 
 type Auth struct {
@@ -24,24 +23,24 @@ func NewAuth(database *sql.DB, logger *slog.Logger) Auth {
 }
 
 func (service Auth) VerifyEmail(email string) (bool, error) {
-	count, err := service.db.From("usr.users").Where(Ex{"email": email}).Count()
+	count, err := service.db.From(userTableName).Where(Ex{"email": email}).Count()
 
 	return count == 0, err
 }
 
 func (service Auth) RegisterUser(registerUser models.AuthUser) error {
 	registerUser.Userlog = models.Userlog{
-		CreatedAt: pointers.ToPtr(time.Now()),
+		CreatedAt: time.Now(),
 	}
 
-	_, err := service.db.Insert("usr.users").Rows(registerUser).Executor().Exec()
+	_, err := service.db.Insert(userTableName).Rows(registerUser).Executor().Exec()
 	return err
 }
 
 func (service Auth) VerifyLogin(email string) (models.AuthUser, error) {
 	authUser := models.AuthUser{}
 
-	_, err := service.db.From("usr.users").Where(Ex{"email": email}).ScanStruct(&authUser)
+	_, err := service.db.From(userTableName).Where(Ex{"email": email}).ScanStruct(&authUser)
 	if err != nil {
 		return authUser, err
 	}

@@ -9,7 +9,7 @@ import (
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/utils/pointers"
 
-	. "github.com/doug-martin/goqu/v9"
+	. "github.com/followthepattern/goqu/v9"
 )
 
 type User struct {
@@ -30,7 +30,7 @@ func NewUser(database *sql.DB) User {
 
 func (repo User) Create(users []models.User) (err error) {
 	for i := range users {
-		users[i].Userlog.CreatedAt = pointers.ToPtr(time.Now())
+		users[i].Userlog.CreatedAt = time.Now()
 	}
 	_, err = repo.db.Insert(userTableName).Rows(users).Executor().Exec()
 	return
@@ -111,11 +111,11 @@ func (repo User) Get(request models.UserListRequestParams) (*models.UserListResp
 }
 
 func (repo User) Update(user models.User) error {
-	user.Userlog.UpdatedAt = pointers.ToPtr(time.Now())
+	user.Userlog.UpdatedAt = time.Now()
 
 	query := repo.db.Update(userTableName).
 		Set(user).
-		Where(C("id").Eq(*user.ID))
+		Where(C("id").Eq(user.ID))
 
 	_, err := query.Executor().Exec()
 	return err

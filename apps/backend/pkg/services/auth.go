@@ -11,7 +11,6 @@ import (
 	"github.com/followthepattern/adapticc/pkg/repositories/database"
 	"github.com/followthepattern/adapticc/pkg/repositories/email"
 	"github.com/followthepattern/adapticc/pkg/utils"
-	"github.com/followthepattern/adapticc/pkg/utils/pointers"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
 )
@@ -51,10 +50,10 @@ func (service Auth) Login(ctx context.Context, email string, password string) (*
 
 	expiresAt := time.Now().Add(time.Hour * 24)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
-		"ID":        *authUser.ID,
-		"email":     *authUser.Email,
-		"firstName": *authUser.FirstName,
-		"lastName":  *authUser.LastName,
+		"ID":        authUser.ID,
+		"email":     authUser.Email,
+		"firstName": authUser.FirstName,
+		"lastName":  authUser.LastName,
 		"expiresAt": expiresAt,
 	})
 
@@ -89,11 +88,11 @@ func (service Auth) Register(ctx context.Context, register models.RegisterReques
 
 	creationUser := models.AuthUser{
 		User: models.User{
-			ID:        pointers.ToPtr(uuid.New().String()),
-			Email:     &register.Email,
-			FirstName: &register.FirstName,
-			LastName:  &register.LastName,
-			Active:    pointers.ToPtr(false),
+			ID:        uuid.New().String(),
+			Email:     register.Email,
+			FirstName: register.FirstName,
+			LastName:  register.LastName,
+			Active:    false,
 		},
 		Password: models.Password{
 			PasswordHash: passwordHash,
@@ -106,7 +105,7 @@ func (service Auth) Register(ctx context.Context, register models.RegisterReques
 		return nil, err
 	}
 
-	mail := GetActivationMailTemplate(service.cfg, *creationUser.ID, *creationUser.Email)
+	mail := GetActivationMailTemplate(service.cfg, creationUser.ID, creationUser.Email)
 
 	err = service.mail.SendMail(mail)
 	if err != nil {
@@ -138,10 +137,10 @@ func GetActivationMailTemplate(cfg config.Config, userID string, email string) m
 func GenerateTokenStringFromUser(model models.User, secret []byte) (string, error) {
 	expiresAt := time.Now().Add(time.Hour * 24)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
-		"ID":        *model.ID,
-		"email":     *model.Email,
-		"firstName": *model.FirstName,
-		"lastName":  *model.LastName,
+		"ID":        model.ID,
+		"email":     model.Email,
+		"firstName": model.FirstName,
+		"lastName":  model.LastName,
 		"expiresAt": expiresAt,
 	})
 

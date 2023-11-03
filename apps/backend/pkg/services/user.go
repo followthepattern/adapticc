@@ -8,7 +8,6 @@ import (
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/repositories/database"
 	"github.com/followthepattern/adapticc/pkg/utils"
-	"github.com/followthepattern/adapticc/pkg/utils/pointers"
 	"github.com/google/uuid"
 )
 
@@ -37,12 +36,12 @@ func (service User) GetByID(ctx context.Context, id string) (*models.User, error
 		return nil, err
 	}
 
-	roles, err := service.roleRepository.GetRoleCodes(*ctxu.ID)
+	roles, err := service.roleRepository.GetRoleCodes(ctxu.ID)
 	if err != nil {
 		return nil, err
 	}
 
-	err = service.ac.Authorize(ctx, *ctxu.ID, accesscontrol.READ, id, roles...)
+	err = service.ac.Authorize(ctx, ctxu.ID, accesscontrol.READ, id, roles...)
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +51,7 @@ func (service User) GetByID(ctx context.Context, id string) (*models.User, error
 		return nil, err
 	}
 
-	if result.IsNil() {
+	if result.IsDefault() {
 		return nil, nil
 	}
 
@@ -65,7 +64,7 @@ func (service User) Profile(ctx context.Context) (*models.User, error) {
 		return nil, err
 	}
 
-	user, err := service.userRepository.GetByID(*ctxu.ID)
+	user, err := service.userRepository.GetByID(ctxu.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -79,12 +78,12 @@ func (service User) Get(ctx context.Context, filter models.UserListRequestParams
 		return models.UserListResponse{}, err
 	}
 
-	roles, err := service.roleRepository.GetRoleCodes(*ctxu.ID)
+	roles, err := service.roleRepository.GetRoleCodes(ctxu.ID)
 	if err != nil {
 		return models.UserListResponse{}, err
 	}
 
-	err = service.ac.Authorize(ctx, *ctxu.ID, accesscontrol.READ, accesscontrol.ALLRESOURCE, roles...)
+	err = service.ac.Authorize(ctx, ctxu.ID, accesscontrol.READ, accesscontrol.ALLRESOURCE, roles...)
 	if err != nil {
 		return models.UserListResponse{}, err
 	}
@@ -103,19 +102,19 @@ func (service User) Create(ctx context.Context, value models.User) error {
 		return nil
 	}
 
-	roles, err := service.roleRepository.GetRoleCodes(*ctxu.ID)
+	roles, err := service.roleRepository.GetRoleCodes(ctxu.ID)
 	if err != nil {
 		return err
 	}
 
-	err = service.ac.Authorize(ctx, *ctxu.ID, accesscontrol.CREATE, accesscontrol.NEW, roles...)
+	err = service.ac.Authorize(ctx, ctxu.ID, accesscontrol.CREATE, accesscontrol.NEW, roles...)
 	if err != nil {
 		return err
 	}
 
-	value.ID = pointers.ToPtr(uuid.New().String())
+	value.ID = uuid.New().String()
 	value.CreationUserID = ctxu.ID
-	value.Active = pointers.ToPtr(false)
+	value.Active = false
 
 	return service.userRepository.Create([]models.User{value})
 }
@@ -126,12 +125,12 @@ func (service User) Update(ctx context.Context, value models.User) error {
 		return nil
 	}
 
-	roles, err := service.roleRepository.GetRoleCodes(*ctxu.ID)
+	roles, err := service.roleRepository.GetRoleCodes(ctxu.ID)
 	if err != nil {
 		return err
 	}
 
-	err = service.ac.Authorize(ctx, *ctxu.ID, accesscontrol.UPDATE, *value.ID, roles...)
+	err = service.ac.Authorize(ctx, ctxu.ID, accesscontrol.UPDATE, value.ID, roles...)
 	if err != nil {
 		return err
 	}
@@ -151,12 +150,12 @@ func (service User) Delete(ctx context.Context, id string) error {
 		return err
 	}
 
-	roles, err := service.roleRepository.GetRoleCodes(*ctxu.ID)
+	roles, err := service.roleRepository.GetRoleCodes(ctxu.ID)
 	if err != nil {
 		return err
 	}
 
-	err = service.ac.Authorize(ctx, *ctxu.ID, accesscontrol.DELETE, id, roles...)
+	err = service.ac.Authorize(ctx, ctxu.ID, accesscontrol.DELETE, id, roles...)
 	if err != nil {
 		return err
 	}

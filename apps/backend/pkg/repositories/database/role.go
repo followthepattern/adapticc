@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"time"
 
-	. "github.com/doug-martin/goqu/v9"
-	"github.com/doug-martin/goqu/v9/exp"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/utils/pointers"
+	. "github.com/followthepattern/goqu/v9"
+	"github.com/followthepattern/goqu/v9/exp"
 )
 
 var (
@@ -123,7 +123,7 @@ func (repo Role) GetRolesByUserID(userID string) ([]models.Role, error) {
 
 func (repo Role) AddRoleToUser(values []models.UserRole) error {
 	for i, _ := range values {
-		values[i].Userlog.CreatedAt = pointers.ToPtr(time.Now())
+		values[i].Userlog.CreatedAt = time.Now()
 	}
 
 	insertion := repo.db.Insert(userRoleTableName)

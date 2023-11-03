@@ -24,21 +24,21 @@ input ListFilter {
 }
 
 type User {
-	id: String
-	email: String
-	firstName: String
-	lastName: String
-	active: Boolean
-	creationUserID: String
-	updateUserID: String
-	createdAt: Time
-	updatedAt: Time
+	id: String!
+	email: String!
+	firstName: String!
+	lastName: String!
+	active: Boolean!
+	creationUserID: String!
+	updateUserID: String!
+	createdAt: Time!
+	updatedAt: Time!
 }
 
 input UserInput {
-	email: String
-	firstName: String
-	lastName: String
+	email: String!
+	firstName: String!
+	lastName: String!
 }
 
 type UserListResponse {
@@ -52,10 +52,10 @@ type Product {
 	id: String
 	title: String
 	description: String
-	creationUserID: String
-	updateUserID: String
-	createdAt: Time
-	updatedAt: Time
+	creationUserID: String!
+	updateUserID: String!
+	createdAt: Time!
+	updatedAt: Time!
 }
 
 input ProductInput {
@@ -74,10 +74,10 @@ type Role {
 	id: String!
 	code: String!
 	name: String!
-	creationUserID: String
-	updateUserID: String
-	createdAt: Time
-	updatedAt: Time
+	creationUserID: String!
+	updateUserID: String!
+	createdAt: Time!
+	updatedAt: Time!
 }
 
 type RoleListResponse {
@@ -93,9 +93,9 @@ type LoginResponse {
 }
 
 type RegisterResponse {
-	email: String
-	first_name: String
-	last_name: String
+	email: String!
+	first_name: String!
+	last_name: String!
 }
 
 schema {

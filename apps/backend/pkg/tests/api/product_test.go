@@ -103,7 +103,7 @@ var _ = Describe("Product Test", func() {
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
 			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("%s %s", middlewares.BearerPrefix, tokenString))
 
-			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, *contextUser.ID)
+			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, contextUser.ID)
 			mockCerbos.EXPECT().IsAllowed(gomock.Any(), gomock.Any(), gomock.Any(), accesscontrol.READ).Return(true, nil)
 			sqlexpectations.ExpectProduct(mock, product)
 
@@ -163,7 +163,7 @@ var _ = Describe("Product Test", func() {
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
 			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("%s %s", middlewares.BearerPrefix, tokenString))
 
-			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, *contextUser.ID)
+			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, contextUser.ID)
 			mockCerbos.EXPECT().IsAllowed(gomock.Any(), gomock.Any(), gomock.Any(), accesscontrol.READ).Return(true, nil)
 			sqlexpectations.ExpectProducts(mock, filter, page, pageSize, []models.Product{product})
 
@@ -210,9 +210,9 @@ var _ = Describe("Product Test", func() {
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
 			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("%s %s", middlewares.BearerPrefix, tokenString))
 
-			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, *contextUser.ID)
+			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, contextUser.ID)
 			mockCerbos.EXPECT().IsAllowed(gomock.Any(), gomock.Any(), gomock.Any(), accesscontrol.CREATE).Return(true, nil)
-			sqlexpectations.CreateProduct(mock, *contextUser.ID, product)
+			sqlexpectations.CreateProduct(mock, contextUser.ID, product)
 
 			code, err := runRequest(handler, httpRequest, testResponse)
 			Expect(err).To(BeNil())
@@ -256,9 +256,9 @@ var _ = Describe("Product Test", func() {
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
 			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("%s %s", middlewares.BearerPrefix, tokenString))
 
-			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, *contextUser.ID)
+			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, contextUser.ID)
 			mockCerbos.EXPECT().IsAllowed(gomock.Any(), gomock.Any(), gomock.Any(), accesscontrol.UPDATE).Return(true, nil)
-			sqlexpectations.UpdateProduct(mock, *contextUser.ID, product)
+			sqlexpectations.UpdateProduct(mock, contextUser.ID, product)
 
 			code, err := runRequest(handler, httpRequest, testResponse)
 			Expect(err).To(BeNil())
@@ -298,7 +298,7 @@ var _ = Describe("Product Test", func() {
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
 			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("%s %s", middlewares.BearerPrefix, tokenString))
 
-			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, *contextUser.ID)
+			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, contextUser.ID)
 			mockCerbos.EXPECT().IsAllowed(gomock.Any(), gomock.Any(), gomock.Any(), accesscontrol.DELETE).Return(true, nil)
 			sqlexpectations.DeleteProduct(mock, product)
 

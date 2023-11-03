@@ -9,8 +9,8 @@ import (
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/utils/pointers"
 
-	. "github.com/doug-martin/goqu/v9"
-	"github.com/doug-martin/goqu/v9/exp"
+	. "github.com/followthepattern/goqu/v9"
+	"github.com/followthepattern/goqu/v9/exp"
 )
 
 var productTable = S("usr").Table("products")
@@ -29,7 +29,7 @@ func NewProduct(database *sql.DB) Product {
 
 func (repo Product) Create(products []models.Product) (err error) {
 	for i, _ := range products {
-		products[i].Userlog.CreatedAt = pointers.ToPtr(time.Now())
+		products[i].Userlog.CreatedAt = time.Now()
 	}
 
 	insertion := repo.db.Insert(productTable)
@@ -114,7 +114,7 @@ func (repo Product) Get(request models.ProductListRequestParams) (*models.Produc
 }
 
 func (repo Product) Update(model models.Product) error {
-	model.Userlog.UpdatedAt = pointers.ToPtr(time.Now())
+	model.Userlog.UpdatedAt = time.Now()
 
 	_, err := repo.db.Update(productTable).
 		Set(model).

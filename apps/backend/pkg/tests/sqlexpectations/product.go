@@ -77,10 +77,8 @@ func CreateProduct(mock sqlmock.Sqlmock, userID string, product models.Product) 
 			"creation_user_id",
 			"description",
 			"id",
-			"title",
-			"update_user_id",
-			"updated_at")
-		VALUES ('.*', '%s', '%s', '.*', '%s', NULL, NULL)`,
+			"title")
+		VALUES ('.*', '%s', '%s', '.*', '%s')`,
 		userID,
 		*product.Description,
 		*product.Title,

@@ -95,10 +95,10 @@ var _ = Describe("Authentication", func() {
 		)
 
 		It("Success", func() {
-			sqlexpectations.ExpectGetAuthUserByEmail(mock, generatedUser, *generatedUser.Email)
+			sqlexpectations.ExpectGetAuthUserByEmail(mock, generatedUser, generatedUser.Email)
 
 			graphRequest := graphqlRequest{
-				Query: fmt.Sprintf(queryTemplate, *generatedUser.Email, password),
+				Query: fmt.Sprintf(queryTemplate, generatedUser.Email, password),
 			}
 
 			request, _ := json.Marshal(graphRequest)
@@ -113,10 +113,10 @@ var _ = Describe("Authentication", func() {
 		})
 
 		It("Wrong password", func() {
-			sqlexpectations.ExpectGetAuthUserByEmail(mock, generatedUser, *generatedUser.Email)
+			sqlexpectations.ExpectGetAuthUserByEmail(mock, generatedUser, generatedUser.Email)
 
 			graphRequest := graphqlRequest{
-				Query: fmt.Sprintf(queryTemplate, *generatedUser.Email, "wrong-password"),
+				Query: fmt.Sprintf(queryTemplate, generatedUser.Email, "wrong-password"),
 			}
 
 			request, _ := json.Marshal(graphRequest)
@@ -146,15 +146,15 @@ var _ = Describe("Authentication", func() {
 
 		It("Success", func() {
 			graphRequest := graphqlRequest{
-				Query: fmt.Sprintf(queryTemplate, *generatedUser.Email, *generatedUser.FirstName, *generatedUser.LastName, password),
+				Query: fmt.Sprintf(queryTemplate, generatedUser.Email, generatedUser.FirstName, generatedUser.LastName, password),
 			}
 			request, _ := json.Marshal(graphRequest)
 
-			sqlexpectations.ExpectVerifyEmail(mock, 0, *generatedUser.Email)
+			sqlexpectations.ExpectVerifyEmail(mock, 0, generatedUser.Email)
 
-			sqlexpectations.ExpectCreateAuthUser(mock, "", generatedUser)
+			sqlexpectations.ExpectCreateAuthUser(mock, generatedUser)
 
-			mailTemplate := services.GetActivationMailTemplate(cfg, "", *generatedUser.Email)
+			mailTemplate := services.GetActivationMailTemplate(cfg, "", generatedUser.Email)
 
 			mockEmail.EXPECT().SetFrom(gomock.Any())
 			mockEmail.EXPECT().SetTo(mailTemplate.To)
@@ -175,20 +175,20 @@ var _ = Describe("Authentication", func() {
 
 			Expect(testResponse.Errors).To(HaveLen(0))
 
-			Expect(*generatedUser.FirstName).To(Equal(*testResponse.Data.Authentication.Register.FirstName))
-			Expect(*generatedUser.LastName).To(Equal(*testResponse.Data.Authentication.Register.LastName))
-			Expect(*generatedUser.Email).To(Equal(*testResponse.Data.Authentication.Register.Email))
+			Expect(generatedUser.FirstName).To(Equal(testResponse.Data.Authentication.Register.FirstName))
+			Expect(generatedUser.LastName).To(Equal(testResponse.Data.Authentication.Register.LastName))
+			Expect(generatedUser.Email).To(Equal(testResponse.Data.Authentication.Register.Email))
 
 			Expect(mock.ExpectationsWereMet()).To(BeNil())
 		})
 
 		It("Duplicated email", func() {
 			graphRequest := graphqlRequest{
-				Query: fmt.Sprintf(queryTemplate, *generatedUser.Email, *generatedUser.FirstName, *generatedUser.LastName, password),
+				Query: fmt.Sprintf(queryTemplate, generatedUser.Email, generatedUser.FirstName, generatedUser.LastName, password),
 			}
 			request, _ := json.Marshal(graphRequest)
 
-			sqlexpectations.ExpectVerifyEmail(mock, 1, *generatedUser.Email)
+			sqlexpectations.ExpectVerifyEmail(mock, 1, generatedUser.Email)
 
 			code, err := runRequest(handler, httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request)), testResponse)
 			Expect(err).To(BeNil())
@@ -197,7 +197,7 @@ var _ = Describe("Authentication", func() {
 			Expect(code).To(Equal(http.StatusOK))
 
 			Expect(testResponse.Errors).To(HaveLen(1))
-			Expect(testResponse.Errors[0].Message).To(Equal(fmt.Sprintf(services.EMAIL_IS_ALREADY_IN_USE_PATTERN, *generatedUser.Email)))
+			Expect(testResponse.Errors[0].Message).To(Equal(fmt.Sprintf(services.EMAIL_IS_ALREADY_IN_USE_PATTERN, generatedUser.Email)))
 		})
 	})
 })

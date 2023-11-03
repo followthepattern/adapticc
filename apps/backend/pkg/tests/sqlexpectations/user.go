@@ -115,20 +115,17 @@ func ExpectUsersWithoutPaging(mock sqlmock.Sqlmock, result []models.User, listRe
 func ExpectCreateUser(mock sqlmock.Sqlmock, userID string, insert models.User) {
 	sqlQuery := fmt.Sprintf(`
 	INSERT INTO
-		"usr"."users" ("active",
-			"created_at",
+		"usr"."users" ("created_at",
 			"creation_user_id",
 			"email",
 			"first_name",
 			"id",
-			"last_name",
-			"update_user_id",
-			"updated_at")
-		VALUES (FALSE, '.*', '%s', '%s', '%s', '.*', '%s', NULL, NULL)`,
+			"last_name")
+		VALUES ('.*', '%s', '%s', '%s', '.*', '%s')`,
 		userID,
-		*insert.Email,
-		*insert.FirstName,
-		*insert.LastName,
+		insert.Email,
+		insert.FirstName,
+		insert.LastName,
 	)
 
 	mock.ExpectExec(sqlQuery).
@@ -143,10 +140,10 @@ func ExpectUpdateUser(mock sqlmock.Sqlmock, userID string, model models.User) {
 		"first_name"='%s',"last_name"='%s',"update_user_id"='%s',"updated_at"='.*'
 	WHERE
 		("id" = '%s')`,
-		*model.FirstName,
-		*model.LastName,
+		model.FirstName,
+		model.LastName,
 		userID,
-		*model.ID,
+		model.ID,
 	)
 
 	mock.ExpectExec(sqlQuery).

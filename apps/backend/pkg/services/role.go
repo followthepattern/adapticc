@@ -28,12 +28,12 @@ func (service Role) GetByID(ctx context.Context, id string) (*models.Role, error
 		return nil, err
 	}
 
-	roles, err := service.roleRepository.GetRoleCodes(*ctxu.ID)
+	roles, err := service.roleRepository.GetRoleCodes(ctxu.ID)
 	if err != nil {
 		return nil, err
 	}
 
-	err = service.ac.Authorize(ctx, *ctxu.ID, accesscontrol.READ, id, roles...)
+	err = service.ac.Authorize(ctx, ctxu.ID, accesscontrol.READ, id, roles...)
 	if err != nil {
 		return nil, err
 	}
@@ -52,12 +52,12 @@ func (service Role) Get(ctx context.Context, filter models.RoleListRequestParams
 		return nil, err
 	}
 
-	roles, err := service.roleRepository.GetRoleCodes(*ctxu.ID)
+	roles, err := service.roleRepository.GetRoleCodes(ctxu.ID)
 	if err != nil {
 		return nil, err
 	}
 
-	err = service.ac.Authorize(ctx, *ctxu.ID, accesscontrol.READ, accesscontrol.ALLRESOURCE, roles...)
+	err = service.ac.Authorize(ctx, ctxu.ID, accesscontrol.READ, accesscontrol.ALLRESOURCE, roles...)
 	if err != nil {
 		return nil, err
 	}
@@ -71,12 +71,12 @@ func (service Role) AddRoleToUser(ctx context.Context, value models.UserRole) er
 		return err
 	}
 
-	roles, err := service.roleRepository.GetRoleCodes(*ctxu.ID)
+	roles, err := service.roleRepository.GetRoleCodes(ctxu.ID)
 	if err != nil {
 		return err
 	}
 
-	err = service.ac.Authorize(ctx, *ctxu.ID, accesscontrol.CREATE, accesscontrol.NEW, roles...)
+	err = service.ac.Authorize(ctx, ctxu.ID, accesscontrol.CREATE, accesscontrol.NEW, roles...)
 	if err != nil {
 		return err
 	}
@@ -92,12 +92,12 @@ func (service Role) RemoveRoleFromUser(ctx context.Context, value models.UserRol
 		return err
 	}
 
-	roles, err := service.roleRepository.GetRoleCodes(*ctxu.ID)
+	roles, err := service.roleRepository.GetRoleCodes(ctxu.ID)
 	if err != nil {
 		return err
 	}
 
-	err = service.ac.Authorize(ctx, *ctxu.ID, accesscontrol.CREATE, accesscontrol.NEW, roles...)
+	err = service.ac.Authorize(ctx, ctxu.ID, accesscontrol.CREATE, accesscontrol.NEW, roles...)
 	if err != nil {
 		return err
 	}

@@ -90,7 +90,7 @@ var _ = Describe("User graphql queries", func() {
 					}
 				}
 			}`
-			query := fmt.Sprintf(queryTemplate, *user.ID)
+			query := fmt.Sprintf(queryTemplate, user.ID)
 			graphRequest := graphqlRequest{
 				Query: query,
 			}
@@ -103,9 +103,9 @@ var _ = Describe("User graphql queries", func() {
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
 			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("Bearer %s", tokenString))
 
-			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, *user.ID)
+			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, user.ID)
 			mockCerbos.EXPECT().IsAllowed(gomock.Any(), gomock.Any(), gomock.Any(), accesscontrol.READ).Return(true, nil)
-			sqlexpectations.ExpectGetUserByID(mock, user, *user.ID)
+			sqlexpectations.ExpectGetUserByID(mock, user, user.ID)
 
 			code, err := runRequest(handler, httpRequest, testResponse)
 			Expect(err).To(BeNil())
@@ -114,7 +114,7 @@ var _ = Describe("User graphql queries", func() {
 
 			Expect(mock.ExpectationsWereMet()).To(BeNil())
 			Expect(code).To(Equal(http.StatusOK))
-			Expect(*testResponse.Data.Users.Single.ID).To(Equal(*user.ID))
+			Expect(testResponse.Data.Users.Single.ID).To(Equal(user.ID))
 		})
 	})
 
@@ -166,7 +166,7 @@ var _ = Describe("User graphql queries", func() {
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
 			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("Bearer %s", tokenString))
 
-			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, *users[0].ID)
+			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, users[0].ID)
 			mockCerbos.EXPECT().IsAllowed(gomock.Any(), gomock.Any(), gomock.Any(), accesscontrol.READ).Return(true, nil)
 			sqlexpectations.ExpectUsers(mock, users, listRequestParams)
 
@@ -177,10 +177,10 @@ var _ = Describe("User graphql queries", func() {
 			Expect(testResponse.Errors).To(BeEmpty())
 			Expect(testResponse.Data.Users.List.Data).To(HaveLen(len(users)))
 			for i := range testResponse.Data.Users.List.Data {
-				Expect(*testResponse.Data.Users.List.Data[i].ID).To(Equal(*users[i].ID))
-				Expect(*testResponse.Data.Users.List.Data[i].Email).To(Equal(*users[i].Email))
-				Expect(*testResponse.Data.Users.List.Data[i].FirstName).To(Equal(*users[i].FirstName))
-				Expect(*testResponse.Data.Users.List.Data[i].LastName).To(Equal(*users[i].LastName))
+				Expect(testResponse.Data.Users.List.Data[i].ID).To(Equal(users[i].ID))
+				Expect(testResponse.Data.Users.List.Data[i].Email).To(Equal(users[i].Email))
+				Expect(testResponse.Data.Users.List.Data[i].FirstName).To(Equal(users[i].FirstName))
+				Expect(testResponse.Data.Users.List.Data[i].LastName).To(Equal(users[i].LastName))
 			}
 
 			Expect(mock.ExpectationsWereMet()).To(BeNil())
@@ -226,7 +226,7 @@ var _ = Describe("User graphql queries", func() {
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
 			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("Bearer %s", tokenString))
 
-			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, *users[0].ID)
+			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, users[0].ID)
 			mockCerbos.EXPECT().IsAllowed(gomock.Any(), gomock.Any(), gomock.Any(), accesscontrol.READ).Return(true, nil)
 			sqlexpectations.ExpectUsersWithoutPaging(mock, users, listRequestParams)
 
@@ -237,10 +237,10 @@ var _ = Describe("User graphql queries", func() {
 			Expect(testResponse.Errors).To(BeEmpty())
 			Expect(testResponse.Data.Users.List.Data).To(HaveLen(len(users)))
 			for i := range testResponse.Data.Users.List.Data {
-				Expect(*testResponse.Data.Users.List.Data[i].ID).To(Equal(*users[i].ID))
-				Expect(*testResponse.Data.Users.List.Data[i].Email).To(Equal(*users[i].Email))
-				Expect(*testResponse.Data.Users.List.Data[i].FirstName).To(Equal(*users[i].FirstName))
-				Expect(*testResponse.Data.Users.List.Data[i].LastName).To(Equal(*users[i].LastName))
+				Expect(testResponse.Data.Users.List.Data[i].ID).To(Equal(users[i].ID))
+				Expect(testResponse.Data.Users.List.Data[i].Email).To(Equal(users[i].Email))
+				Expect(testResponse.Data.Users.List.Data[i].FirstName).To(Equal(users[i].FirstName))
+				Expect(testResponse.Data.Users.List.Data[i].LastName).To(Equal(users[i].LastName))
 			}
 
 			Expect(mock.ExpectationsWereMet()).To(BeNil())
@@ -275,7 +275,7 @@ var _ = Describe("User graphql queries", func() {
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
 			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("%s %s", middlewares.BearerPrefix, tokenString))
 
-			sqlexpectations.ExpectGetUserByID(mock, user, *user.ID)
+			sqlexpectations.ExpectGetUserByID(mock, user, user.ID)
 
 			code, err := runRequest(handler, httpRequest, testResponse)
 			Expect(err).To(BeNil())
@@ -284,7 +284,7 @@ var _ = Describe("User graphql queries", func() {
 
 			Expect(code).To(Equal(http.StatusOK))
 			Expect(mock.ExpectationsWereMet()).To(BeNil())
-			Expect(*testResponse.Data.Users.Profile.ID).To(Equal(*user.ID))
+			Expect(testResponse.Data.Users.Profile.ID).To(Equal(user.ID))
 		})
 	})
 
@@ -307,7 +307,7 @@ var _ = Describe("User graphql queries", func() {
 				}
 			}`
 
-			query := fmt.Sprintf(queryTemplate, *user.Email, *user.FirstName, *user.LastName)
+			query := fmt.Sprintf(queryTemplate, user.Email, user.FirstName, user.LastName)
 			graphRequest := graphqlRequest{
 				Query: query,
 			}
@@ -320,9 +320,9 @@ var _ = Describe("User graphql queries", func() {
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
 			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("%s %s", middlewares.BearerPrefix, tokenString))
 
-			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, *contextUser.ID)
+			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, contextUser.ID)
 			mockCerbos.EXPECT().IsAllowed(gomock.Any(), gomock.Any(), gomock.Any(), accesscontrol.CREATE).Return(true, nil)
-			sqlexpectations.ExpectCreateUser(mock, *contextUser.ID, user)
+			sqlexpectations.ExpectCreateUser(mock, contextUser.ID, user)
 
 			code, err := runRequest(handler, httpRequest, testResponse)
 			Expect(err).To(BeNil())
@@ -339,6 +339,7 @@ var _ = Describe("User graphql queries", func() {
 		var graphql string = `mutation {
 			users {
 				update (id: "%v", model: {
+					email: ""
 					firstName: "%s"
 					lastName: "%s"
 				}) {
@@ -353,7 +354,7 @@ var _ = Describe("User graphql queries", func() {
 			role1 := datagenerator.NewRandomRole()
 
 			graphRequest := graphqlRequest{
-				Query: fmt.Sprintf(graphql, *user.ID, *user.FirstName, *user.LastName),
+				Query: fmt.Sprintf(graphql, user.ID, user.FirstName, user.LastName),
 			}
 			request, _ := json.Marshal(graphRequest)
 
@@ -364,9 +365,9 @@ var _ = Describe("User graphql queries", func() {
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
 			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("Bearer %s", tokenString))
 
-			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, *contextUser.ID)
+			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, contextUser.ID)
 			mockCerbos.EXPECT().IsAllowed(gomock.Any(), gomock.Any(), gomock.Any(), accesscontrol.UPDATE).Return(true, nil)
-			sqlexpectations.ExpectUpdateUser(mock, *contextUser.ID, user)
+			sqlexpectations.ExpectUpdateUser(mock, contextUser.ID, user)
 
 			code, err := runRequest(handler, httpRequest, testResponse)
 			Expect(err).To(BeNil())
@@ -394,7 +395,7 @@ var _ = Describe("User graphql queries", func() {
 			role1 := datagenerator.NewRandomRole()
 
 			graphRequest := graphqlRequest{
-				Query: fmt.Sprintf(graphql, *user.ID),
+				Query: fmt.Sprintf(graphql, user.ID),
 			}
 			request, _ := json.Marshal(graphRequest)
 
@@ -405,9 +406,9 @@ var _ = Describe("User graphql queries", func() {
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
 			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("%s %s", middlewares.BearerPrefix, tokenString))
 
-			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, *contextUser.ID)
+			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, contextUser.ID)
 			mockCerbos.EXPECT().IsAllowed(gomock.Any(), gomock.Any(), gomock.Any(), accesscontrol.DELETE).Return(true, nil)
-			sqlexpectations.ExpectDeleteUser(mock, *user.ID)
+			sqlexpectations.ExpectDeleteUser(mock, user.ID)
 
 			code, err := runRequest(handler, httpRequest, testResponse)
 			Expect(err).To(BeNil())

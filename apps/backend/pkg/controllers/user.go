@@ -38,7 +38,7 @@ func (ctrl User) GetByID(ctx context.Context, userID string) (*models.User, erro
 		return nil, err
 	}
 
-	if result.IsNil() {
+	if result.IsDefault() {
 		return nil, nil
 	}
 

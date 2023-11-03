@@ -80,13 +80,8 @@ func (resolver UserResolver) Update(ctx context.Context, args struct {
 	Id    string
 	Model models.User
 }) (*ResponseStatus, error) {
-	user := models.User{
-		ID:        &args.Id,
-		FirstName: args.Model.FirstName,
-		LastName:  args.Model.LastName,
-	}
-
-	err := resolver.ctrl.Update(ctx, user)
+	args.Model.ID = args.Id
+	err := resolver.ctrl.Update(ctx, args.Model)
 	if err != nil {
 		return nil, err
 	}
