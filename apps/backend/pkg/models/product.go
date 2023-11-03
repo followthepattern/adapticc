@@ -5,14 +5,14 @@ import (
 )
 
 type Product struct {
-	ID          *string `db:"id"`
-	Title       *string `json:"title"`
-	Description *string `json:"description"`
+	ID          string `db:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
 	Userlog
 }
 
-func (m *Product) IsNil() bool {
-	return m == nil || m.ID == nil
+func (m Product) IsDefault() bool {
+	return len(m.ID) < 1
 }
 
 func (m Product) CreateValidate() error {

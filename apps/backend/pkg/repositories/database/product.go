@@ -58,8 +58,8 @@ func (repo Product) Get(request models.ProductListRequestParams) (*models.Produc
 
 	query := repo.db.From(productTable)
 
-	if request.Filter.Search != nil {
-		pattern := fmt.Sprintf("%%%s%%", *request.Filter.Search)
+	if len(request.Filter.Search) > 0 {
+		pattern := fmt.Sprintf("%%%s%%", request.Filter.Search)
 		query = query.Where(
 			Or(
 				I("id").Like(pattern),
@@ -118,7 +118,7 @@ func (repo Product) Update(model models.Product) error {
 
 	_, err := repo.db.Update(productTable).
 		Set(model).
-		Where(I("id").Eq(*model.ID)).
+		Where(I("id").Eq(model.ID)).
 		Executor().
 		Exec()
 

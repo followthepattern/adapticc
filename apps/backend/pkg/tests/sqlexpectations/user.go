@@ -32,9 +32,9 @@ func ExpectUsers(mock sqlmock.Sqlmock, result []models.User, listRequestParams m
 		(("first_name" LIKE '%%%s%%') OR
 		("last_name" LIKE '%%%s%%') OR
 		("email" LIKE '%%%s%%')) LIMIT 1`,
-		*listRequestParams.Filter.Search,
-		*listRequestParams.Filter.Search,
-		*listRequestParams.Filter.Search)
+		listRequestParams.Filter.Search,
+		listRequestParams.Filter.Search,
+		listRequestParams.Filter.Search)
 
 	mock.ExpectQuery(countQuery).
 		WillReturnRows(sqlmock.NewRows([]string{"count"}).
@@ -57,9 +57,9 @@ func ExpectUsers(mock sqlmock.Sqlmock, result []models.User, listRequestParams m
 		(("first_name" LIKE '%%%s%%') OR
 		("last_name" LIKE '%%%s%%') OR
 		("email" LIKE '%%%s%%')) LIMIT %v`,
-		*listRequestParams.Filter.Search,
-		*listRequestParams.Filter.Search,
-		*listRequestParams.Filter.Search,
+		listRequestParams.Filter.Search,
+		listRequestParams.Filter.Search,
+		listRequestParams.Filter.Search,
 		*listRequestParams.Pagination.PageSize)
 
 	SQLMockRows := ModelToSQLMockRows(result)
@@ -78,9 +78,9 @@ func ExpectUsersWithoutPaging(mock sqlmock.Sqlmock, result []models.User, listRe
 		("last_name" LIKE '%%%s%%') OR
 		("email" LIKE '%%%s%%'))
 	LIMIT 1`,
-		*listRequestParams.Filter.Search,
-		*listRequestParams.Filter.Search,
-		*listRequestParams.Filter.Search)
+		listRequestParams.Filter.Search,
+		listRequestParams.Filter.Search,
+		listRequestParams.Filter.Search)
 
 	mock.ExpectQuery(countQuery).
 		WillReturnRows(sqlmock.NewRows([]string{"count"}).
@@ -103,9 +103,9 @@ func ExpectUsersWithoutPaging(mock sqlmock.Sqlmock, result []models.User, listRe
 		(("first_name" LIKE '%%%s%%') OR
 		("last_name" LIKE '%%%s%%') OR
 		("email" LIKE '%%%s%%'))`,
-		*listRequestParams.Filter.Search,
-		*listRequestParams.Filter.Search,
-		*listRequestParams.Filter.Search)
+		listRequestParams.Filter.Search,
+		listRequestParams.Filter.Search,
+		listRequestParams.Filter.Search)
 
 	SQLMockRows := ModelToSQLMockRows(result)
 	mock.ExpectQuery(sqlQuery).

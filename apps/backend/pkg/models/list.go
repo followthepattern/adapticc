@@ -12,7 +12,7 @@ type ListRequestParams[T any] struct {
 }
 
 type ListFilter struct {
-	Search *string
+	Search string
 }
 
 type Pagination struct {

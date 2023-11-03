@@ -41,7 +41,7 @@ func (ctrl Product) GetByID(ctx context.Context, id string) (*models.Product, er
 		return nil, err
 	}
 
-	if result.IsNil() {
+	if result.IsDefault() {
 		return nil, nil
 	}
 

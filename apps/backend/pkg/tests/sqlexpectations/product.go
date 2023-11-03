@@ -22,7 +22,7 @@ func ExpectProduct(mock sqlmock.Sqlmock, result models.Product) {
 		WHERE
 			("id" = '%s')
 		LIMIT 1`,
-		*result.ID)
+		result.ID)
 
 	mock.ExpectQuery(sqlQuery).
 		WillReturnRows(ModelToSQLMockRows(result))
@@ -36,8 +36,8 @@ func ExpectProducts(mock sqlmock.Sqlmock, filter models.ListFilter, page int, pa
 		"usr"."products"
 	WHERE (("id" LIKE '%%%s%%') OR ("title" LIKE '%%%s%%'))
 	LIMIT 1`,
-		*filter.Search,
-		*filter.Search,
+		filter.Search,
+		filter.Search,
 	)
 
 	mock.ExpectQuery(countQuery).
@@ -60,8 +60,8 @@ func ExpectProducts(mock sqlmock.Sqlmock, filter models.ListFilter, page int, pa
 	FROM "usr"."products"
 	WHERE (("id" LIKE '%%%s%%') OR ("title" LIKE '%%%s%%'))
 	LIMIT %d OFFSET %d`,
-		*filter.Search,
-		*filter.Search,
+		filter.Search,
+		filter.Search,
 		page*pageSize,
 		pageSize,
 	)
@@ -80,8 +80,8 @@ func CreateProduct(mock sqlmock.Sqlmock, userID string, product models.Product) 
 			"title")
 		VALUES ('.*', '%s', '%s', '.*', '%s')`,
 		userID,
-		*product.Description,
-		*product.Title,
+		product.Description,
+		product.Title,
 	)
 
 	mock.ExpectExec(sqlQuery).
@@ -94,11 +94,11 @@ func UpdateProduct(mock sqlmock.Sqlmock, userID string, product models.Product) 
 		"usr"."products"
 	SET
 		"description"='%s',"id"='%s',"title"='%s',"update_user_id"='%s',"updated_at"='.*' WHERE ("id" = '%s')`,
-		*product.Description,
-		*product.ID,
-		*product.Title,
+		product.Description,
+		product.ID,
+		product.Title,
 		userID,
-		*product.ID)
+		product.ID)
 
 	mock.ExpectExec(sqlQuery).
 		WillReturnResult(sqlmock.NewResult(1, 1))
@@ -106,7 +106,7 @@ func UpdateProduct(mock sqlmock.Sqlmock, userID string, product models.Product) 
 
 func DeleteProduct(mock sqlmock.Sqlmock, product models.Product) {
 	sqlQuery := fmt.Sprintf(`DELETE FROM "usr"."products" WHERE ("id" = '%s')`,
-		*product.ID)
+		product.ID)
 
 	mock.ExpectExec(sqlQuery).
 		WillReturnResult(sqlmock.NewResult(1, 1))

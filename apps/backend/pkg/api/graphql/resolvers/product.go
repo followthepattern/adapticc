@@ -6,7 +6,6 @@ import (
 
 	"github.com/followthepattern/adapticc/pkg/controllers"
 	"github.com/followthepattern/adapticc/pkg/models"
-	"github.com/followthepattern/adapticc/pkg/utils/pointers"
 )
 
 func getFromProductListResponseModel(response models.ProductListResponse) ListResponse[models.Product] {
@@ -79,7 +78,7 @@ func (resolver ProductResolver) Update(ctx context.Context, args struct {
 	Id    string
 	Model models.Product
 }) (*ResponseStatus, error) {
-	args.Model.ID = pointers.ToPtr(args.Id)
+	args.Model.ID = args.Id
 	err := resolver.ctrl.Update(ctx, args.Model)
 	if err != nil {
 		return nil, err

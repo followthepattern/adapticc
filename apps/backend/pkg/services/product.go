@@ -9,7 +9,6 @@ import (
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/repositories/database"
 	"github.com/followthepattern/adapticc/pkg/utils"
-	"github.com/followthepattern/adapticc/pkg/utils/pointers"
 	"github.com/google/uuid"
 )
 
@@ -52,7 +51,7 @@ func (service Product) GetByID(ctx context.Context, id string) (*models.Product,
 		return nil, err
 	}
 
-	if result.IsNil() {
+	if result.IsDefault() {
 		return nil, nil
 	}
 
@@ -94,7 +93,7 @@ func (service Product) Create(ctx context.Context, value models.Product) error {
 		return err
 	}
 
-	value.ID = pointers.ToPtr(uuid.New().String())
+	value.ID = uuid.New().String()
 	value.Userlog.CreationUserID = ctxu.ID
 
 	return service.productRepository.Create([]models.Product{value})
@@ -111,7 +110,7 @@ func (service Product) Update(ctx context.Context, value models.Product) error {
 		return err
 	}
 
-	err = service.ac.Authorize(ctx, ctxu.ID, accesscontrol.UPDATE, *value.ID, roles...)
+	err = service.ac.Authorize(ctx, ctxu.ID, accesscontrol.UPDATE, value.ID, roles...)
 	if err != nil {
 		return err
 	}

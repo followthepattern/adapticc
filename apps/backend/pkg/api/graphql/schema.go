@@ -20,7 +20,7 @@ input OrderBy {
 }
 
 input ListFilter {
-	search: String
+	search: String!
 }
 
 type User {
@@ -49,9 +49,9 @@ type UserListResponse {
 }
 
 type Product {
-	id: String
-	title: String
-	description: String
+	id: String!
+	title: String!
+	description: String!
 	creationUserID: String!
 	updateUserID: String!
 	createdAt: Time!
@@ -59,8 +59,8 @@ type Product {
 }
 
 input ProductInput {
-	title: String
-	description: String
+	title: String!
+	description: String!
 }
 
 type ProductListResponse {

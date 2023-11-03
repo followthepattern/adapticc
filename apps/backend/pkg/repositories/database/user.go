@@ -66,8 +66,8 @@ func (repo User) Get(request models.UserListRequestParams) (*models.UserListResp
 
 	query := repo.db.From(userTableName)
 
-	if request.Filter.Search != nil {
-		pattern := fmt.Sprintf("%%%s%%", *request.Filter.Search)
+	if len(request.Filter.Search) > 0 {
+		pattern := fmt.Sprintf("%%%s%%", request.Filter.Search)
 		query = query.Where(
 			Or(
 				I("first_name").Like(pattern),

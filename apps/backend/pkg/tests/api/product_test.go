@@ -92,7 +92,7 @@ var _ = Describe("Product Test", func() {
 			role1 := datagenerator.NewRandomRole()
 
 			graphRequest := graphqlRequest{
-				Query: fmt.Sprintf(query, *product.ID),
+				Query: fmt.Sprintf(query, product.ID),
 			}
 			request, _ := json.Marshal(graphRequest)
 
@@ -114,9 +114,9 @@ var _ = Describe("Product Test", func() {
 
 			Expect(code).To(Equal(http.StatusOK))
 			Expect(mock.ExpectationsWereMet()).To(BeNil())
-			Expect(*testResponse.Data.Products.Single.ID).To(Equal(*product.ID))
-			Expect(*testResponse.Data.Products.Single.Title).To(Equal(*product.Title))
-			Expect(*testResponse.Data.Products.Single.Description).To(Equal(*product.Description))
+			Expect(testResponse.Data.Products.Single.ID).To(Equal(product.ID))
+			Expect(testResponse.Data.Products.Single.Title).To(Equal(product.Title))
+			Expect(testResponse.Data.Products.Single.Description).To(Equal(product.Description))
 		})
 	})
 
@@ -152,7 +152,7 @@ var _ = Describe("Product Test", func() {
 			}
 
 			graphRequest := graphqlRequest{
-				Query: fmt.Sprintf(query, pageSize, page, *product.ID),
+				Query: fmt.Sprintf(query, pageSize, page, product.ID),
 			}
 			request, _ := json.Marshal(graphRequest)
 
@@ -174,9 +174,9 @@ var _ = Describe("Product Test", func() {
 
 			Expect(code).To(Equal(http.StatusOK))
 			Expect(mock.ExpectationsWereMet()).To(BeNil())
-			Expect(*testResponse.Data.Products.List.Data[0].ID).To(Equal(*product.ID))
-			Expect(*testResponse.Data.Products.List.Data[0].Title).To(Equal(*product.Title))
-			Expect(*testResponse.Data.Products.List.Data[0].Description).To(Equal(*product.Description))
+			Expect(testResponse.Data.Products.List.Data[0].ID).To(Equal(product.ID))
+			Expect(testResponse.Data.Products.List.Data[0].Title).To(Equal(product.Title))
+			Expect(testResponse.Data.Products.List.Data[0].Description).To(Equal(product.Description))
 		})
 	})
 
@@ -199,7 +199,7 @@ var _ = Describe("Product Test", func() {
 			role1 := datagenerator.NewRandomRole()
 
 			graphRequest := graphqlRequest{
-				Query: fmt.Sprintf(query, *product.Title, *product.Description),
+				Query: fmt.Sprintf(query, product.Title, product.Description),
 			}
 			request, _ := json.Marshal(graphRequest)
 
@@ -245,7 +245,7 @@ var _ = Describe("Product Test", func() {
 			role1 := datagenerator.NewRandomRole()
 
 			graphRequest := graphqlRequest{
-				Query: fmt.Sprintf(query, *product.ID, *product.Title, *product.Description),
+				Query: fmt.Sprintf(query, product.ID, product.Title, product.Description),
 			}
 			request, _ := json.Marshal(graphRequest)
 
@@ -287,7 +287,7 @@ var _ = Describe("Product Test", func() {
 			role1 := datagenerator.NewRandomRole()
 
 			graphRequest := graphqlRequest{
-				Query: fmt.Sprintf(query, *product.ID),
+				Query: fmt.Sprintf(query, product.ID),
 			}
 			request, _ := json.Marshal(graphRequest)
 

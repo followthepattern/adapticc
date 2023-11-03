@@ -129,7 +129,7 @@ var _ = Describe("User graphql queries", func() {
 					Page:     pointers.ToPtr[uint](1),
 				},
 				Filter: models.ListFilter{
-					Search: pointers.ToPtr("email@email.com"),
+					Search: "email@email.com",
 				},
 			}
 
@@ -153,7 +153,7 @@ var _ = Describe("User graphql queries", func() {
 				}
 			}`
 
-			query := fmt.Sprintf(queryTemplate, *listRequestParams.Filter.Search)
+			query := fmt.Sprintf(queryTemplate, listRequestParams.Filter.Search)
 			graphRequest := graphqlRequest{
 				Query: query,
 			}
@@ -192,7 +192,7 @@ var _ = Describe("User graphql queries", func() {
 
 			listRequestParams := models.UserListRequestParams{
 				Filter: models.ListFilter{
-					Search: pointers.ToPtr("email@email.com"),
+					Search: "email@email.com",
 				},
 			}
 			queryTemplate := `
@@ -213,7 +213,7 @@ var _ = Describe("User graphql queries", func() {
 					}
 				}
 			}`
-			query := fmt.Sprintf(queryTemplate, *listRequestParams.Filter.Search)
+			query := fmt.Sprintf(queryTemplate, listRequestParams.Filter.Search)
 			graphRequest := graphqlRequest{
 				Query: query,
 			}

@@ -48,8 +48,8 @@ func (repo Role) Get(request models.RoleListRequestParams) (*models.RoleListResp
 
 	query := repo.db.From(roleTableName)
 
-	if request.Filter.Search != nil {
-		pattern := fmt.Sprintf("%%%s%%", *request.Filter.Search)
+	if len(request.Filter.Search) > 0 {
+		pattern := fmt.Sprintf("%%%s%%", request.Filter.Search)
 		query = query.Where(
 			Or(
 				I("id").Like(pattern),
