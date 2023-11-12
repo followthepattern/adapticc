@@ -2,16 +2,18 @@ package graphql
 
 const Schema = `
 scalar Time
-scalar Int64
-scalar Uint
+scalar NullInt64
+scalar NullUint
+scalar NullInt
+scalar NullString
 
 type ResponseStatus {
-	code: Uint!
+	code: NullInt!
 }
 
 input Pagination {
-	pageSize: Uint
-	page: Uint
+	pageSize: NullUint!
+	page: NullUint!
 }
 
 input OrderBy {
@@ -42,16 +44,16 @@ input UserInput {
 }
 
 type UserListResponse {
-	count: Int64!
-	pageSize: Uint
-	page: Uint
+	count: NullInt64!
+	pageSize: NullUint!
+	page: NullUint!
 	data: [User!]!
 }
 
 type Product {
-	id: String!
-	title: String!
-	description: String!
+	id: NullString!
+	title: NullString!
+	description: NullString!
 	creationUserID: String!
 	updateUserID: String!
 	createdAt: Time!
@@ -59,14 +61,14 @@ type Product {
 }
 
 input ProductInput {
-	title: String!
-	description: String!
+	title: NullString!
+	description: NullString!
 }
 
 type ProductListResponse {
-	count: Int64!
-	pageSize: Uint
-	page: Uint
+	count: NullInt64!
+	pageSize: NullUint!
+	page: NullUint!
 	data: [Product!]!
 }
 
@@ -81,9 +83,9 @@ type Role {
 }
 
 type RoleListResponse {
-	count: Int64!
-	pageSize: Uint
-	page: Uint
+	count: NullInt64!
+	pageSize: NullUint!
+	page: NullUint!
 	data: [Role!]!
 }
 
@@ -141,7 +143,7 @@ type UserMutation {
 
 type ProductMutation {
 	create(model: ProductInput!): ResponseStatus
-	update(id: String!, model: ProductInput!): ResponseStatus
+	update(id: NullString!, model: ProductInput!): ResponseStatus
 	delete(id: String!): ResponseStatus
 }
 

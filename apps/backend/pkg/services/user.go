@@ -64,15 +64,10 @@ func (service User) Profile(ctx context.Context) (*models.User, error) {
 		return nil, err
 	}
 
-	user, err := service.userRepository.GetByID(ctxu.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	return user, nil
+	return service.userRepository.GetByID(ctxu.ID)
 }
 
-func (service User) Get(ctx context.Context, filter models.UserListRequestParams) (models.UserListResponse, error) {
+func (service User) Get(ctx context.Context, request models.UserListRequestParams) (models.UserListResponse, error) {
 	ctxu, err := utils.GetUserContext(ctx)
 	if err != nil {
 		return models.UserListResponse{}, err
@@ -88,7 +83,9 @@ func (service User) Get(ctx context.Context, filter models.UserListRequestParams
 		return models.UserListResponse{}, err
 	}
 
-	result, err := service.userRepository.Get(filter)
+	request.Pagination.SetDefaultIfEmpty()
+
+	result, err := service.userRepository.Get(request)
 	if err != nil {
 		return models.UserListResponse{}, err
 	}

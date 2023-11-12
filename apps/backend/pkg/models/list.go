@@ -1,5 +1,7 @@
 package models
 
+import "github.com/followthepattern/adapticc/pkg/types"
+
 const (
 	DefaultPageSize = 20
 	DefaultPage     = 1
@@ -16,8 +18,18 @@ type ListFilter struct {
 }
 
 type Pagination struct {
-	PageSize *uint
-	Page     *uint
+	PageSize types.NullUint
+	Page     types.NullUint
+}
+
+func (p *Pagination) SetDefaultIfEmpty() {
+	if p.PageSize.Data < 1 {
+		p.PageSize = types.UintFrom(DefaultPageSize)
+	}
+
+	if p.Page.Data < 1 {
+		p.Page = types.UintFrom(DefaultPage)
+	}
 }
 
 type OrderBy struct {
@@ -26,8 +38,8 @@ type OrderBy struct {
 }
 
 type ListResponse[T any] struct {
-	Count    int64 `json:"count"`
-	PageSize *uint `json:"page_size"`
-	Page     *uint `json:"page"`
-	Data     []T   `json:"data"`
+	Count    types.NullInt64 `json:"count"`
+	PageSize types.NullUint  `json:"page_size"`
+	Page     types.NullUint  `json:"page"`
+	Data     []T             `json:"data"`
 }

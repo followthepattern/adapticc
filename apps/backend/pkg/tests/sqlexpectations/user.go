@@ -60,7 +60,7 @@ func ExpectUsers(mock sqlmock.Sqlmock, result []models.User, listRequestParams m
 		listRequestParams.Filter.Search,
 		listRequestParams.Filter.Search,
 		listRequestParams.Filter.Search,
-		*listRequestParams.Pagination.PageSize)
+		listRequestParams.Pagination.PageSize)
 
 	SQLMockRows := ModelToSQLMockRows(result)
 	mock.ExpectQuery(sqlQuery).

@@ -6,13 +6,8 @@ import (
 
 	"github.com/followthepattern/adapticc/pkg/controllers"
 	"github.com/followthepattern/adapticc/pkg/models"
+	"github.com/followthepattern/adapticc/pkg/types"
 )
-
-func getFromProductListResponseModel(response models.ProductListResponse) ListResponse[models.Product] {
-	resp := fromListReponseModel[models.Product, models.Product](models.ListResponse[models.Product](response))
-	resp.Data = response.Data
-	return resp
-}
 
 type ProductResolver struct {
 	ctrl controllers.Product
@@ -31,16 +26,16 @@ func (resolver ProductResolver) Single(ctx context.Context, args struct{ Id stri
 }
 
 func (resolver ProductResolver) List(ctx context.Context, args struct {
-	Pagination *Pagination
+	Pagination *models.Pagination
 	Filter     *models.ListFilter
 	OrderBy    *[]models.OrderBy
-}) (*ListResponse[models.Product], error) {
+}) (*models.ListResponse[models.Product], error) {
 	request := models.ProductListRequestParams{}
 
 	if args.Pagination != nil {
 		request.Pagination = models.Pagination{
-			PageSize: args.Pagination.PageSize.ValuePtr(),
-			Page:     args.Pagination.Page.ValuePtr(),
+			PageSize: args.Pagination.PageSize,
+			Page:     args.Pagination.Page,
 		}
 	}
 
@@ -57,9 +52,7 @@ func (resolver ProductResolver) List(ctx context.Context, args struct {
 		return nil, err
 	}
 
-	response := getFromProductListResponseModel(*products)
-
-	return &response, err
+	return products, err
 }
 
 func (resolver ProductResolver) Create(ctx context.Context, args struct {
@@ -70,12 +63,12 @@ func (resolver ProductResolver) Create(ctx context.Context, args struct {
 		return nil, err
 	}
 	return &ResponseStatus{
-		Code: NewUint(http.StatusOK),
+		Code: types.IntFrom(http.StatusCreated),
 	}, nil
 }
 
 func (resolver ProductResolver) Update(ctx context.Context, args struct {
-	Id    string
+	Id    types.NullString
 	Model models.Product
 }) (*ResponseStatus, error) {
 	args.Model.ID = args.Id
@@ -84,7 +77,7 @@ func (resolver ProductResolver) Update(ctx context.Context, args struct {
 		return nil, err
 	}
 	return &ResponseStatus{
-		Code: NewUint(200),
+		Code: types.IntFrom(http.StatusOK),
 	}, nil
 }
 
@@ -96,6 +89,6 @@ func (resolver ProductResolver) Delete(ctx context.Context, args struct {
 		return nil, err
 	}
 	return &ResponseStatus{
-		Code: NewUint(200),
+		Code: types.IntFrom(http.StatusOK),
 	}, nil
 }

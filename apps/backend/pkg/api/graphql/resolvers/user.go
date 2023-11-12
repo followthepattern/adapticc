@@ -6,13 +6,8 @@ import (
 
 	"github.com/followthepattern/adapticc/pkg/controllers"
 	"github.com/followthepattern/adapticc/pkg/models"
+	"github.com/followthepattern/adapticc/pkg/types"
 )
-
-func getFromUserListResponseModel(response models.UserListResponse) *ListResponse[models.User] {
-	resp := fromListReponseModel[models.User, models.User](models.ListResponse[models.User](response))
-	resp.Data = response.Data
-	return &resp
-}
 
 type UserResolver struct {
 	ctrl controllers.User
@@ -27,16 +22,16 @@ func (resolver UserResolver) Single(ctx context.Context, args struct{ Id string 
 }
 
 func (resolver UserResolver) List(ctx context.Context, args struct {
-	Pagination *Pagination
+	Pagination *models.Pagination
 	Filter     *models.ListFilter
 	OrderBy    *[]models.OrderBy
-}) (*ListResponse[models.User], error) {
+}) (*models.ListResponse[models.User], error) {
 	request := models.UserListRequestParams{}
 
 	if args.Pagination != nil {
 		request.Pagination = models.Pagination{
-			PageSize: args.Pagination.PageSize.ValuePtr(),
-			Page:     args.Pagination.Page.ValuePtr(),
+			PageSize: args.Pagination.PageSize,
+			Page:     args.Pagination.Page,
 		}
 	}
 
@@ -50,14 +45,12 @@ func (resolver UserResolver) List(ctx context.Context, args struct {
 		request.OrderBy = *args.OrderBy
 	}
 
-	users, err := resolver.ctrl.Get(ctx, request)
+	results, err := resolver.ctrl.Get(ctx, request)
 	if err != nil {
 		return nil, err
 	}
 
-	result := getFromUserListResponseModel(users)
-
-	return result, err
+	return results, err
 }
 
 func (resolver UserResolver) Profile(ctx context.Context) (*models.User, error) {
@@ -72,7 +65,7 @@ func (resolver UserResolver) Create(ctx context.Context, args struct {
 		return nil, err
 	}
 	return &ResponseStatus{
-		Code: NewUint(http.StatusOK),
+		Code: types.IntFrom(http.StatusCreated),
 	}, nil
 }
 
@@ -86,7 +79,7 @@ func (resolver UserResolver) Update(ctx context.Context, args struct {
 		return nil, err
 	}
 	return &ResponseStatus{
-		Code: NewUint(200),
+		Code: types.IntFrom(http.StatusOK),
 	}, nil
 }
 
@@ -98,6 +91,6 @@ func (resolver UserResolver) Delete(ctx context.Context, args struct {
 		return nil, err
 	}
 	return &ResponseStatus{
-		Code: NewUint(200),
+		Code: types.IntFrom(http.StatusOK),
 	}, nil
 }

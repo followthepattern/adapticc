@@ -17,7 +17,7 @@ import (
 	"github.com/followthepattern/adapticc/pkg/services"
 	"github.com/followthepattern/adapticc/pkg/tests/datagenerator"
 	"github.com/followthepattern/adapticc/pkg/tests/sqlexpectations"
-	"github.com/followthepattern/adapticc/pkg/utils/pointers"
+	"github.com/followthepattern/adapticc/pkg/types"
 	"github.com/golang/mock/gomock"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -125,8 +125,8 @@ var _ = Describe("User graphql queries", func() {
 
 			listRequestParams := models.UserListRequestParams{
 				Pagination: models.Pagination{
-					PageSize: pointers.ToPtr[uint](5),
-					Page:     pointers.ToPtr[uint](1),
+					PageSize: types.UintFrom(5),
+					Page:     types.UintFrom(1),
 				},
 				Filter: models.ListFilter{
 					Search: "email@email.com",
@@ -243,7 +243,7 @@ var _ = Describe("User graphql queries", func() {
 				Expect(testResponse.Data.Users.List.Data[i].LastName).To(Equal(users[i].LastName))
 			}
 
-			Expect(mock.ExpectationsWereMet()).To(BeNil())
+			Expect(mock.ExpectationsWereMet()).ShouldNot(HaveOccurred())
 		})
 	})
 
@@ -331,7 +331,7 @@ var _ = Describe("User graphql queries", func() {
 
 			Expect(code).To(Equal(http.StatusOK))
 			Expect(mock.ExpectationsWereMet()).To(BeNil())
-			Expect(testResponse.Data.Users.Create.Code).To(Equal(resolvers.NewUint(200)))
+			Expect(testResponse.Data.Users.Create.Code.Data).To(Equal(http.StatusCreated))
 		})
 	})
 
@@ -376,7 +376,7 @@ var _ = Describe("User graphql queries", func() {
 
 			Expect(code).To(Equal(http.StatusOK))
 			Expect(mock.ExpectationsWereMet()).To(BeNil())
-			Expect(testResponse.Data.Users.Update.Code).To(Equal(resolvers.NewUint(200)))
+			Expect(testResponse.Data.Users.Update.Code.Data).To(Equal(http.StatusOK))
 		})
 	})
 
@@ -415,7 +415,7 @@ var _ = Describe("User graphql queries", func() {
 			Expect(testResponse.Errors).To(BeEmpty())
 			Expect(code).To(Equal(http.StatusOK))
 			Expect(mock.ExpectationsWereMet()).To(BeNil())
-			Expect(testResponse.Data.Users.Delete.Code).To(Equal(resolvers.NewUint(200)))
+			Expect(testResponse.Data.Users.Delete.Code.Data).To(Equal(http.StatusOK))
 		})
 	})
 })

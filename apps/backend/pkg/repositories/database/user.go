@@ -7,7 +7,8 @@ import (
 	"time"
 
 	"github.com/followthepattern/adapticc/pkg/models"
-	"github.com/followthepattern/adapticc/pkg/utils/pointers"
+	"github.com/followthepattern/adapticc/pkg/repositories/database/sqlbuilder"
+	"github.com/followthepattern/adapticc/pkg/types"
 
 	. "github.com/followthepattern/goqu/v9"
 )
@@ -81,19 +82,9 @@ func (repo User) Get(request models.UserListRequestParams) (*models.UserListResp
 		return nil, err
 	}
 
-	if request.Pagination.Page == nil {
-		request.Pagination.Page = pointers.ToPtr[uint](models.DefaultPage)
-	}
+	query = sqlbuilder.WithPagination(query, request.Pagination)
 
-	if request.Pagination.PageSize != nil {
-		page := *request.Pagination.Page
-		if page > 0 {
-			page--
-		}
-
-		query = query.Offset(page * *request.Pagination.PageSize)
-		query = query.Limit(*request.Pagination.PageSize)
-	}
+	query = sqlbuilder.WithOrderBy(query, request.OrderBy)
 
 	err = query.ScanStructs(&data)
 	if err != nil {
@@ -101,7 +92,7 @@ func (repo User) Get(request models.UserListRequestParams) (*models.UserListResp
 	}
 
 	result := models.UserListResponse{
-		Count:    count,
+		Count:    types.Int64From(count),
 		PageSize: request.Pagination.PageSize,
 		Page:     request.Pagination.Page,
 		Data:     data,

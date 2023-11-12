@@ -2,12 +2,13 @@ package datagenerator
 
 import (
 	"github.com/followthepattern/adapticc/pkg/models"
+	"github.com/followthepattern/adapticc/pkg/types"
 )
 
 func NewRandomProduct() models.Product {
 	return models.Product{
-		ID:          String(8),
-		Title:       String(8),
-		Description: String(8),
+		ID:          types.StringFrom(String(8)),
+		Title:       types.StringFrom(String(8)),
+		Description: types.StringFrom(String(8)),
 	}
 }

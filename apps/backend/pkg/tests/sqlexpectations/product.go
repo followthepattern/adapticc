@@ -1,11 +1,21 @@
 package sqlexpectations
 
 import (
+	"database/sql/driver"
 	"fmt"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/followthepattern/adapticc/pkg/models"
 )
+
+var columns = []string{
+	"created_at",
+	"creation_user_id",
+	"description",
+	"id",
+	"title",
+	"update_user_id",
+	"updated_at"}
 
 func ExpectProduct(mock sqlmock.Sqlmock, result models.Product) {
 	sqlQuery := fmt.Sprintf(
@@ -24,11 +34,23 @@ func ExpectProduct(mock sqlmock.Sqlmock, result models.Product) {
 		LIMIT 1`,
 		result.ID)
 
+	rows := sqlmock.NewRows(columns)
+	values := []driver.Value{
+		result.CreatedAt,
+		result.CreationUserID,
+		result.Description,
+		result.ID,
+		result.Title,
+		result.UpdateUserID,
+		result.UpdatedAt,
+	}
+	rows.AddRow(values...)
+
 	mock.ExpectQuery(sqlQuery).
-		WillReturnRows(ModelToSQLMockRows(result))
+		WillReturnRows(rows)
 }
 
-func ExpectProducts(mock sqlmock.Sqlmock, filter models.ListFilter, page int, pageSize int, result []models.Product) {
+func ExpectProducts(mock sqlmock.Sqlmock, filter models.ListFilter, page int, pageSize int, results []models.Product) {
 	countQuery := fmt.Sprintf(`
 	SELECT
 		COUNT(\*) AS "count"
@@ -42,7 +64,7 @@ func ExpectProducts(mock sqlmock.Sqlmock, filter models.ListFilter, page int, pa
 
 	mock.ExpectQuery(countQuery).
 		WillReturnRows(sqlmock.NewRows([]string{"count"}).
-			AddRow(len(result)))
+			AddRow(len(results)))
 
 	if page > 0 {
 		page--
@@ -62,12 +84,27 @@ func ExpectProducts(mock sqlmock.Sqlmock, filter models.ListFilter, page int, pa
 	LIMIT %d OFFSET %d`,
 		filter.Search,
 		filter.Search,
-		page*pageSize,
 		pageSize,
+		page*pageSize,
 	)
 
+	rows := sqlmock.NewRows(columns)
+
+	for _, result := range results {
+		values := []driver.Value{
+			result.CreatedAt,
+			result.CreationUserID,
+			result.Description,
+			result.ID,
+			result.Title,
+			result.UpdateUserID,
+			result.UpdatedAt,
+		}
+		rows.AddRow(values...)
+	}
+
 	mock.ExpectQuery(sqlQuery).
-		WillReturnRows(ModelToSQLMockRows(result))
+		WillReturnRows(rows)
 }
 
 func CreateProduct(mock sqlmock.Sqlmock, userID string, product models.Product) {
@@ -80,8 +117,8 @@ func CreateProduct(mock sqlmock.Sqlmock, userID string, product models.Product) 
 			"title")
 		VALUES ('.*', '%s', '%s', '.*', '%s')`,
 		userID,
-		product.Description,
-		product.Title,
+		product.Description.Data,
+		product.Title.Data,
 	)
 
 	mock.ExpectExec(sqlQuery).
@@ -94,11 +131,11 @@ func UpdateProduct(mock sqlmock.Sqlmock, userID string, product models.Product) 
 		"usr"."products"
 	SET
 		"description"='%s',"id"='%s',"title"='%s',"update_user_id"='%s',"updated_at"='.*' WHERE ("id" = '%s')`,
-		product.Description,
-		product.ID,
-		product.Title,
+		product.Description.Data,
+		product.ID.Data,
+		product.Title.Data,
 		userID,
-		product.ID)
+		product.ID.Data)
 
 	mock.ExpectExec(sqlQuery).
 		WillReturnResult(sqlmock.NewResult(1, 1))
@@ -106,7 +143,7 @@ func UpdateProduct(mock sqlmock.Sqlmock, userID string, product models.Product) 
 
 func DeleteProduct(mock sqlmock.Sqlmock, product models.Product) {
 	sqlQuery := fmt.Sprintf(`DELETE FROM "usr"."products" WHERE ("id" = '%s')`,
-		product.ID)
+		product.ID.Data)
 
 	mock.ExpectExec(sqlQuery).
 		WillReturnResult(sqlmock.NewResult(1, 1))

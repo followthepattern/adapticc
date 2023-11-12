@@ -54,13 +54,13 @@ func (ctrl User) Profile(ctx context.Context) (*models.User, error) {
 	return user, nil
 }
 
-func (ctrl User) Get(ctx context.Context, filter models.UserListRequestParams) (models.UserListResponse, error) {
+func (ctrl User) Get(ctx context.Context, filter models.UserListRequestParams) (*models.UserListResponse, error) {
 	result, err := ctrl.userService.Get(ctx, filter)
 	if err != nil {
-		return models.UserListResponse{}, err
+		return nil, err
 	}
 
-	return result, nil
+	return &result, nil
 }
 
 func (ctrl User) Create(ctx context.Context, value models.User) error {

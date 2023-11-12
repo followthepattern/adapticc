@@ -8,6 +8,7 @@ import (
 	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/repositories/database"
+	"github.com/followthepattern/adapticc/pkg/types"
 	"github.com/followthepattern/adapticc/pkg/utils"
 	"github.com/google/uuid"
 )
@@ -46,19 +47,10 @@ func (service Product) GetByID(ctx context.Context, id string) (*models.Product,
 		return nil, err
 	}
 
-	result, err := service.productRepository.GetByID(id)
-	if err != nil {
-		return nil, err
-	}
-
-	if result.IsDefault() {
-		return nil, nil
-	}
-
-	return result, nil
+	return service.productRepository.GetByID(id)
 }
 
-func (service Product) Get(ctx context.Context, filter models.ProductListRequestParams) (*models.ProductListResponse, error) {
+func (service Product) Get(ctx context.Context, request models.ProductListRequestParams) (*models.ProductListResponse, error) {
 	ctxu, err := utils.GetUserContext(ctx)
 	if err != nil {
 		return nil, err
@@ -74,7 +66,9 @@ func (service Product) Get(ctx context.Context, filter models.ProductListRequest
 		return nil, err
 	}
 
-	return service.productRepository.Get(filter)
+	request.Pagination.SetDefaultIfEmpty()
+
+	return service.productRepository.Get(request)
 }
 
 func (service Product) Create(ctx context.Context, value models.Product) error {
@@ -93,7 +87,7 @@ func (service Product) Create(ctx context.Context, value models.Product) error {
 		return err
 	}
 
-	value.ID = uuid.New().String()
+	value.ID = types.StringFrom(uuid.NewString())
 	value.Userlog.CreationUserID = ctxu.ID
 
 	return service.productRepository.Create([]models.Product{value})
@@ -110,7 +104,7 @@ func (service Product) Update(ctx context.Context, value models.Product) error {
 		return err
 	}
 
-	err = service.ac.Authorize(ctx, ctxu.ID, accesscontrol.UPDATE, value.ID, roles...)
+	err = service.ac.Authorize(ctx, ctxu.ID, accesscontrol.UPDATE, value.ID.Data, roles...)
 	if err != nil {
 		return err
 	}

@@ -4,7 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+
+	"github.com/followthepattern/adapticc/pkg/types"
 )
+
+type ResponseStatus struct {
+	Code types.NullInt `json:"code"`
+}
 
 type Int64 struct {
 	int64

@@ -7,10 +7,10 @@ import (
 	"time"
 
 	"github.com/followthepattern/adapticc/pkg/models"
-	"github.com/followthepattern/adapticc/pkg/utils/pointers"
+	"github.com/followthepattern/adapticc/pkg/repositories/database/sqlbuilder"
+	"github.com/followthepattern/adapticc/pkg/types"
 
 	. "github.com/followthepattern/goqu/v9"
-	"github.com/followthepattern/goqu/v9/exp"
 )
 
 var productTable = S("usr").Table("products")
@@ -72,31 +72,9 @@ func (repo Product) Get(request models.ProductListRequestParams) (*models.Produc
 		return nil, err
 	}
 
-	if request.Pagination.Page == nil {
-		request.Pagination.Page = pointers.ToPtr[uint](models.DefaultPage)
-	}
+	query = sqlbuilder.WithPagination(query, request.Pagination)
 
-	if request.Pagination.PageSize != nil {
-		page := *request.Pagination.Page
-		if page > 0 {
-			page--
-		}
-
-		query = query.Offset(page * *request.Pagination.PageSize)
-		query = query.Limit(*request.Pagination.PageSize)
-	}
-
-	orderLength := len(request.OrderBy)
-	if orderLength > 0 {
-		orderExpressions := make([]exp.OrderedExpression, orderLength)
-		for i, order := range request.OrderBy {
-			orderExpressions[i] = I(order.Name).Asc()
-			if order.Desc != nil && *order.Desc {
-				orderExpressions[i] = I(order.Name).Desc()
-			}
-		}
-		query = query.Order(orderExpressions...)
-	}
+	query = sqlbuilder.WithOrderBy(query, request.OrderBy)
 
 	err = query.ScanStructs(&data)
 	if err != nil {
@@ -104,7 +82,7 @@ func (repo Product) Get(request models.ProductListRequestParams) (*models.Produc
 	}
 
 	result := models.ProductListResponse{
-		Count:    count,
+		Count:    types.Int64From(count),
 		PageSize: request.Pagination.PageSize,
 		Page:     request.Pagination.Page,
 		Data:     data,

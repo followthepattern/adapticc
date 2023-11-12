@@ -114,9 +114,9 @@ var _ = Describe("Product Test", func() {
 
 			Expect(code).To(Equal(http.StatusOK))
 			Expect(mock.ExpectationsWereMet()).To(BeNil())
-			Expect(testResponse.Data.Products.Single.ID).To(Equal(product.ID))
-			Expect(testResponse.Data.Products.Single.Title).To(Equal(product.Title))
-			Expect(testResponse.Data.Products.Single.Description).To(Equal(product.Description))
+			Expect(testResponse.Data.Products.Single.ID.Data).To(Equal(product.ID.Data))
+			Expect(testResponse.Data.Products.Single.Title.Data).To(Equal(product.Title.Data))
+			Expect(testResponse.Data.Products.Single.Description.Data).To(Equal(product.Description.Data))
 		})
 	})
 
@@ -144,11 +144,11 @@ var _ = Describe("Product Test", func() {
 			contextUser := datagenerator.NewRandomUser()
 			role1 := datagenerator.NewRandomRole()
 
-			page := 2
+			page := 4
 			pageSize := 10
 
 			filter := models.ListFilter{
-				Search: product.ID,
+				Search: product.ID.Data,
 			}
 
 			graphRequest := graphqlRequest{
@@ -174,9 +174,9 @@ var _ = Describe("Product Test", func() {
 
 			Expect(code).To(Equal(http.StatusOK))
 			Expect(mock.ExpectationsWereMet()).To(BeNil())
-			Expect(testResponse.Data.Products.List.Data[0].ID).To(Equal(product.ID))
-			Expect(testResponse.Data.Products.List.Data[0].Title).To(Equal(product.Title))
-			Expect(testResponse.Data.Products.List.Data[0].Description).To(Equal(product.Description))
+			Expect(testResponse.Data.Products.List.Data[0].ID.Data).To(Equal(product.ID.Data))
+			Expect(testResponse.Data.Products.List.Data[0].Title.Data).To(Equal(product.Title.Data))
+			Expect(testResponse.Data.Products.List.Data[0].Description.Data).To(Equal(product.Description.Data))
 		})
 	})
 
@@ -221,7 +221,7 @@ var _ = Describe("Product Test", func() {
 
 			Expect(code).To(Equal(http.StatusOK))
 			Expect(mock.ExpectationsWereMet()).To(BeNil())
-			Expect(testResponse.Data.Products.Create.Code.Value()).To(Equal(uint(http.StatusOK)))
+			Expect(testResponse.Data.Products.Create.Code.Data).To(Equal(http.StatusCreated))
 		})
 	})
 
@@ -267,7 +267,7 @@ var _ = Describe("Product Test", func() {
 
 			Expect(code).To(Equal(http.StatusOK))
 			Expect(mock.ExpectationsWereMet()).To(BeNil())
-			Expect(testResponse.Data.Products.Update.Code.Value()).To(Equal(uint(http.StatusOK)))
+			Expect(testResponse.Data.Products.Update.Code.Data).To(Equal(http.StatusOK))
 		})
 	})
 
@@ -309,7 +309,7 @@ var _ = Describe("Product Test", func() {
 
 			Expect(code).To(Equal(http.StatusOK))
 			Expect(mock.ExpectationsWereMet()).To(BeNil())
-			Expect(testResponse.Data.Products.Delete.Code.Value()).To(Equal(uint(http.StatusOK)))
+			Expect(testResponse.Data.Products.Delete.Code.Data).To(Equal(http.StatusOK))
 		})
 	})
 })

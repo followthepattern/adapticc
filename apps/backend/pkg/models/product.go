@@ -1,18 +1,19 @@
 package models
 
 import (
+	"github.com/followthepattern/adapticc/pkg/types"
 	validation "github.com/go-ozzo/ozzo-validation"
 )
 
 type Product struct {
-	ID          string `db:"id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
+	ID          types.NullString `db:"id" goqu:"omitempty"`
+	Title       types.NullString `db:"title" goqu:"omitempty"`
+	Description types.NullString `db:"description" goqu:"omitempty"`
 	Userlog
 }
 
 func (m Product) IsDefault() bool {
-	return len(m.ID) < 1
+	return m.ID.Len() < 1
 }
 
 func (m Product) CreateValidate() error {

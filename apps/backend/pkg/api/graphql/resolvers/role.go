@@ -2,16 +2,12 @@ package resolvers
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/followthepattern/adapticc/pkg/controllers"
 	"github.com/followthepattern/adapticc/pkg/models"
+	"github.com/followthepattern/adapticc/pkg/types"
 )
-
-func getFromRoleListResponseModel(response models.RoleListResponse) ListResponse[models.Role] {
-	resp := fromListReponseModel[models.Role, models.Role](models.ListResponse[models.Role](response))
-	resp.Data = response.Data
-	return resp
-}
 
 type RoleResolver struct {
 	ctrl controllers.Role
@@ -30,16 +26,16 @@ func (resolver RoleResolver) Single(ctx context.Context, args struct{ Id string 
 }
 
 func (resolver RoleResolver) List(ctx context.Context, args struct {
-	Pagination *Pagination
+	Pagination *models.Pagination
 	Filter     *models.ListFilter
 	OrderBy    *[]models.OrderBy
-}) (*ListResponse[models.Role], error) {
+}) (*models.ListResponse[models.Role], error) {
 	request := models.RoleListRequestParams{}
 
 	if args.Pagination != nil {
 		request.Pagination = models.Pagination{
-			PageSize: args.Pagination.PageSize.ValuePtr(),
-			Page:     args.Pagination.Page.ValuePtr(),
+			PageSize: args.Pagination.PageSize,
+			Page:     args.Pagination.Page,
 		}
 	}
 
@@ -56,9 +52,7 @@ func (resolver RoleResolver) List(ctx context.Context, args struct {
 		return nil, err
 	}
 
-	response := getFromRoleListResponseModel(*values)
-
-	return &response, err
+	return values, nil
 }
 
 func (resolver RoleResolver) AddRoleToUser(ctx context.Context, args struct {
@@ -70,7 +64,7 @@ func (resolver RoleResolver) AddRoleToUser(ctx context.Context, args struct {
 		return nil, err
 	}
 	return &ResponseStatus{
-		Code: NewUint(200),
+		Code: types.IntFrom(http.StatusCreated),
 	}, nil
 }
 
@@ -83,6 +77,6 @@ func (resolver RoleResolver) DeleteRoleFromUser(ctx context.Context, args struct
 		return nil, err
 	}
 	return &ResponseStatus{
-		Code: NewUint(200),
+		Code: types.IntFrom(http.StatusOK),
 	}, nil
 }
