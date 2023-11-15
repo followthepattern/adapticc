@@ -114,7 +114,7 @@ var _ = Describe("User graphql queries", func() {
 
 			Expect(mock.ExpectationsWereMet()).To(BeNil())
 			Expect(code).To(Equal(http.StatusOK))
-			Expect(testResponse.Data.Users.Single.ID).To(Equal(user.ID))
+			Expect(testResponse.Data.Users.Single.ID.Data).To(Equal(user.ID.Data))
 		})
 	})
 
@@ -177,10 +177,10 @@ var _ = Describe("User graphql queries", func() {
 			Expect(testResponse.Errors).To(BeEmpty())
 			Expect(testResponse.Data.Users.List.Data).To(HaveLen(len(users)))
 			for i := range testResponse.Data.Users.List.Data {
-				Expect(testResponse.Data.Users.List.Data[i].ID).To(Equal(users[i].ID))
-				Expect(testResponse.Data.Users.List.Data[i].Email).To(Equal(users[i].Email))
-				Expect(testResponse.Data.Users.List.Data[i].FirstName).To(Equal(users[i].FirstName))
-				Expect(testResponse.Data.Users.List.Data[i].LastName).To(Equal(users[i].LastName))
+				Expect(testResponse.Data.Users.List.Data[i].ID.Data).To(Equal(users[i].ID.Data))
+				Expect(testResponse.Data.Users.List.Data[i].Email.Data).To(Equal(users[i].Email.Data))
+				Expect(testResponse.Data.Users.List.Data[i].FirstName.Data).To(Equal(users[i].FirstName.Data))
+				Expect(testResponse.Data.Users.List.Data[i].LastName.Data).To(Equal(users[i].LastName.Data))
 			}
 
 			Expect(mock.ExpectationsWereMet()).To(BeNil())
@@ -237,10 +237,10 @@ var _ = Describe("User graphql queries", func() {
 			Expect(testResponse.Errors).To(BeEmpty())
 			Expect(testResponse.Data.Users.List.Data).To(HaveLen(len(users)))
 			for i := range testResponse.Data.Users.List.Data {
-				Expect(testResponse.Data.Users.List.Data[i].ID).To(Equal(users[i].ID))
-				Expect(testResponse.Data.Users.List.Data[i].Email).To(Equal(users[i].Email))
-				Expect(testResponse.Data.Users.List.Data[i].FirstName).To(Equal(users[i].FirstName))
-				Expect(testResponse.Data.Users.List.Data[i].LastName).To(Equal(users[i].LastName))
+				Expect(testResponse.Data.Users.List.Data[i].ID.Data).To(Equal(users[i].ID.Data))
+				Expect(testResponse.Data.Users.List.Data[i].Email.Data).To(Equal(users[i].Email.Data))
+				Expect(testResponse.Data.Users.List.Data[i].FirstName.Data).To(Equal(users[i].FirstName.Data))
+				Expect(testResponse.Data.Users.List.Data[i].LastName.Data).To(Equal(users[i].LastName.Data))
 			}
 
 			Expect(mock.ExpectationsWereMet()).ShouldNot(HaveOccurred())
@@ -284,7 +284,7 @@ var _ = Describe("User graphql queries", func() {
 
 			Expect(code).To(Equal(http.StatusOK))
 			Expect(mock.ExpectationsWereMet()).To(BeNil())
-			Expect(testResponse.Data.Users.Profile.ID).To(Equal(user.ID))
+			Expect(testResponse.Data.Users.Profile.ID.Data).To(Equal(user.ID.Data))
 		})
 	})
 

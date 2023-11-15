@@ -5,6 +5,7 @@ import (
 
 	"github.com/followthepattern/adapticc/pkg/controllers"
 	"github.com/followthepattern/adapticc/pkg/models"
+	"github.com/followthepattern/adapticc/pkg/types"
 )
 
 type AuthMutation struct {
@@ -18,8 +19,8 @@ func NewAuthMutation(ctrl controllers.Auth) AuthMutation {
 }
 
 func (r AuthMutation) Login(ctx context.Context, args struct {
-	Email    string
-	Password string
+	Email    types.String
+	Password types.String
 }) (*loginResponse, error) {
 	loginRequest := models.LoginRequestParams{
 		Email:    args.Email,
@@ -35,10 +36,10 @@ func (r AuthMutation) Login(ctx context.Context, args struct {
 }
 
 func (r AuthMutation) Register(ctx context.Context, args struct {
-	Email     string
-	FirstName string
-	LastName  string
-	Password  string
+	Email     types.String
+	FirstName types.String
+	LastName  types.String
+	Password  types.String
 }) (*models.RegisterResponse, error) {
 	registerRequest := models.RegisterRequestParams{
 		Email:     args.Email,

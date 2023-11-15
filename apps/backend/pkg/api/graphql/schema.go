@@ -5,7 +5,6 @@ scalar Time
 scalar NullInt64
 scalar NullUint
 scalar NullInt
-scalar NullString
 
 type ResponseStatus {
 	code: NullInt!
@@ -51,9 +50,9 @@ type UserListResponse {
 }
 
 type Product {
-	id: NullString!
-	title: NullString!
-	description: NullString!
+	id: String!
+	title: String!
+	description: String!
 	creationUserID: String!
 	updateUserID: String!
 	createdAt: Time!
@@ -61,8 +60,8 @@ type Product {
 }
 
 input ProductInput {
-	title: NullString!
-	description: NullString!
+	title: String!
+	description: String!
 }
 
 type ProductListResponse {
@@ -143,7 +142,7 @@ type UserMutation {
 
 type ProductMutation {
 	create(model: ProductInput!): ResponseStatus
-	update(id: NullString!, model: ProductInput!): ResponseStatus
+	update(id: String!, model: ProductInput!): ResponseStatus
 	delete(id: String!): ResponseStatus
 }
 

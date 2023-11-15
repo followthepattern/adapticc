@@ -10,6 +10,7 @@ import (
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/repositories/database"
 	"github.com/followthepattern/adapticc/pkg/repositories/email"
+	"github.com/followthepattern/adapticc/pkg/types"
 	"github.com/followthepattern/adapticc/pkg/utils"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
@@ -32,7 +33,7 @@ func NewAuth(cfg config.Config, repository database.Auth, emailClient email.Emai
 	}
 }
 
-func (service Auth) Login(ctx context.Context, email string, password string) (*models.LoginResponse, error) {
+func (service Auth) Login(ctx context.Context, email types.String, password types.String) (*models.LoginResponse, error) {
 	authUser, err := service.repository.VerifyLogin(email)
 	if err != nil {
 		return nil, err
@@ -44,16 +45,16 @@ func (service Auth) Login(ctx context.Context, email string, password string) (*
 
 	requestPasswordHash := utils.GeneratePasswordHash(password, authUser.Salt)
 
-	if requestPasswordHash != authUser.PasswordHash {
+	if requestPasswordHash != authUser.PasswordHash.Data {
 		return nil, errors.New(WRONG_EMAIL_OR_PASSWORD)
 	}
 
 	expiresAt := time.Now().Add(time.Hour * 24)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
-		"ID":        authUser.ID,
-		"email":     authUser.Email,
-		"firstName": authUser.FirstName,
-		"lastName":  authUser.LastName,
+		"ID":        authUser.ID.Data,
+		"email":     authUser.Email.Data,
+		"firstName": authUser.FirstName.Data,
+		"lastName":  authUser.LastName.Data,
 		"expiresAt": expiresAt,
 	})
 
@@ -83,12 +84,12 @@ func (service Auth) Register(ctx context.Context, register models.RegisterReques
 		return nil, fmt.Errorf(EMAIL_IS_ALREADY_IN_USE_PATTERN, register.Email)
 	}
 
-	salt := utils.GenerateSaltString()
-	passwordHash := utils.GeneratePasswordHash(register.Password, salt)
+	salt := types.StringFrom(utils.GenerateSaltString())
+	passwordHash := types.StringFrom(utils.GeneratePasswordHash(register.Password, salt))
 
 	creationUser := models.AuthUser{
 		User: models.User{
-			ID:        uuid.New().String(),
+			ID:        types.StringFrom(uuid.NewString()),
 			Email:     register.Email,
 			FirstName: register.FirstName,
 			LastName:  register.LastName,
@@ -119,14 +120,14 @@ func (service Auth) Register(ctx context.Context, register models.RegisterReques
 	}, nil
 }
 
-func GetActivationMailTemplate(cfg config.Config, userID string, email string) models.Mail {
+func GetActivationMailTemplate(cfg config.Config, userID types.String, email types.String) models.Mail {
 	activationLink := fmt.Sprintf("%s/users/activate/%s", cfg.Organization.Url, userID)
 
 	from := fmt.Sprintf("%s <%s>", cfg.Organization.Name, cfg.Organization.Email)
 
 	m := models.Mail{
 		From:    from,
-		To:      []string{email},
+		To:      []string{email.Data},
 		Subject: "Activate your email address",
 		Text:    []byte(fmt.Sprintf("your activation link: %s", activationLink)),
 	}

@@ -1,16 +1,17 @@
 package models
 
 import (
+	"github.com/followthepattern/adapticc/pkg/types"
 	validation "github.com/go-ozzo/ozzo-validation"
 )
 
 type User struct {
-	ID        string `db:"id" goqu:"skipupdate,omitempty"`
-	Email     string `db:"email" goqu:"skipupdate,omitempty"`
-	FirstName string `db:"first_name" goqu:"omitempty"`
-	LastName  string `db:"last_name" goqu:"omitempty"`
-	Active    bool   `db:"active" goqu:"skipupdate,omitempty"`
-	Roles     []Role `db:"-"`
+	ID        types.String `db:"id" goqu:"skipupdate,omitempty"`
+	Email     types.String `db:"email" goqu:"skipupdate,omitempty"`
+	FirstName types.String `db:"first_name" goqu:"omitempty"`
+	LastName  types.String `db:"last_name" goqu:"omitempty"`
+	Active    bool         `db:"active" goqu:"skipupdate,omitempty"`
+	Roles     []Role       `db:"-"`
 	Userlog
 }
 
@@ -29,12 +30,7 @@ func (u User) UpdateValidate() error {
 }
 
 func (u User) IsDefault() bool {
-	return len(u.ID) < 1
-}
-
-type SingleUserRequestParams struct {
-	ID    *string
-	Email *string
+	return u.ID.Len() < 1
 }
 
 type UserListRequestParams = ListRequestParams[ListFilter]

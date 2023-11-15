@@ -7,6 +7,7 @@ import (
 	"errors"
 
 	"github.com/followthepattern/adapticc/pkg/models"
+	"github.com/followthepattern/adapticc/pkg/types"
 	"github.com/google/uuid"
 )
 
@@ -30,8 +31,8 @@ func GenerateSaltString() string {
 	return hex.EncodeToString(GenerateSalt())
 }
 
-func GeneratePasswordHash(password string, salt string) string {
-	return hex.EncodeToString(GenerateHash([]byte(password + salt)))
+func GeneratePasswordHash(password types.String, salt types.String) string {
+	return hex.EncodeToString(GenerateHash([]byte(password.Data + salt.Data)))
 }
 
 func GetModelFromContext[T any](ctx context.Context, ctxKey ContextKey) *T {

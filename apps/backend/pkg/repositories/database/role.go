@@ -83,7 +83,7 @@ func (repo Role) Get(request models.RoleListRequestParams) (*models.RoleListResp
 	return &result, nil
 }
 
-func (repo Role) GetRolesByUserID(userID string) ([]models.Role, error) {
+func (repo Role) GetRolesByUserID(userID types.String) ([]models.Role, error) {
 	var data []models.Role
 
 	err := repo.db.From(userRoleTableName.As("ur")).
@@ -136,7 +136,7 @@ func (repo Role) RemoveRoleFromUser(value models.UserRole) error {
 	return err
 }
 
-func (repo Role) GetRoleCodes(userID string) ([]string, error) {
+func (repo Role) GetRoleCodes(userID types.String) ([]string, error) {
 	roles, err := repo.GetRolesByUserID(userID)
 	if err != nil {
 		return nil, err

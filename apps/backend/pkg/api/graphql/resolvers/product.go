@@ -68,7 +68,7 @@ func (resolver ProductResolver) Create(ctx context.Context, args struct {
 }
 
 func (resolver ProductResolver) Update(ctx context.Context, args struct {
-	Id    types.NullString
+	Id    types.String
 	Model models.Product
 }) (*ResponseStatus, error) {
 	args.Model.ID = args.Id

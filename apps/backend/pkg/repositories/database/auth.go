@@ -7,6 +7,7 @@ import (
 	"log/slog"
 
 	"github.com/followthepattern/adapticc/pkg/models"
+	"github.com/followthepattern/adapticc/pkg/types"
 	. "github.com/followthepattern/goqu/v9"
 )
 
@@ -22,7 +23,7 @@ func NewAuth(database *sql.DB, logger *slog.Logger) Auth {
 	}
 }
 
-func (service Auth) VerifyEmail(email string) (bool, error) {
+func (service Auth) VerifyEmail(email types.String) (bool, error) {
 	count, err := service.db.From(userTableName).Where(Ex{"email": email}).Count()
 
 	return count == 0, err
@@ -37,7 +38,7 @@ func (service Auth) RegisterUser(registerUser models.AuthUser) error {
 	return err
 }
 
-func (service Auth) VerifyLogin(email string) (models.AuthUser, error) {
+func (service Auth) VerifyLogin(email types.String) (models.AuthUser, error) {
 	authUser := models.AuthUser{}
 
 	_, err := service.db.From(userTableName).Where(Ex{"email": email}).ScanStruct(&authUser)

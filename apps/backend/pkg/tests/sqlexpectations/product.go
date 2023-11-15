@@ -6,9 +6,10 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/followthepattern/adapticc/pkg/models"
+	"github.com/followthepattern/adapticc/pkg/types"
 )
 
-var columns = []string{
+var productColumns = []string{
 	"created_at",
 	"creation_user_id",
 	"description",
@@ -34,7 +35,7 @@ func ExpectProduct(mock sqlmock.Sqlmock, result models.Product) {
 		LIMIT 1`,
 		result.ID)
 
-	rows := sqlmock.NewRows(columns)
+	rows := sqlmock.NewRows(productColumns)
 	values := []driver.Value{
 		result.CreatedAt,
 		result.CreationUserID,
@@ -88,7 +89,7 @@ func ExpectProducts(mock sqlmock.Sqlmock, filter models.ListFilter, page int, pa
 		page*pageSize,
 	)
 
-	rows := sqlmock.NewRows(columns)
+	rows := sqlmock.NewRows(productColumns)
 
 	for _, result := range results {
 		values := []driver.Value{
@@ -107,7 +108,7 @@ func ExpectProducts(mock sqlmock.Sqlmock, filter models.ListFilter, page int, pa
 		WillReturnRows(rows)
 }
 
-func CreateProduct(mock sqlmock.Sqlmock, userID string, product models.Product) {
+func CreateProduct(mock sqlmock.Sqlmock, userID types.String, product models.Product) {
 	sqlQuery := fmt.Sprintf(`
 		INSERT INTO "usr"."products"
 			("created_at",
@@ -125,7 +126,7 @@ func CreateProduct(mock sqlmock.Sqlmock, userID string, product models.Product) 
 		WillReturnResult(sqlmock.NewResult(1, 1))
 }
 
-func UpdateProduct(mock sqlmock.Sqlmock, userID string, product models.Product) {
+func UpdateProduct(mock sqlmock.Sqlmock, userID types.String, product models.Product) {
 	sqlQuery := fmt.Sprintf(`
 	UPDATE
 		"usr"."products"

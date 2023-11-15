@@ -9,6 +9,7 @@ import (
 	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/services"
+	"github.com/followthepattern/adapticc/pkg/types"
 	validation "github.com/go-ozzo/ozzo-validation"
 )
 
@@ -28,21 +29,12 @@ func NewUser(cont container.Container) User {
 	}
 }
 
-func (ctrl User) GetByID(ctx context.Context, userID string) (*models.User, error) {
+func (ctrl User) GetByID(ctx context.Context, userID types.String) (*models.User, error) {
 	if err := validation.Validate(userID, Required("userID")); err != nil {
 		return nil, err
 	}
 
-	result, err := ctrl.userService.GetByID(ctx, userID)
-	if err != nil {
-		return nil, err
-	}
-
-	if result.IsDefault() {
-		return nil, nil
-	}
-
-	return result, nil
+	return ctrl.userService.GetByID(ctx, userID)
 }
 
 func (ctrl User) Profile(ctx context.Context) (*models.User, error) {
@@ -87,7 +79,7 @@ func (ctrl User) ActivateUser(ctx context.Context, userID string) error {
 	return ctrl.userService.ActivateUser(ctx, userID)
 }
 
-func (ctrl User) Delete(ctx context.Context, userID string) error {
+func (ctrl User) Delete(ctx context.Context, userID types.String) error {
 	if err := validation.Validate(userID, Required("userID")); err != nil {
 		return err
 	}

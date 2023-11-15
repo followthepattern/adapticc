@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/followthepattern/adapticc/pkg/models"
+	"github.com/followthepattern/adapticc/pkg/types"
 	"github.com/golang-jwt/jwt/v4"
 )
 
@@ -52,10 +53,10 @@ func getAuthorizedUserFromClaims(claims jwt.MapClaims) (*models.User, error) {
 	}
 
 	return &models.User{
-		ID:        id,
-		Email:     email,
-		FirstName: firstName,
-		LastName:  lastName,
+		ID:        types.StringFrom(id),
+		Email:     types.StringFrom(email),
+		FirstName: types.StringFrom(firstName),
+		LastName:  types.StringFrom(lastName),
 	}, nil
 }
 

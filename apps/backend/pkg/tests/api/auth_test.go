@@ -16,6 +16,7 @@ import (
 	"github.com/followthepattern/adapticc/pkg/services"
 	"github.com/followthepattern/adapticc/pkg/tests/datagenerator"
 	"github.com/followthepattern/adapticc/pkg/tests/sqlexpectations"
+	"github.com/followthepattern/adapticc/pkg/types"
 	"github.com/golang/mock/gomock"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -154,7 +155,7 @@ var _ = Describe("Authentication", func() {
 
 			sqlexpectations.ExpectCreateAuthUser(mock, generatedUser)
 
-			mailTemplate := services.GetActivationMailTemplate(cfg, "", generatedUser.Email)
+			mailTemplate := services.GetActivationMailTemplate(cfg, types.StringFrom(""), generatedUser.Email)
 
 			mockEmail.EXPECT().SetFrom(gomock.Any())
 			mockEmail.EXPECT().SetTo(mailTemplate.To)
@@ -175,9 +176,9 @@ var _ = Describe("Authentication", func() {
 
 			Expect(testResponse.Errors).To(HaveLen(0))
 
-			Expect(generatedUser.FirstName).To(Equal(testResponse.Data.Authentication.Register.FirstName))
-			Expect(generatedUser.LastName).To(Equal(testResponse.Data.Authentication.Register.LastName))
-			Expect(generatedUser.Email).To(Equal(testResponse.Data.Authentication.Register.Email))
+			Expect(generatedUser.FirstName.Data).To(Equal(testResponse.Data.Authentication.Register.FirstName.Data))
+			Expect(generatedUser.LastName.Data).To(Equal(testResponse.Data.Authentication.Register.LastName.Data))
+			Expect(generatedUser.Email.Data).To(Equal(testResponse.Data.Authentication.Register.Email.Data))
 
 			Expect(mock.ExpectationsWereMet()).To(BeNil())
 		})

@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 
+	"github.com/followthepattern/adapticc/pkg/types"
 	validation "github.com/go-ozzo/ozzo-validation"
 )
 
@@ -12,8 +13,8 @@ type LoginResponse struct {
 }
 
 type LoginRequestParams struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email    types.String `json:"email"`
+	Password types.String `json:"password"`
 }
 
 func (l LoginRequestParams) Validate() error {
@@ -24,10 +25,10 @@ func (l LoginRequestParams) Validate() error {
 }
 
 type RegisterRequestParams struct {
-	Email     string `json:"email"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"list_name"`
-	Password  string `json:"password"`
+	Email     types.String `json:"email"`
+	FirstName types.String `json:"first_name"`
+	LastName  types.String `json:"list_name"`
+	Password  types.String `json:"password"`
 }
 
 func (r RegisterRequestParams) Validate() error {
@@ -40,8 +41,8 @@ func (r RegisterRequestParams) Validate() error {
 }
 
 type Password struct {
-	PasswordHash string `db:"password_hash"`
-	Salt         string `db:"salt"`
+	PasswordHash types.String `db:"password_hash"`
+	Salt         types.String `db:"salt"`
 }
 
 func (p *Password) IsEmpty() bool {
@@ -49,7 +50,7 @@ func (p *Password) IsEmpty() bool {
 		return true
 	}
 
-	if len(p.PasswordHash) < 1 {
+	if p.PasswordHash.Len() < 1 {
 		return true
 	}
 
@@ -62,7 +63,7 @@ type AuthUser struct {
 }
 
 type RegisterResponse struct {
-	Email     string `json:"email"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
+	Email     types.String `json:"email"`
+	FirstName types.String `json:"first_name"`
+	LastName  types.String `json:"last_name"`
 }

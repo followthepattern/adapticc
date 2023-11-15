@@ -6,9 +6,10 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/followthepattern/adapticc/pkg/models"
+	"github.com/followthepattern/adapticc/pkg/types"
 )
 
-func ExpectGetAuthUserByEmail(mock sqlmock.Sqlmock, result models.AuthUser, email string) {
+func ExpectGetAuthUserByEmail(mock sqlmock.Sqlmock, result models.AuthUser, email types.String) {
 	sqlQuery := fmt.Sprintf(`SELECT "active", "created_at", "creation_user_id", "email", "first_name", "id", "last_name", "password_hash", "salt", "update_user_id", "updated_at" FROM "usr"."users" WHERE ("email" = '%v') LIMIT 1`, email)
 
 	columns := []string{
@@ -37,7 +38,7 @@ func ExpectGetAuthUserByEmail(mock sqlmock.Sqlmock, result models.AuthUser, emai
 		WillReturnRows(rows)
 }
 
-func ExpectVerifyEmail(mock sqlmock.Sqlmock, count int, email string) {
+func ExpectVerifyEmail(mock sqlmock.Sqlmock, count int, email types.String) {
 	sqlQuery := fmt.Sprintf(`SELECT COUNT(\*) AS "count" FROM "usr"."users" WHERE ("email" = '%s') LIMIT 1`, email)
 
 	mock.ExpectQuery(sqlQuery).

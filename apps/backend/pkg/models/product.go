@@ -6,9 +6,9 @@ import (
 )
 
 type Product struct {
-	ID          types.NullString `db:"id" goqu:"omitempty"`
-	Title       types.NullString `db:"title" goqu:"omitempty"`
-	Description types.NullString `db:"description" goqu:"omitempty"`
+	ID          types.String `db:"id" goqu:"omitempty"`
+	Title       types.String `db:"title" goqu:"omitempty"`
+	Description types.String `db:"description" goqu:"omitempty"`
 	Userlog
 }
 

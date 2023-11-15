@@ -37,10 +37,14 @@ func (repo User) Create(users []models.User) (err error) {
 	return
 }
 
-func (repo User) GetByID(id string) (*models.User, error) {
+func (repo User) GetByID(id types.String) (*models.User, error) {
 	user := models.User{}
 
 	query := repo.db.From(userTableName).Where(Ex{"id": id})
+
+	sql, _, _ := query.ToSQL()
+
+	fmt.Println(sql)
 
 	_, err := query.ScanStruct(&user)
 	if err != nil {
@@ -133,7 +137,7 @@ func (repo User) ActivateUser(userID string) error {
 	return nil
 }
 
-func (repo User) Delete(id string) error {
+func (repo User) Delete(id types.String) error {
 	query := repo.db.Delete(userTableName).
 		Where(C("id").Eq(id))
 

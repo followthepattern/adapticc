@@ -42,7 +42,7 @@ func (service Product) GetByID(ctx context.Context, id string) (*models.Product,
 		return nil, err
 	}
 
-	err = service.ac.Authorize(ctx, ctxu.ID, accesscontrol.READ, id, roles...)
+	err = service.ac.Authorize(ctx, ctxu.ID.Data, accesscontrol.READ, id, roles...)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +61,7 @@ func (service Product) Get(ctx context.Context, request models.ProductListReques
 		return nil, err
 	}
 
-	err = service.ac.Authorize(ctx, ctxu.ID, accesscontrol.READ, accesscontrol.ALLRESOURCE, roles...)
+	err = service.ac.Authorize(ctx, ctxu.ID.Data, accesscontrol.READ, accesscontrol.ALLRESOURCE, roles...)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +82,7 @@ func (service Product) Create(ctx context.Context, value models.Product) error {
 		return err
 	}
 
-	err = service.ac.Authorize(ctx, ctxu.ID, accesscontrol.CREATE, accesscontrol.NEW, roles...)
+	err = service.ac.Authorize(ctx, ctxu.ID.Data, accesscontrol.CREATE, accesscontrol.NEW, roles...)
 	if err != nil {
 		return err
 	}
@@ -104,7 +104,7 @@ func (service Product) Update(ctx context.Context, value models.Product) error {
 		return err
 	}
 
-	err = service.ac.Authorize(ctx, ctxu.ID, accesscontrol.UPDATE, value.ID.Data, roles...)
+	err = service.ac.Authorize(ctx, ctxu.ID.Data, accesscontrol.UPDATE, value.ID.Data, roles...)
 	if err != nil {
 		return err
 	}
@@ -125,7 +125,7 @@ func (service Product) Delete(ctx context.Context, id string) error {
 		return err
 	}
 
-	err = service.ac.Authorize(ctx, ctxu.ID, accesscontrol.DELETE, id, roles...)
+	err = service.ac.Authorize(ctx, ctxu.ID.Data, accesscontrol.DELETE, id, roles...)
 	if err != nil {
 		return err
 	}

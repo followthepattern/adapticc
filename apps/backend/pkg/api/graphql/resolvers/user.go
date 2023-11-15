@@ -17,7 +17,7 @@ func NewUserQuery(ctrl controllers.User) UserResolver {
 	return UserResolver{ctrl: ctrl}
 }
 
-func (resolver UserResolver) Single(ctx context.Context, args struct{ Id string }) (*models.User, error) {
+func (resolver UserResolver) Single(ctx context.Context, args struct{ Id types.String }) (*models.User, error) {
 	return resolver.ctrl.GetByID(ctx, args.Id)
 }
 
@@ -70,7 +70,7 @@ func (resolver UserResolver) Create(ctx context.Context, args struct {
 }
 
 func (resolver UserResolver) Update(ctx context.Context, args struct {
-	Id    string
+	Id    types.String
 	Model models.User
 }) (*ResponseStatus, error) {
 	args.Model.ID = args.Id
@@ -84,7 +84,7 @@ func (resolver UserResolver) Update(ctx context.Context, args struct {
 }
 
 func (resolver UserResolver) Delete(ctx context.Context, args struct {
-	Id string
+	Id types.String
 }) (*ResponseStatus, error) {
 	err := resolver.ctrl.Delete(ctx, args.Id)
 	if err != nil {

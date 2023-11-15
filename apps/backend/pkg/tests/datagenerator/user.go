@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/followthepattern/adapticc/pkg/models"
+	"github.com/followthepattern/adapticc/pkg/types"
 	"github.com/followthepattern/adapticc/pkg/utils"
 
 	"github.com/google/uuid"
@@ -11,14 +12,14 @@ import (
 
 func NewRandomUser() models.User {
 	return models.User{
-		ID:        uuid.New().String(),
-		Email:     RandomEmail(8, 8),
-		FirstName: String(8),
-		LastName:  String(8),
+		ID:        types.StringFrom(uuid.NewString()),
+		Email:     types.StringFrom(RandomEmail(8, 8)),
+		FirstName: types.StringFrom(String(8)),
+		LastName:  types.StringFrom(String(8)),
 		Active:    false,
 		Userlog: models.Userlog{
-			CreationUserID: uuid.New().String(),
-			UpdateUserID:   uuid.New().String(),
+			CreationUserID: types.StringFrom(uuid.NewString()),
+			UpdateUserID:   types.StringFrom(uuid.NewString()),
 			CreatedAt:      time.Now(),
 			UpdatedAt:      time.Now(),
 		},
@@ -26,24 +27,25 @@ func NewRandomUser() models.User {
 }
 
 func NewRandomAuthUser(password string) models.AuthUser {
-	salt := utils.GenerateSaltString()
+	salt := types.StringFrom(utils.GenerateSaltString())
+	passwordString := types.StringFrom(password)
 	return models.AuthUser{
 		User: models.User{
-			ID:        uuid.New().String(),
-			Email:     RandomEmail(8, 8),
-			FirstName: String(8),
-			LastName:  String(8),
+			ID:        types.StringFrom(uuid.NewString()),
+			Email:     types.StringFrom(RandomEmail(8, 8)),
+			FirstName: types.StringFrom(String(8)),
+			LastName:  types.StringFrom(String(8)),
 			Active:    false,
 			Userlog: models.Userlog{
-				CreationUserID: uuid.New().String(),
-				UpdateUserID:   uuid.New().String(),
+				CreationUserID: types.StringFrom(uuid.NewString()),
+				UpdateUserID:   types.StringFrom(uuid.NewString()),
 				CreatedAt:      time.Now(),
 				UpdatedAt:      time.Now(),
 			},
 		},
 		Password: models.Password{
 			Salt:         salt,
-			PasswordHash: utils.GeneratePasswordHash(password, salt),
+			PasswordHash: types.StringFrom(utils.GeneratePasswordHash(passwordString, salt)),
 		},
 	}
 }
