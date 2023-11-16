@@ -4,7 +4,7 @@ import (
 	"strconv"
 )
 
-const uinName = "Uint"
+const uintName = "Uint"
 
 type Uint struct {
 	BaseType[uint]
@@ -12,7 +12,7 @@ type Uint struct {
 
 func NewUint(value uint, valid bool) Uint {
 	base := New[uint](value, true)
-	base.name = uinName
+	base.name = uintName
 	return Uint{
 		BaseType: base,
 	}
@@ -24,18 +24,18 @@ func UintFrom(value uint) Uint {
 
 func UintFromPtr(value *uint) Uint {
 	base := FromPtr[uint](value)
-	base.name = uinName
+	base.name = uintName
 	return Uint{
 		BaseType: base,
 	}
 }
 
 func (ttype Uint) ImplementsGraphQLType(name string) bool {
-	return name == uinName
+	return name == uintName
 }
 
 func (ttype *Uint) UnmarshalGraphQL(input interface{}) error {
-	ttype.name = uinName
+	ttype.name = uintName
 	switch input := input.(type) {
 	case int:
 		ttype.Data = uint(input)
