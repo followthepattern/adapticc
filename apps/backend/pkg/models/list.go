@@ -18,8 +18,8 @@ type ListFilter struct {
 }
 
 type Pagination struct {
-	PageSize types.NullUint
-	Page     types.NullUint
+	PageSize types.Uint
+	Page     types.Uint
 }
 
 func (p *Pagination) SetDefaultIfEmpty() {
@@ -39,7 +39,7 @@ type OrderBy struct {
 
 type ListResponse[T any] struct {
 	Count    types.NullInt64 `json:"count"`
-	PageSize types.NullUint  `json:"page_size"`
-	Page     types.NullUint  `json:"page"`
+	PageSize types.Uint      `json:"page_size"`
+	Page     types.Uint      `json:"page"`
 	Data     []T             `json:"data"`
 }
