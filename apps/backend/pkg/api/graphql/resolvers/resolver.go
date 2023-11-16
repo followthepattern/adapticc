@@ -8,7 +8,7 @@ type Resolver struct {
 	users        UserResolver
 	products     ProductResolver
 	roles        RoleResolver
-	authMutation AuthMutation
+	authMutation Auth
 }
 
 func New(controllers controllers.Controllers) Resolver {
@@ -31,7 +31,7 @@ func (r Resolver) Users() (UserResolver, error) {
 	return r.users, nil
 }
 
-func (r Resolver) Authentication() (AuthMutation, error) {
+func (r Resolver) Authentication() (Auth, error) {
 	return r.authMutation, nil
 }
 

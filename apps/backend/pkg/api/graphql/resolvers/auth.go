@@ -8,17 +8,17 @@ import (
 	"github.com/followthepattern/adapticc/pkg/types"
 )
 
-type AuthMutation struct {
+type Auth struct {
 	auth controllers.Auth
 }
 
-func NewAuthMutation(ctrl controllers.Auth) AuthMutation {
-	return AuthMutation{
+func NewAuthMutation(ctrl controllers.Auth) Auth {
+	return Auth{
 		auth: ctrl,
 	}
 }
 
-func (r AuthMutation) Login(ctx context.Context, args struct {
+func (r Auth) Login(ctx context.Context, args struct {
 	Email    types.String
 	Password types.String
 }) (*loginResponse, error) {
@@ -35,7 +35,7 @@ func (r AuthMutation) Login(ctx context.Context, args struct {
 	return getFromLoginResponseModel(*loginResponse), nil
 }
 
-func (r AuthMutation) Register(ctx context.Context, args struct {
+func (r Auth) Register(ctx context.Context, args struct {
 	Email     types.String
 	FirstName types.String
 	LastName  types.String
