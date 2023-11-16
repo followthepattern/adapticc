@@ -42,10 +42,6 @@ func (repo User) GetByID(id types.String) (*models.User, error) {
 
 	query := repo.db.From(userTableName).Where(Ex{"id": id})
 
-	sql, _, _ := query.ToSQL()
-
-	fmt.Println(sql)
-
 	_, err := query.ScanStruct(&user)
 	if err != nil {
 		return nil, err
