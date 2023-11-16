@@ -4,7 +4,6 @@ const Schema = `
 scalar Time
 scalar Int64
 scalar Uint
-scalar NullInt
 
 type ResponseStatus {
 	code: Int!

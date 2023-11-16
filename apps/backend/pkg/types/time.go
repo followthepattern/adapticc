@@ -4,37 +4,37 @@ import (
 	"time"
 )
 
-const nullTime = "NullTime"
+const timeName = "Time"
 
-type NullTime struct {
+type Time struct {
 	BaseType[time.Time]
 }
 
-func NewTime(value time.Time, valid bool) NullTime {
+func NewTime(value time.Time, valid bool) Time {
 	base := New[time.Time](value, true)
-	base.name = nullTime
-	return NullTime{
+	base.name = timeName
+	return Time{
 		BaseType: base,
 	}
 }
 
-func TimeFrom(value time.Time) NullTime {
+func TimeFrom(value time.Time) Time {
 	return NewTime(value, true)
 }
 
-func TimeFromPtr(value *time.Time) NullTime {
+func TimeFromPtr(value *time.Time) Time {
 	base := FromPtr[time.Time](value)
-	base.name = nullTime
-	return NullTime{
+	base.name = timeName
+	return Time{
 		BaseType: base,
 	}
 }
 
-func (ttype NullTime) ImplementsGraphQLType(name string) bool {
-	return nullTime == name
+func (ttype Time) ImplementsGraphQLType(name string) bool {
+	return timeName == name
 }
 
-func (ttype *NullTime) UnmarshalGraphQL(input interface{}) error {
+func (ttype *Time) UnmarshalGraphQL(input interface{}) error {
 	switch input := input.(type) {
 	case time.Time:
 		ttype.Data = input
