@@ -2,37 +2,37 @@ package types
 
 import "strconv"
 
-const nullInt64 = "NullInt64"
+const int64Name = "Int64"
 
-type NullInt64 struct {
+type Int64 struct {
 	BaseType[int64]
 }
 
-func NewInt64(value int64, valid bool) NullInt64 {
+func NewInt64(value int64, valid bool) Int64 {
 	base := New[int64](value, true)
-	base.name = nullInt64
-	return NullInt64{
+	base.name = int64Name
+	return Int64{
 		BaseType: base,
 	}
 }
 
-func Int64From(value int64) NullInt64 {
+func Int64From(value int64) Int64 {
 	return NewInt64(value, true)
 }
 
-func Int64FromPtr(value *int64) NullInt64 {
+func Int64FromPtr(value *int64) Int64 {
 	base := FromPtr[int64](value)
-	base.name = nullInt64
-	return NullInt64{
+	base.name = int64Name
+	return Int64{
 		BaseType: base,
 	}
 }
 
-func (ttype NullInt64) ImplementsGraphQLType(name string) bool {
-	return nullInt64 == name
+func (ttype Int64) ImplementsGraphQLType(name string) bool {
+	return int64Name == name
 }
 
-func (ttype *NullInt64) UnmarshalGraphQL(input interface{}) error {
+func (ttype *Int64) UnmarshalGraphQL(input interface{}) error {
 	switch input := input.(type) {
 	case int:
 		ttype.Data = int64(input)

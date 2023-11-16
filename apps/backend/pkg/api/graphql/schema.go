@@ -2,8 +2,8 @@ package graphql
 
 const Schema = `
 scalar Time
-scalar NullInt64
-scalar NullUint
+scalar Int64
+scalar Uint
 scalar NullInt
 
 type ResponseStatus {
@@ -11,8 +11,8 @@ type ResponseStatus {
 }
 
 input Pagination {
-	pageSize: NullUint!
-	page: NullUint!
+	pageSize: Uint!
+	page: Uint!
 }
 
 input OrderBy {
@@ -43,9 +43,9 @@ input UserInput {
 }
 
 type UserListResponse {
-	count: NullInt64!
-	pageSize: NullUint!
-	page: NullUint!
+	count: Int64!
+	pageSize: Uint!
+	page: Uint!
 	data: [User!]!
 }
 
@@ -65,9 +65,9 @@ input ProductInput {
 }
 
 type ProductListResponse {
-	count: NullInt64!
-	pageSize: NullUint!
-	page: NullUint!
+	count: Int64!
+	pageSize: Uint!
+	page: Uint!
 	data: [Product!]!
 }
 
@@ -82,9 +82,9 @@ type Role {
 }
 
 type RoleListResponse {
-	count: NullInt64!
-	pageSize: NullUint!
-	page: NullUint!
+	count: Int64!
+	pageSize: Uint!
+	page: Uint!
 	data: [Role!]!
 }
 

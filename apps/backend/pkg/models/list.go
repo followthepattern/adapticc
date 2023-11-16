@@ -38,8 +38,8 @@ type OrderBy struct {
 }
 
 type ListResponse[T any] struct {
-	Count    types.NullInt64 `json:"count"`
-	PageSize types.Uint      `json:"page_size"`
-	Page     types.Uint      `json:"page"`
-	Data     []T             `json:"data"`
+	Count    types.Int64 `json:"count"`
+	PageSize types.Uint  `json:"page_size"`
+	Page     types.Uint  `json:"page"`
+	Data     []T         `json:"data"`
 }
