@@ -3,7 +3,7 @@ package resolvers
 import (
 	"github.com/followthepattern/adapticc/pkg/models"
 
-	"github.com/followthepattern/graphql-go"
+	"github.com/graph-gophers/graphql-go"
 )
 
 type loginResponse struct {

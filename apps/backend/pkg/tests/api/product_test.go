@@ -18,8 +18,8 @@ import (
 	"github.com/followthepattern/adapticc/pkg/services"
 	"github.com/followthepattern/adapticc/pkg/tests/datagenerator"
 	"github.com/followthepattern/adapticc/pkg/tests/sqlexpectations"
-	"github.com/followthepattern/graphql-go/errors"
 	"github.com/golang/mock/gomock"
+	"github.com/graph-gophers/graphql-go/errors"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )

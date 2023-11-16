@@ -20,7 +20,7 @@ import (
 	"github.com/golang/mock/gomock"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/followthepattern/graphql-go/errors"
+	"github.com/graph-gophers/graphql-go/errors"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"

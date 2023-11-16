@@ -6,8 +6,8 @@ import (
 	"github.com/followthepattern/adapticc/pkg/api/graphql/resolvers"
 	"github.com/followthepattern/adapticc/pkg/controllers"
 
-	"github.com/followthepattern/graphql-go"
-	"github.com/followthepattern/graphql-go/relay"
+	"github.com/graph-gophers/graphql-go"
+	"github.com/graph-gophers/graphql-go/relay"
 )
 
 func New(controllers controllers.Controllers) http.Handler {

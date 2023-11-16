@@ -1,6 +1,6 @@
 package resolvers
 
-import "github.com/followthepattern/graphql-go"
+import "github.com/graph-gophers/graphql-go"
 
 type UserLog struct {
 	CreationUserID *string
