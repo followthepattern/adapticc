@@ -4,38 +4,38 @@ import (
 	"strconv"
 )
 
-const nullBool = "NullBool"
+const boolName = "Bool"
 
-type NullBool struct {
+type Bool struct {
 	BaseType[bool]
 }
 
-func NewBool(value bool, valid bool) NullBool {
+func NewBool(value bool, valid bool) Bool {
 	base := New[bool](value, true)
-	base.name = nullBool
-	return NullBool{
+	base.name = boolName
+	return Bool{
 		BaseType: base,
 	}
 }
 
-func BoolFrom(value bool) NullBool {
+func BoolFrom(value bool) Bool {
 	return NewBool(value, true)
 }
 
-func BoolFromPtr(value *bool) NullBool {
+func BoolFromPtr(value *bool) Bool {
 	base := FromPtr[bool](value)
-	base.name = nullBool
-	return NullBool{
+	base.name = boolName
+	return Bool{
 		BaseType: base,
 	}
 }
 
-func (ttype NullBool) ImplementsGraphQLType(name string) bool {
-	return nullBool == name
+func (ttype Bool) ImplementsGraphQLType(name string) bool {
+	return boolName == name
 }
 
-func (ttype *NullBool) UnmarshalGraphQL(input interface{}) error {
-	ttype.name = nullBool
+func (ttype *Bool) UnmarshalGraphQL(input interface{}) error {
+	ttype.name = boolName
 	switch input := input.(type) {
 	case string:
 		value, err := strconv.ParseBool(input)
