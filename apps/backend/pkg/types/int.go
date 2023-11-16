@@ -4,37 +4,37 @@ import (
 	"strconv"
 )
 
-const nullInt = "NullInt"
+const intName = "Int"
 
-type NullInt struct {
+type Int struct {
 	BaseType[int]
 }
 
-func NewInt(value int, valid bool) NullInt {
+func NewInt(value int, valid bool) Int {
 	base := New[int](value, true)
-	base.name = nullInt
-	return NullInt{
+	base.name = intName
+	return Int{
 		BaseType: base,
 	}
 }
 
-func IntFrom(value int) NullInt {
+func IntFrom(value int) Int {
 	return NewInt(value, true)
 }
 
-func IntFromPtr(value *int) NullInt {
+func IntFromPtr(value *int) Int {
 	base := FromPtr[int](value)
-	base.name = nullInt
-	return NullInt{
+	base.name = intName
+	return Int{
 		BaseType: base,
 	}
 }
 
-func (ttype NullInt) ImplementsGraphQLType(name string) bool {
-	return nullInt == name
+func (ttype Int) ImplementsGraphQLType(name string) bool {
+	return intName == name
 }
 
-func (ttype *NullInt) UnmarshalGraphQL(input interface{}) error {
+func (ttype *Int) UnmarshalGraphQL(input interface{}) error {
 	switch input := input.(type) {
 	case int:
 		ttype.Data = input

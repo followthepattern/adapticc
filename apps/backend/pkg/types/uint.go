@@ -35,7 +35,7 @@ func (ttype NullUint) ImplementsGraphQLType(name string) bool {
 }
 
 func (ttype *NullUint) UnmarshalGraphQL(input interface{}) error {
-	ttype.name = nullInt
+	ttype.name = nullUint
 	switch input := input.(type) {
 	case int:
 		ttype.Data = uint(input)
