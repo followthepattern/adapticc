@@ -221,7 +221,7 @@ var _ = Describe("Product Test", func() {
 
 			Expect(code).To(Equal(http.StatusOK))
 			Expect(mock.ExpectationsWereMet()).To(BeNil())
-			Expect(testResponse.Data.Products.Create.Code.Data).To(Equal(http.StatusCreated))
+			Expect(testResponse.Data.Products.Create.Code).To(Equal(int32(http.StatusCreated)))
 		})
 	})
 
@@ -267,7 +267,7 @@ var _ = Describe("Product Test", func() {
 
 			Expect(code).To(Equal(http.StatusOK))
 			Expect(mock.ExpectationsWereMet()).To(BeNil())
-			Expect(testResponse.Data.Products.Update.Code.Data).To(Equal(http.StatusOK))
+			Expect(testResponse.Data.Products.Update.Code).To(Equal(int32(http.StatusOK)))
 		})
 	})
 
@@ -309,7 +309,7 @@ var _ = Describe("Product Test", func() {
 
 			Expect(code).To(Equal(http.StatusOK))
 			Expect(mock.ExpectationsWereMet()).To(BeNil())
-			Expect(testResponse.Data.Products.Delete.Code.Data).To(Equal(http.StatusOK))
+			Expect(testResponse.Data.Products.Delete.Code).To(Equal(int32(http.StatusOK)))
 		})
 	})
 })

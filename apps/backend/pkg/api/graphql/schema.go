@@ -7,7 +7,7 @@ scalar NullUint
 scalar NullInt
 
 type ResponseStatus {
-	code: NullInt!
+	code: Int!
 }
 
 input Pagination {

@@ -6,7 +6,6 @@ import (
 
 	"github.com/followthepattern/adapticc/pkg/controllers"
 	"github.com/followthepattern/adapticc/pkg/models"
-	"github.com/followthepattern/adapticc/pkg/types"
 )
 
 type RoleResolver struct {
@@ -64,7 +63,7 @@ func (resolver RoleResolver) AddRoleToUser(ctx context.Context, args struct {
 		return nil, err
 	}
 	return &ResponseStatus{
-		Code: types.IntFrom(http.StatusCreated),
+		Code: http.StatusCreated,
 	}, nil
 }
 
@@ -77,6 +76,6 @@ func (resolver RoleResolver) DeleteRoleFromUser(ctx context.Context, args struct
 		return nil, err
 	}
 	return &ResponseStatus{
-		Code: types.IntFrom(http.StatusOK),
+		Code: http.StatusOK,
 	}, nil
 }

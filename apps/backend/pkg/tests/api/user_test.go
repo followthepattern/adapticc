@@ -331,7 +331,7 @@ var _ = Describe("User graphql queries", func() {
 
 			Expect(code).To(Equal(http.StatusOK))
 			Expect(mock.ExpectationsWereMet()).To(BeNil())
-			Expect(testResponse.Data.Users.Create.Code.Data).To(Equal(http.StatusCreated))
+			Expect(testResponse.Data.Users.Create.Code).To(Equal(int32(http.StatusCreated)))
 		})
 	})
 
@@ -376,7 +376,7 @@ var _ = Describe("User graphql queries", func() {
 
 			Expect(code).To(Equal(http.StatusOK))
 			Expect(mock.ExpectationsWereMet()).To(BeNil())
-			Expect(testResponse.Data.Users.Update.Code.Data).To(Equal(http.StatusOK))
+			Expect(testResponse.Data.Users.Update.Code).To(Equal(int32(http.StatusOK)))
 		})
 	})
 
@@ -412,10 +412,12 @@ var _ = Describe("User graphql queries", func() {
 
 			code, err := runRequest(handler, httpRequest, testResponse)
 			Expect(err).To(BeNil())
-			Expect(testResponse.Errors).To(BeEmpty())
 			Expect(code).To(Equal(http.StatusOK))
+
+			Expect(testResponse.Errors).To(BeEmpty())
+
 			Expect(mock.ExpectationsWereMet()).To(BeNil())
-			Expect(testResponse.Data.Users.Delete.Code.Data).To(Equal(http.StatusOK))
+			Expect(testResponse.Data.Users.Delete.Code).To(Equal(int32(http.StatusOK)))
 		})
 	})
 })

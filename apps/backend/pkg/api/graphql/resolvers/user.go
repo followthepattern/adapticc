@@ -65,7 +65,7 @@ func (resolver UserResolver) Create(ctx context.Context, args struct {
 		return nil, err
 	}
 	return &ResponseStatus{
-		Code: types.IntFrom(http.StatusCreated),
+		Code: http.StatusCreated,
 	}, nil
 }
 
@@ -79,7 +79,7 @@ func (resolver UserResolver) Update(ctx context.Context, args struct {
 		return nil, err
 	}
 	return &ResponseStatus{
-		Code: types.IntFrom(http.StatusOK),
+		Code: http.StatusOK,
 	}, nil
 }
 
@@ -91,6 +91,6 @@ func (resolver UserResolver) Delete(ctx context.Context, args struct {
 		return nil, err
 	}
 	return &ResponseStatus{
-		Code: types.IntFrom(http.StatusOK),
+		Code: http.StatusOK,
 	}, nil
 }
