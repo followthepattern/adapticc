@@ -1,8 +1,6 @@
 package datagenerator
 
 import (
-	"time"
-
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/types"
 	"github.com/followthepattern/adapticc/pkg/utils"
@@ -20,8 +18,8 @@ func NewRandomUser() models.User {
 		Userlog: models.Userlog{
 			CreationUserID: types.StringFrom(uuid.NewString()),
 			UpdateUserID:   types.StringFrom(uuid.NewString()),
-			CreatedAt:      time.Now(),
-			UpdatedAt:      time.Now(),
+			CreatedAt:      types.TimeNow(),
+			UpdatedAt:      types.TimeNow(),
 		},
 	}
 }
@@ -39,8 +37,8 @@ func NewRandomAuthUser(password string) models.AuthUser {
 			Userlog: models.Userlog{
 				CreationUserID: types.StringFrom(uuid.NewString()),
 				UpdateUserID:   types.StringFrom(uuid.NewString()),
-				CreatedAt:      time.Now(),
-				UpdatedAt:      time.Now(),
+				CreatedAt:      types.TimeNow(),
+				UpdatedAt:      types.TimeNow(),
 			},
 		},
 		Password: models.Password{

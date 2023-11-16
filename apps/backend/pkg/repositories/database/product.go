@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/repositories/database/sqlbuilder"
@@ -29,7 +28,7 @@ func NewProduct(database *sql.DB) Product {
 
 func (repo Product) Create(products []models.Product) (err error) {
 	for i, _ := range products {
-		products[i].Userlog.CreatedAt = time.Now()
+		products[i].Userlog.CreatedAt = types.TimeNow()
 	}
 
 	insertion := repo.db.Insert(productTable)
@@ -92,7 +91,7 @@ func (repo Product) Get(request models.ProductListRequestParams) (*models.Produc
 }
 
 func (repo Product) Update(model models.Product) error {
-	model.Userlog.UpdatedAt = time.Now()
+	model.Userlog.UpdatedAt = types.TimeNow()
 
 	_, err := repo.db.Update(productTable).
 		Set(model).

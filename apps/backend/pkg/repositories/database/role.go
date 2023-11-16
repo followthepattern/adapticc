@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/repositories/database/sqlbuilder"
@@ -102,7 +101,7 @@ func (repo Role) GetRolesByUserID(userID types.String) ([]models.Role, error) {
 
 func (repo Role) AddRoleToUser(values []models.UserRole) error {
 	for i, _ := range values {
-		values[i].Userlog.CreatedAt = time.Now()
+		values[i].Userlog.CreatedAt = types.TimeNow()
 	}
 
 	insertion := repo.db.Insert(userRoleTableName)

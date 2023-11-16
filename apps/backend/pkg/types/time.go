@@ -22,6 +22,10 @@ func TimeFrom(value time.Time) Time {
 	return NewTime(value, true)
 }
 
+func TimeNow() Time {
+	return TimeFrom(time.Now())
+}
+
 func TimeFromPtr(value *time.Time) Time {
 	base := FromPtr[time.Time](value)
 	base.name = timeName

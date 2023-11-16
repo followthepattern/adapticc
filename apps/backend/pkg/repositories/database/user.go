@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/followthepattern/adapticc/pkg/models"
 	"github.com/followthepattern/adapticc/pkg/repositories/database/sqlbuilder"
@@ -31,7 +30,7 @@ func NewUser(database *sql.DB) User {
 
 func (repo User) Create(users []models.User) (err error) {
 	for i := range users {
-		users[i].Userlog.CreatedAt = time.Now()
+		users[i].Userlog.CreatedAt = types.TimeNow()
 	}
 	_, err = repo.db.Insert(userTableName).Rows(users).Executor().Exec()
 	return
@@ -102,7 +101,7 @@ func (repo User) Get(request models.UserListRequestParams) (*models.UserListResp
 }
 
 func (repo User) Update(user models.User) error {
-	user.Userlog.UpdatedAt = time.Now()
+	user.Userlog.UpdatedAt = types.TimeNow()
 
 	query := repo.db.Update(userTableName).
 		Set(user).

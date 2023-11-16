@@ -2,7 +2,6 @@ package database
 
 import (
 	"database/sql"
-	"time"
 
 	"log/slog"
 
@@ -31,7 +30,7 @@ func (service Auth) VerifyEmail(email types.String) (bool, error) {
 
 func (service Auth) RegisterUser(registerUser models.AuthUser) error {
 	registerUser.Userlog = models.Userlog{
-		CreatedAt: time.Now(),
+		CreatedAt: types.TimeNow(),
 	}
 
 	_, err := service.db.Insert(userTableName).Rows(registerUser).Executor().Exec()
