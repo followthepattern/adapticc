@@ -28,7 +28,7 @@ func WithOrderBy(query *SelectDataset, orderBy []models.OrderBy) *SelectDataset 
 		orderExpressions := make([]exp.OrderedExpression, orderLength)
 		for i, order := range orderBy {
 			orderExpressions[i] = I(order.Name).Asc()
-			if order.Desc != nil && *order.Desc {
+			if order.Desc.IsValid() && order.Desc.Data {
 				orderExpressions[i] = I(order.Name).Desc()
 			}
 		}

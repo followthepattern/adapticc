@@ -4,7 +4,7 @@ import (
 	"strconv"
 )
 
-const boolName = "Bool"
+const boolName = "Boolean"
 
 type Bool struct {
 	BaseType[bool]

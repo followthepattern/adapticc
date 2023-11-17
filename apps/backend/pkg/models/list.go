@@ -34,7 +34,7 @@ func (p *Pagination) SetDefaultIfEmpty() {
 
 type OrderBy struct {
 	Name string
-	Desc *bool
+	Desc types.Bool
 }
 
 type ListResponse[T any] struct {
