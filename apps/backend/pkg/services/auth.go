@@ -93,7 +93,7 @@ func (service Auth) Register(ctx context.Context, register models.RegisterReques
 			Email:     register.Email,
 			FirstName: register.FirstName,
 			LastName:  register.LastName,
-			Active:    false,
+			Active:    types.FALSE,
 		},
 		Password: models.Password{
 			PasswordHash: passwordHash,

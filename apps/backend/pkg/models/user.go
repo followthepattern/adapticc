@@ -10,7 +10,7 @@ type User struct {
 	Email     types.String `db:"email" goqu:"skipupdate,omitempty"`
 	FirstName types.String `db:"first_name" goqu:"omitempty"`
 	LastName  types.String `db:"last_name" goqu:"omitempty"`
-	Active    bool         `db:"active" goqu:"skipupdate,omitempty"`
+	Active    types.Bool   `db:"active" goqu:"skipupdate,omitempty"`
 	Roles     []Role       `db:"-"`
 	Userlog
 }

@@ -112,7 +112,7 @@ func (service User) Create(ctx context.Context, value models.User) error {
 
 	value.ID = types.StringFrom(uuid.NewString())
 	value.CreationUserID = ctxu.ID
-	value.Active = false
+	value.Active = types.FALSE
 
 	return service.userRepository.Create([]models.User{value})
 }

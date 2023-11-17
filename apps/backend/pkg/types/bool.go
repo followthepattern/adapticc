@@ -6,6 +6,11 @@ import (
 
 const boolName = "Boolean"
 
+var (
+	TRUE  = BoolFrom(true)
+	FALSE = BoolFrom(false)
+)
+
 type Bool struct {
 	BaseType[bool]
 }

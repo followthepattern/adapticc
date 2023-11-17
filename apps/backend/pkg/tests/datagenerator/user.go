@@ -14,7 +14,7 @@ func NewRandomUser() models.User {
 		Email:     types.StringFrom(RandomEmail(8, 8)),
 		FirstName: types.StringFrom(String(8)),
 		LastName:  types.StringFrom(String(8)),
-		Active:    false,
+		Active:    types.FALSE,
 		Userlog: models.Userlog{
 			CreationUserID: types.StringFrom(uuid.NewString()),
 			UpdateUserID:   types.StringFrom(uuid.NewString()),
@@ -33,7 +33,7 @@ func NewRandomAuthUser(password string) models.AuthUser {
 			Email:     types.StringFrom(RandomEmail(8, 8)),
 			FirstName: types.StringFrom(String(8)),
 			LastName:  types.StringFrom(String(8)),
-			Active:    false,
+			Active:    types.FALSE,
 			Userlog: models.Userlog{
 				CreationUserID: types.StringFrom(uuid.NewString()),
 				UpdateUserID:   types.StringFrom(uuid.NewString()),
