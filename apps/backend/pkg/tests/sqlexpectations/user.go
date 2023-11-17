@@ -175,13 +175,14 @@ func ExpectUsersWithoutPaging(mock sqlmock.Sqlmock, results []models.User, listR
 func ExpectCreateUser(mock sqlmock.Sqlmock, userID types.String, insert models.User) {
 	sqlQuery := fmt.Sprintf(`
 	INSERT INTO
-		"usr"."users" ("created_at",
+		"usr"."users" ("active",
+			"created_at",
 			"creation_user_id",
 			"email",
 			"first_name",
 			"id",
 			"last_name")
-		VALUES ('.*', '%s', '%s', '%s', '.*', '%s')`,
+		VALUES (FALSE, '.*', '%s', '%s', '%s', '.*', '%s')`,
 		userID,
 		insert.Email,
 		insert.FirstName,

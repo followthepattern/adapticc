@@ -1,10 +1,13 @@
 package models
 
-import validation "github.com/go-ozzo/ozzo-validation"
+import (
+	"github.com/followthepattern/adapticc/pkg/types"
+	validation "github.com/go-ozzo/ozzo-validation"
+)
 
 type UserRole struct {
-	UserID string `db:"user_id"`
-	RoleID string `db:"role_id"`
+	UserID types.String `db:"user_id"`
+	RoleID types.String `db:"role_id"`
 	Userlog
 }
 

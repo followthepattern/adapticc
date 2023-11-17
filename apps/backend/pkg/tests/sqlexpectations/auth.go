@@ -48,14 +48,15 @@ func ExpectVerifyEmail(mock sqlmock.Sqlmock, count int, email types.String) {
 func ExpectCreateAuthUser(mock sqlmock.Sqlmock, insert models.AuthUser) {
 	sqlQuery := fmt.Sprintf(`
 	INSERT INTO
-		"usr"."users" ("created_at",
+		"usr"."users" ("active",
+		"created_at",
 		"email",
 		"first_name",
 		"id",
 		"last_name",
 		"password_hash",
 		"salt")
-	VALUES ('.*', '%s', '%s', '.*', '%s', '.*', '.*')`,
+	VALUES (FALSE, '.*', '%s', '%s', '.*', '%s', '.*', '.*')`,
 		insert.Email,
 		insert.FirstName,
 		insert.LastName,

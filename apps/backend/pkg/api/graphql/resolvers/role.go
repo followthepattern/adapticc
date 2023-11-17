@@ -6,6 +6,7 @@ import (
 
 	"github.com/followthepattern/adapticc/pkg/controllers"
 	"github.com/followthepattern/adapticc/pkg/models"
+	"github.com/followthepattern/adapticc/pkg/types"
 )
 
 type RoleResolver struct {
@@ -55,8 +56,8 @@ func (resolver RoleResolver) List(ctx context.Context, args struct {
 }
 
 func (resolver RoleResolver) AddRoleToUser(ctx context.Context, args struct {
-	UserID string
-	RoleID string
+	UserID types.String
+	RoleID types.String
 }) (*ResponseStatus, error) {
 	err := resolver.ctrl.AddRoleToUser(ctx, models.UserRole{UserID: args.UserID, RoleID: args.RoleID})
 	if err != nil {
@@ -68,8 +69,8 @@ func (resolver RoleResolver) AddRoleToUser(ctx context.Context, args struct {
 }
 
 func (resolver RoleResolver) DeleteRoleFromUser(ctx context.Context, args struct {
-	UserID string
-	RoleID string
+	UserID types.String
+	RoleID types.String
 }) (*ResponseStatus, error) {
 	err := resolver.ctrl.DeleteRoleFromUser(ctx, models.UserRole{UserID: args.UserID, RoleID: args.RoleID})
 	if err != nil {
