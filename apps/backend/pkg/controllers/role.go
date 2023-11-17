@@ -40,7 +40,7 @@ func (ctrl Role) GetByID(ctx context.Context, id string) (*models.Role, error) {
 		return nil, err
 	}
 
-	if result.IsNil() {
+	if result.IsDefault() {
 		return nil, nil
 	}
 

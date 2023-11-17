@@ -1,11 +1,14 @@
 package models
 
-import validation "github.com/go-ozzo/ozzo-validation"
+import (
+	"github.com/followthepattern/adapticc/pkg/types"
+	validation "github.com/go-ozzo/ozzo-validation"
+)
 
 type Role struct {
-	ID   string `db:"id"`
-	Code string `db:"code"`
-	Name string `db:"name"`
+	ID   types.String `db:"id"`
+	Code types.String `db:"code"`
+	Name types.String `db:"name"`
 	Userlog
 }
 
@@ -22,16 +25,8 @@ func (m Role) UpdateValidate() error {
 	)
 }
 
-func (r *Role) IsNil() bool {
-	if r == nil {
-		return true
-	}
-
-	if len(r.ID) < 1 {
-		return true
-	}
-
-	return false
+func (m Role) IsDefault() bool {
+	return m.ID.Len() < 1
 }
 
 type RoleListRequestParams = ListRequestParams[ListFilter]

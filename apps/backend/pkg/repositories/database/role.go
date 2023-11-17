@@ -144,7 +144,7 @@ func (repo Role) GetRoleCodes(userID types.String) ([]string, error) {
 	result := make([]string, len(roles))
 
 	for i, role := range roles {
-		result[i] = role.Code
+		result[i] = role.Code.Data
 	}
 
 	return result, nil
