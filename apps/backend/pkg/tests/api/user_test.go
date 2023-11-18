@@ -50,6 +50,7 @@ var _ = Describe("User graphql queries", func() {
 		mdb        *sql.DB
 		mock       sqlmock.Sqlmock
 		cfg        config.Config
+		jwtKeys    config.JwtKeyPair
 		handler    http.Handler
 		mockCtrl   *gomock.Controller
 		mockCerbos *mocks.MockClient
@@ -64,6 +65,9 @@ var _ = Describe("User graphql queries", func() {
 		mdb, mock, err = sqlmock.New()
 		Expect(err).To(BeNil())
 
+		jwtKeys, err = getMockJWTKeys()
+		Expect(err).ShouldNot(HaveOccurred())
+
 		mockCtrl = gomock.NewController(GinkgoT())
 		mockCerbos = mocks.NewMockClient(mockCtrl)
 
@@ -72,7 +76,7 @@ var _ = Describe("User graphql queries", func() {
 			Cerbos: mockCerbos,
 		}.Build()
 
-		handler = NewMockHandler(ac, nil, mdb, cfg)
+		handler = NewMockHandler(ac, nil, mdb, cfg, jwtKeys)
 
 	})
 
@@ -96,7 +100,7 @@ var _ = Describe("User graphql queries", func() {
 			}
 			request, _ := json.Marshal(graphRequest)
 
-			tokenString, err := services.GenerateTokenStringFromUser(user, []byte(cfg.Server.HmacSecret))
+			tokenString, err := services.GenerateTokenStringFromUser(user, jwtKeys.Private)
 			Expect(err).To(BeNil())
 
 			testResponse := &graphqlUserResponse{}
@@ -159,7 +163,7 @@ var _ = Describe("User graphql queries", func() {
 			}
 			request, _ := json.Marshal(graphRequest)
 
-			tokenString, err := services.GenerateTokenStringFromUser(users[0], []byte(cfg.Server.HmacSecret))
+			tokenString, err := services.GenerateTokenStringFromUser(users[0], jwtKeys.Private)
 			Expect(err).To(BeNil())
 
 			testResponse := &graphqlUserResponse{}
@@ -219,7 +223,7 @@ var _ = Describe("User graphql queries", func() {
 			}
 			request, _ := json.Marshal(graphRequest)
 
-			tokenString, err := services.GenerateTokenStringFromUser(users[0], []byte(cfg.Server.HmacSecret))
+			tokenString, err := services.GenerateTokenStringFromUser(users[0], jwtKeys.Private)
 			Expect(err).To(BeNil())
 
 			testResponse := &graphqlUserResponse{}
@@ -268,7 +272,7 @@ var _ = Describe("User graphql queries", func() {
 			}
 			request, _ := json.Marshal(graphRequest)
 
-			tokenString, err := services.GenerateTokenStringFromUser(user, []byte(cfg.Server.HmacSecret))
+			tokenString, err := services.GenerateTokenStringFromUser(user, jwtKeys.Private)
 			Expect(err).To(BeNil())
 
 			testResponse := &graphqlUserResponse{}
@@ -313,7 +317,7 @@ var _ = Describe("User graphql queries", func() {
 			}
 			request, _ := json.Marshal(graphRequest)
 
-			tokenString, err := services.GenerateTokenStringFromUser(contextUser, []byte(cfg.Server.HmacSecret))
+			tokenString, err := services.GenerateTokenStringFromUser(contextUser, jwtKeys.Private)
 			Expect(err).To(BeNil())
 
 			testResponse := &graphqlUserResponse{}
@@ -358,7 +362,7 @@ var _ = Describe("User graphql queries", func() {
 			}
 			request, _ := json.Marshal(graphRequest)
 
-			tokenString, err := services.GenerateTokenStringFromUser(contextUser, []byte(cfg.Server.HmacSecret))
+			tokenString, err := services.GenerateTokenStringFromUser(contextUser, jwtKeys.Private)
 			Expect(err).To(BeNil())
 
 			testResponse := &graphqlUserResponse{}
@@ -399,7 +403,7 @@ var _ = Describe("User graphql queries", func() {
 			}
 			request, _ := json.Marshal(graphRequest)
 
-			tokenString, err := services.GenerateTokenStringFromUser(contextUser, []byte(cfg.Server.HmacSecret))
+			tokenString, err := services.GenerateTokenStringFromUser(contextUser, jwtKeys.Private)
 			Expect(err).To(BeNil())
 
 			testResponse := &graphqlUserResponse{}

@@ -10,20 +10,22 @@ import (
 )
 
 type Container struct {
-	ac     accesscontrol.AccessControl
-	email  email.Email
-	db     *sql.DB
-	cfg    config.Config
-	logger *slog.Logger
+	ac      accesscontrol.AccessControl
+	email   email.Email
+	db      *sql.DB
+	cfg     config.Config
+	jwtKeys config.JwtKeyPair
+	logger  *slog.Logger
 }
 
-func New(ac accesscontrol.AccessControl, emailClient email.Email, db *sql.DB, cfg config.Config, logger *slog.Logger) Container {
+func New(ac accesscontrol.AccessControl, emailClient email.Email, db *sql.DB, cfg config.Config, logger *slog.Logger, jwtKeys config.JwtKeyPair) Container {
 	return Container{
-		ac:     ac,
-		db:     db,
-		cfg:    cfg,
-		logger: logger,
-		email:  emailClient,
+		ac:      ac,
+		db:      db,
+		cfg:     cfg,
+		logger:  logger,
+		email:   emailClient,
+		jwtKeys: jwtKeys,
 	}
 }
 
@@ -45,4 +47,8 @@ func (c Container) GetLogger() *slog.Logger {
 
 func (c Container) GetEmail() email.Email {
 	return c.email
+}
+
+func (c Container) GetJWTKeys() config.JwtKeyPair {
+	return c.jwtKeys
 }

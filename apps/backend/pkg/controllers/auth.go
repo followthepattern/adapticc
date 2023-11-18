@@ -19,7 +19,7 @@ type Auth struct {
 
 func NewAuth(cont container.Container) Auth {
 	auth := database.NewAuth(cont.GetDB(), cont.GetLogger())
-	authService := services.NewAuth(cont.GetConfig(), auth, cont.GetEmail())
+	authService := services.NewAuth(cont.GetConfig(), auth, cont.GetEmail(), cont.GetJWTKeys())
 
 	return Auth{
 		authService: authService,

@@ -45,6 +45,7 @@ var _ = Describe("Authentication", func() {
 		mdb     *sql.DB
 		mock    sqlmock.Sqlmock
 		cfg     config.Config
+		jwtKeys config.JwtKeyPair
 		handler http.Handler
 
 		mockCtrl  *gomock.Controller
@@ -70,12 +71,14 @@ var _ = Describe("Authentication", func() {
 				Password: "test-password",
 			},
 		}
+		jwtKeys, err = getMockJWTKeys()
+		Expect(err).ShouldNot(HaveOccurred())
 
 		ac := accesscontrol.Config{}.Build()
 		mockCtrl = gomock.NewController(GinkgoT())
 		mockEmail = mocks.NewMockEmail(mockCtrl)
 
-		handler = NewMockHandler(ac, mockEmail, mdb, cfg)
+		handler = NewMockHandler(ac, mockEmail, mdb, cfg, jwtKeys)
 
 		testResponse = &graphqlAuthResponse{}
 		password = datagenerator.String(13)

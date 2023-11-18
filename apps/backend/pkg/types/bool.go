@@ -42,6 +42,11 @@ func (ttype Bool) ImplementsGraphQLType(name string) bool {
 func (ttype *Bool) UnmarshalGraphQL(input interface{}) error {
 	ttype.name = boolName
 	switch input := input.(type) {
+	case bool:
+		ttype.Data = input
+		ttype.Valid = true
+		ttype.Set = true
+		return nil
 	case string:
 		value, err := strconv.ParseBool(input)
 		if err != nil {

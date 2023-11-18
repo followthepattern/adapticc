@@ -14,6 +14,7 @@ import (
 )
 
 func NewHttpApi(cfg config.Config,
+	jwtKeys config.JwtKeyPair,
 	graphqlHandler http.Handler,
 	restHandler http.Handler,
 	logger *slog.Logger,
@@ -36,7 +37,7 @@ func NewHttpApi(cfg config.Config,
 
 	middlewares.AddMiddlewareLogger(r, logger)
 
-	authMiddleware := middlewares.NewJWT(logger, cfg)
+	authMiddleware := middlewares.NewJWT(logger, jwtKeys)
 
 	r.Route("/", func(r chi.Router) {
 		r.With(authMiddleware.Authenticate).Post("/graphql", graphqlHandler.ServeHTTP)

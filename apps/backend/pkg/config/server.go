@@ -3,10 +3,12 @@ package config
 import validation "github.com/go-ozzo/ozzo-validation"
 
 type Server struct {
-	Host       string
-	Port       string
-	HmacSecret string `mapstructure:"hmac_secret"`
-	LogLevel   int    `mapstructure:"log_level"`
+	Host              string
+	Port              string
+	HmacSecret        string `mapstructure:"hmac_secret"`
+	Ed25519PrivateKey string `mapstructure:"ed25519_private_key"`
+	Ed25519PublicKey  string `mapstructure:"ed25519_public_key"`
+	LogLevel          int    `mapstructure:"log_level"`
 }
 
 func (cfg *Server) Validate() error {
@@ -14,5 +16,7 @@ func (cfg *Server) Validate() error {
 		validation.Field(&cfg.LogLevel, validation.Required),
 		validation.Field(&cfg.Host, validation.Required),
 		validation.Field(&cfg.Port, validation.Required),
+		validation.Field(&cfg.Ed25519PrivateKey, validation.Required),
+		validation.Field(&cfg.Ed25519PublicKey, validation.Required),
 	)
 }

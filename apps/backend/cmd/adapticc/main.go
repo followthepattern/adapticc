@@ -30,6 +30,11 @@ func main() {
 		log.Fatal(err)
 	}
 
+	jwt, err := config.ReadKeys(cfg.Server)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	db, err := sql.Open("postgres", cfg.DB.ConnectionURL())
 	if err != nil {
 		log.Fatal(err)
@@ -53,7 +58,7 @@ func main() {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 
-	cont := container.New(cerbosClient, emailClient, db, *cfg, logger)
+	cont := container.New(cerbosClient, emailClient, db, *cfg, logger, jwt)
 
 	ctrls := controllers.New(cont)
 
@@ -61,7 +66,7 @@ func main() {
 
 	restHandler := rest.New(ctrls)
 
-	router := api.NewHttpApi(*cfg, graphqlHandler, restHandler, logger)
+	router := api.NewHttpApi(*cfg, jwt, graphqlHandler, restHandler, logger)
 
 	server := hostserver.NewServer(router, logger)
 	ctx, cancel := context.WithCancel(ctx)

@@ -13,14 +13,14 @@ import (
 )
 
 type JWT struct {
-	logger *slog.Logger
-	cfg    config.Config
+	logger  *slog.Logger
+	jwtKeys config.JwtKeyPair
 }
 
-func NewJWT(logger *slog.Logger, cfg config.Config) JWT {
+func NewJWT(logger *slog.Logger, jwtKeys config.JwtKeyPair) JWT {
 	result := JWT{
-		logger: logger,
-		cfg:    cfg,
+		logger:  logger,
+		jwtKeys: jwtKeys,
 	}
 	return result
 }
@@ -66,8 +66,8 @@ func (a JWT) Authenticate(next http.Handler) http.Handler {
 }
 
 func (a JWT) keyFunc(token *jwt.Token) (interface{}, error) {
-	if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+	if _, ok := token.Method.(*jwt.SigningMethodEd25519); !ok {
 		return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 	}
-	return []byte(a.cfg.Server.HmacSecret), nil
+	return a.jwtKeys.Public, nil
 }

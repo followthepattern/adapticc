@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"crypto"
 	"errors"
 	"fmt"
 	"time"
@@ -23,13 +24,15 @@ type Auth struct {
 	repository database.Auth
 	cfg        config.Config
 	mail       Mail
+	jwtKeys    config.JwtKeyPair
 }
 
-func NewAuth(cfg config.Config, repository database.Auth, emailClient email.Email) Auth {
+func NewAuth(cfg config.Config, repository database.Auth, emailClient email.Email, jwtKeys config.JwtKeyPair) Auth {
 	return Auth{
 		cfg:        cfg,
 		repository: repository,
 		mail:       NewMail(cfg.Mail, emailClient),
+		jwtKeys:    jwtKeys,
 	}
 }
 
@@ -50,15 +53,8 @@ func (service Auth) Login(ctx context.Context, email types.String, password type
 	}
 
 	expiresAt := time.Now().Add(time.Hour * 24)
-	token := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
-		"ID":        authUser.ID.Data,
-		"email":     authUser.Email.Data,
-		"firstName": authUser.FirstName.Data,
-		"lastName":  authUser.LastName.Data,
-		"expiresAt": expiresAt,
-	})
 
-	tokenString, err := token.SignedString([]byte(service.cfg.Server.HmacSecret))
+	tokenString, err := GenerateTokenStringFromUser(authUser.User, service.jwtKeys.Private)
 	if err != nil {
 		return nil, err
 	}
@@ -135,9 +131,9 @@ func GetActivationMailTemplate(cfg config.Config, userID types.String, email typ
 	return m
 }
 
-func GenerateTokenStringFromUser(model models.User, secret []byte) (string, error) {
+func GenerateTokenStringFromUser(model models.User, privateKey crypto.PrivateKey) (string, error) {
 	expiresAt := time.Now().Add(time.Hour * 24)
-	token := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
+	token := jwt.NewWithClaims(jwt.GetSigningMethod("EdDSA"), jwt.MapClaims{
 		"ID":        model.ID,
 		"email":     model.Email,
 		"firstName": model.FirstName,
@@ -145,7 +141,7 @@ func GenerateTokenStringFromUser(model models.User, secret []byte) (string, erro
 		"expiresAt": expiresAt,
 	})
 
-	tokenString, err := token.SignedString(secret)
+	tokenString, err := token.SignedString(privateKey)
 	if err != nil {
 		return "", err
 	}

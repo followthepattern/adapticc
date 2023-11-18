@@ -21,6 +21,7 @@ import (
 	"github.com/followthepattern/adapticc/pkg/container"
 	"github.com/followthepattern/adapticc/pkg/controllers"
 	"github.com/followthepattern/adapticc/pkg/repositories/email"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 const graphqlURL = "/graphql"
@@ -42,10 +43,10 @@ func runRequest(srv http.Handler, r *http.Request, data interface{}) (int, error
 	return response.Code, nil
 }
 
-func NewMockHandler(ac accesscontrol.AccessControl, emailClient email.Email, db *sql.DB, cfg config.Config) http.Handler {
+func NewMockHandler(ac accesscontrol.AccessControl, emailClient email.Email, db *sql.DB, cfg config.Config, jwtKeys config.JwtKeyPair) http.Handler {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
-	cont := container.New(ac, emailClient, db, cfg, logger)
+	cont := container.New(ac, emailClient, db, cfg, logger, jwtKeys)
 
 	ctrls := controllers.New(cont)
 
@@ -53,7 +54,7 @@ func NewMockHandler(ac accesscontrol.AccessControl, emailClient email.Email, db 
 
 	restHandler := rest.New(ctrls)
 
-	return api.NewHttpApi(cfg, graphqlHandler, restHandler, logger)
+	return api.NewHttpApi(cfg, jwtKeys, graphqlHandler, restHandler, logger)
 }
 
 var replaceEmptySpacesToSpace = regexp.MustCompile(`\s+`)
@@ -64,6 +65,32 @@ var replacePipe = regexp.MustCompile(`\|`)
 
 func stripQuery(q string) (s string) {
 	return strings.TrimSpace(replaceEmptySpacesToSpace.ReplaceAllString(q, " "))
+}
+
+func getMockJWTKeys() (config.JwtKeyPair, error) {
+	publicKeystring := []byte(`-----BEGIN PUBLIC KEY-----
+MCowBQYDK2VwAyEA5xdfauTdmBzpx9McaSvMaZRhUlGlcrTAe0IHQqnwMjs=
+-----END PUBLIC KEY-----
+`)
+
+	ed25519PublicKey, err := jwt.ParseEdPublicKeyFromPEM(publicKeystring)
+	if err != nil {
+		return config.JwtKeyPair{}, err
+	}
+
+	privateKeystring := []byte(`-----BEGIN PRIVATE KEY-----
+MC4CAQAwBQYDK2VwBCIEIB8klgJvgq1xk5AMw4lZFfQvjCwaRxH8ghJHGn8KQtUM
+-----END PRIVATE KEY-----`)
+
+	ed25519PrivateKey, err := jwt.ParseEdPrivateKeyFromPEM(privateKeystring)
+	if err != nil {
+		return config.JwtKeyPair{}, err
+	}
+
+	return config.JwtKeyPair{
+		Public:  ed25519PublicKey,
+		Private: ed25519PrivateKey,
+	}, nil
 }
 
 // strip out new lines and trim spaces
