@@ -10,8 +10,8 @@ type ResponseStatus {
 }
 
 input Pagination {
-	pageSize: Uint!
-	page: Uint!
+	pageSize: Uint
+	page: Uint
 }
 
 input OrderBy {
@@ -20,7 +20,7 @@ input OrderBy {
 }
 
 input ListFilter {
-	search: String!
+	search: String
 }
 
 type User {

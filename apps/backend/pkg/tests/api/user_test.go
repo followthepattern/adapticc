@@ -133,7 +133,7 @@ var _ = Describe("User graphql queries", func() {
 					Page:     types.UintFrom(1),
 				},
 				Filter: models.ListFilter{
-					Search: "email@email.com",
+					Search: types.StringFrom(datagenerator.RandomEmail(8, 8)),
 				},
 			}
 
@@ -196,7 +196,7 @@ var _ = Describe("User graphql queries", func() {
 
 			listRequestParams := models.UserListRequestParams{
 				Filter: models.ListFilter{
-					Search: "email@email.com",
+					Search: types.StringFrom(datagenerator.RandomEmail(8, 8)),
 				},
 			}
 			queryTemplate := `

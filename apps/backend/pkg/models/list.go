@@ -14,7 +14,7 @@ type ListRequestParams[T any] struct {
 }
 
 type ListFilter struct {
-	Search string
+	Search types.String
 }
 
 type Pagination struct {

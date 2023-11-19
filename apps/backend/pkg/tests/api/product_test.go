@@ -150,7 +150,7 @@ var _ = Describe("Product Test", func() {
 			pageSize := 10
 
 			filter := models.ListFilter{
-				Search: product.ID.Data,
+				Search: product.ID,
 			}
 
 			graphRequest := graphqlRequest{

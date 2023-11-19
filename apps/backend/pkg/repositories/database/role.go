@@ -48,7 +48,7 @@ func (repo Role) Get(request models.RoleListRequestParams) (*models.RoleListResp
 
 	query := repo.db.From(roleTableName)
 
-	if len(request.Filter.Search) > 0 {
+	if request.Filter.Search.IsValid() {
 		pattern := fmt.Sprintf("%%%s%%", request.Filter.Search)
 		query = query.Where(
 			Or(
