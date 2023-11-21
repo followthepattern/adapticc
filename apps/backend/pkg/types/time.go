@@ -1,6 +1,7 @@
 package types
 
 import (
+	"encoding/json"
 	"time"
 )
 
@@ -87,4 +88,8 @@ func (ttype *Time) UnmarshalGraphQL(input interface{}) error {
 	default:
 		return ttype.BaseType.UnmarshalGraphQL(input)
 	}
+}
+
+func (ttype Time) MarshalJSON() ([]byte, error) {
+	return json.Marshal(ttype.Data)
 }

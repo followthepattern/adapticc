@@ -1,6 +1,7 @@
 package types
 
 import (
+	"encoding/json"
 	"fmt"
 )
 
@@ -52,4 +53,8 @@ func (ttype String) Len() int {
 		return len(ttype.Data)
 	}
 	return 0
+}
+
+func (ttype String) MarshalJSON() ([]byte, error) {
+	return json.Marshal(ttype.Data)
 }
