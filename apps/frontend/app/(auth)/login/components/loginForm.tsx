@@ -33,11 +33,14 @@ export default function LoginForm() {
         }
     }, [data, setToken]);
 
+    const inputLabelClassName = "block text-sm font-medium text-gray-900"
+    const inputFieldClassName = "block w-full py-2 border-0 rounded-md shadow-sm text-gray-950 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm";
+
     return (
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
             <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
                 <div>
-                    <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                    <label htmlFor="email" className={inputLabelClassName}>
                         Email address
                     </label>
                     <div className="mt-2">
@@ -46,7 +49,7 @@ export default function LoginForm() {
                             type="email"
                             autoComplete="email"
                             required
-                            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            className={inputFieldClassName}
                             {...register("email")}
                         />
                     </div>
@@ -54,14 +57,9 @@ export default function LoginForm() {
 
                 <div>
                     <div className="flex items-center justify-between">
-                        <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
+                        <label htmlFor="password" className={inputLabelClassName}>
                             Password
                         </label>
-                        <div className="text-sm">
-                            <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
-                                Forgot password?
-                            </a>
-                        </div>
                     </div>
                     <div className="mt-2">
                         <input
@@ -69,7 +67,7 @@ export default function LoginForm() {
                             type="password"
                             autoComplete="current-password"
                             required
-                            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                            className={inputFieldClassName}
                             {...register("password")}
                         />
                     </div>
@@ -78,15 +76,19 @@ export default function LoginForm() {
                 <div>
                     <button
                         type="submit"
-                        className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                        className="w-full px-3 py-3 text-sm font-semibold text-white bg-blue-600 rounded-md shadow-sm mx:auto hover:bg-blue-500"
                     >
                         Sign in
                     </button>
+                    {error && <p className="mt-2 text-sm font-bold text-red-600">
+                        {ErrorParser(error.message)}
+                    </p>}
+                </div>
+
+                <div>
+
                 </div>
             </form>
-            {error && <p className="mt-10 text-center text-sm text-red-600 font-bold">
-                {ErrorParser(error.message)}
-            </p>}
         </div>
 
     )
