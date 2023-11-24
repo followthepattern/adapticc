@@ -1,10 +1,10 @@
-import useSingleUser from "../../components/singleUser";
-import useUpdateUser from "../../components/updateUser";
+import useSingleUser from "../../hooks/singleUser";
+import useUpdateUser from "../../hooks/updateUser";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { RESOURCE_URL } from "../../page";
 import { useEffect } from "react";
-import useDeleteUser from "../../components/deleteUser";
+import useDeleteUser from "../../hooks/deleteUser";
 import { User } from "@/models/user";
 
 export default function UserEdit() {

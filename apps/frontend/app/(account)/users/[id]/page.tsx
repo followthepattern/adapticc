@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { RESOURCE_URL } from "../page";
-import useSingleUser from "../components/singleUser";
+import useSingleUser from "../hooks/singleUser";
 
 export default function User() {
     const { id } = useParams()

@@ -2,8 +2,8 @@ import SectionHeader from '../components/listPage/sectionHeader/sectionHeader';
 import List from '../components/listPage/listPage';
 import { ListPageComponentProperties } from '../components/listPage/listPageWrapper/listPageWrapper';
 import { SortLabel, SetPageParams, SetSearchPatternParams, SetSortPatternParrams } from '../components/listPage/listPageWrapper/listingFunctions';
-import UserTable from './components/userTable';
-import useListUsers from './components/listUser';
+import UserTable from './hooks/userTable';
+import useListUsers from './hooks/listUser';
 
 export const RESOURCE_NAME = "Users"
 export const RESOURCE_URL = "/users"

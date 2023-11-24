@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import useCreateProduct from "../components/createUser";
+import useCreateProduct from "../hooks/createUser";
 import { useNavigate } from "react-router-dom";
 import { RESOURCE_URL } from "../page";
 import { useEffect } from "react";
