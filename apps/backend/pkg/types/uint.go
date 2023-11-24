@@ -52,6 +52,11 @@ func (ttype *Uint) UnmarshalGraphQL(input interface{}) error {
 		ttype.Valid = true
 		ttype.Set = true
 		return nil
+	case float64:
+		ttype.Data = uint(input)
+		ttype.Valid = true
+		ttype.Set = true
+		return nil
 	case string:
 		value, err := strconv.Atoi(input)
 		if err != nil {
