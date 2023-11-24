@@ -2,8 +2,8 @@ import SectionHeader from '../components/listPage/sectionHeader/sectionHeader';
 import List from '../components/listPage/listPage';
 import { ListPageComponentProperties } from '../components/listPage/listPageWrapper/listPageWrapper';
 import { SortLabel, SetPageParams, SetSearchPatternParams, SetSortPatternParrams } from '../components/listPage/listPageWrapper/listingFunctions';
-import useListProduct from './components/listProduct';
-import ProductTable from './components/productTable';
+import useListProduct from './hooks/listProduct';
+import ProductTable from './hooks/productTable';
 
 export const RESOURCE_NAME = "Products"
 export const RESOURCE_URL = "/products"

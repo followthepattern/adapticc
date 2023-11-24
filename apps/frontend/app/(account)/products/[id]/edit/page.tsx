@@ -1,7 +1,7 @@
-import useSingleProduct from "../../components/singleProduct";
-import useUpdateProduct from "../../components/updateProduct";
+import useSingleProduct from "../../hooks/singleProduct";
+import useUpdateProduct from "../../hooks/updateProduct";
 import { useForm } from "react-hook-form";
-import useDeleteProduct from "../../components/deleteProduct";
+import useDeleteProduct from "../../hooks/deleteProduct";
 import { useNavigate, useParams } from "react-router-dom";
 import { RESOURCE_URL } from "../../page";
 import { useEffect } from "react";

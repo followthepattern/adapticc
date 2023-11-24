@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import useSingleProduct from "../components/singleProduct";
+import useSingleProduct from "../hooks/singleProduct";
 import { RESOURCE_URL } from "../page";
 
 export default function Product() {
