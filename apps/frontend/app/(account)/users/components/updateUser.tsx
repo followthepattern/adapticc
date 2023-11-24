@@ -1,6 +1,6 @@
 import { updateUser as graphQL } from "@/graphql/users/mutation";
 import { MutationResponse, UpdateMutationResult } from "@/graphql/mutation";
-import useUpdate from "@/graphql/components/updateComponent";
+import useUpdate from "@/graphql/hooks/useUpdate";
 import { User } from "@/models/user";
 
 export default function useUpdateUser(): UpdateMutationResult<User,number | undefined> {

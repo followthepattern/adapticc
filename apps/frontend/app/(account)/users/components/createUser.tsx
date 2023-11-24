@@ -1,6 +1,6 @@
 import { CreateMutationResult, MutationResponse } from "@/graphql/mutation";
 import { User } from "@/models/user";
-import useCreate from "@/graphql/components/createComponent";
+import useCreate from "@/graphql/hooks/useCreate";
 import { createUser as graphQL } from "@/graphql/users/mutation";
 
 export default function useCreateUsers(): CreateMutationResult<User, number> {

@@ -1,4 +1,4 @@
-import useSingle from "@/graphql/components/singleComponent";
+import useSingle from "@/graphql/hooks/useSingle";
 import { QueryResponse, SingleQueryResult } from "@/graphql/query";
 import { getSingleUser as graphQL } from "@/graphql/users/query";
 import { User } from "@/models/user";

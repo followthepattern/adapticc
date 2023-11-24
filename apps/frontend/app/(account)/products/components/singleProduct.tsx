@@ -1,4 +1,4 @@
-import useSingle from "@/graphql/components/singleComponent";
+import useSingle from "@/graphql/hooks/useSingle";
 import { getSingleProduct as graphQL } from "@/graphql/products/query";
 import { QueryResponse, SingleQueryResult } from "@/graphql/query";
 import { Product } from "@/models/product";

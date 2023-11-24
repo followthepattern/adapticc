@@ -1,7 +1,7 @@
 import { getUsers as graphQL } from "@/graphql/users/query";
 import { ListResponse, ListQueryResult } from "@/graphql/utils/list";
 import { QueryResponse } from "@/graphql/query";
-import useList from "@/graphql/components/listComponent";
+import useList from "@/graphql/hooks/useList";
 import { User } from "@/models/user";
 
 export default function useListUsers(): ListQueryResult<ListResponse<User>> {
