@@ -1,8 +1,8 @@
-import Pagination from "./pagination";
+import Pagination from "./pagination/pagination";
 
 import { useEffect } from "react";
 import { ListQueryParams, ListQueryResult, ListResponse, OrderBy } from "@/graphql/utils/list";
-import { ListPageComponentProperties } from "../listPageWrapper/listPageWrapper";
+import { ListPageComponentProperties } from "./listPageWrapper/listPageWrapper";
 
 interface TableProperties<T> {
     entities: T[]
