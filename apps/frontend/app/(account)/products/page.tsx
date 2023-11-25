@@ -3,7 +3,8 @@ import List from '../components/listPage/listPage';
 import { ListPageComponentProperties } from '../components/listPage/listPageWrapper/listPageWrapper';
 import { SortLabel, SetPageParams, SetSearchPatternParams, SetSortPatternParrams } from '../components/listPage/listPageWrapper/listingFunctions';
 import useListProduct from './hooks/listProduct';
-import ProductTable from './hooks/productTable';
+import CreateTable, { CreateTableProperties } from '../components/listPage/table/table';
+import { Product } from '@/models/product';
 
 export const RESOURCE_NAME = "Products"
 export const RESOURCE_URL = "/products"
@@ -21,6 +22,23 @@ const sortByLables: SortLabel[] = [
   }
 ];
 
+function productViewLink(product: Product): string {
+  return `/products/${product.id}`
+}
+
+function productEditLink(product: Product): string {
+  return `/products/${product.id}/edit`
+}
+
+function getCreateTableProperties(): CreateTableProperties<Product> {
+  return {
+    headerColumns: ["Title", "Description"],
+    getViewLink: productViewLink,
+    getEditLink: productEditLink,
+    getCells: (entity) => [entity.title ?? "", entity.description ?? ""]
+  }
+}
+
 export default function Products(props: ListPageComponentProperties) {
   const sortOnChange = (sortLabel: SortLabel) => {
     SetSortPatternParrams(props.searchParams, props.setSearchParams, sortLabel);
@@ -36,6 +54,10 @@ export default function Products(props: ListPageComponentProperties) {
 
   const selectedSortLabel = sortByLables.find(l => l.code == props.sortProps.sortLabel?.code);
 
+  const createTableProperties = getCreateTableProperties();
+
+  const productTable = CreateTable(createTableProperties);
+
   return (
     <div>
       <SectionHeader
@@ -47,13 +69,13 @@ export default function Products(props: ListPageComponentProperties) {
         sortByLables={sortByLables}
         selectedSortLabel={selectedSortLabel}
       />
-      <div className="mt-8 flow-root overflow-hidden">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="flow-root mt-8 overflow-hidden">
+        <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
           <List {...props}
             sortProps={{ sortLabel: selectedSortLabel }}
             onPageChange={pageOnChange}
             useList={useListProduct}
-            tableComponent={ProductTable}
+            tableComponent={productTable}
           />
         </div>
       </div>

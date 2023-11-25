@@ -27,12 +27,6 @@ const sortByLables: SortLabel[] = [
   }
 ];
 
-function mapUserToRowCells(user: User): string[] {
-  const email = user.email ?? ""
-  const name = `${user.firstName} ${user.lastName}`
-  return [email, name]
-}
-
 function userViewLink(user: User): string {
   return `/users/${user.id}`
 }
@@ -60,7 +54,7 @@ export default function Users(props: ListPageComponentProperties) {
     headerColumns: ["Email", "Name"],
     getViewLink: userViewLink,
     getEditLink: userEditLink,
-    getCells: mapUserToRowCells,
+    getCells: (entity) => [entity.email ?? "", `${entity.firstName} ${entity.lastName}`],
   }
 
   const userTable = CreateTable(createTableProperties);

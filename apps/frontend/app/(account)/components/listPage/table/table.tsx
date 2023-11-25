@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 
 interface Entity {
-    id: string
+    id?: string
 }
 
 export interface TableProperties<T = Entity> {
@@ -13,13 +13,6 @@ export interface CreateTableProperties<T> {
     getEditLink: (entity: T) => string
     getViewLink: (entity: T) => string
     getCells: (entity: T) => string[]
-}
-
-export interface TableRow<T> {
-    id: string
-    viewLink: string
-    editLink: string
-    cells: string[]
 }
 
 export default function CreateTable<T extends Entity>({
