@@ -1,6 +1,6 @@
 import { User } from "@/models/user";
 import { createContext } from "react";
 
-const UserContext = createContext<User>({});
+const UserContext = createContext<User>({id:""});
 
 export default UserContext;
