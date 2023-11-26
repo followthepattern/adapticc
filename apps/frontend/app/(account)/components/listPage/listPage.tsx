@@ -61,12 +61,15 @@ export default function List<T>(props: ListProperties<T>) {
 
     return (
         <>
-            <Table entities={entities}/>
-            {maxPage > 1 && <Pagination
-                currentPage={props.paginationProperties.page}
-                maxPage={maxPage}
-                onClick={props.onPageChange}
-            />}
+            <Table entities={entities} />
+            {maxPage > 1 && <div className="pt-5">
+                <Pagination
+                    currentPage={props.paginationProperties.page}
+                    maxPage={maxPage}
+                    onClick={props.onPageChange}
+                />
+            </div>
+            }
         </>
     )
 }

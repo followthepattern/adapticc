@@ -7,65 +7,41 @@ interface PaginationProperties {
     onClick: (page: number) => void
 }
 
-function calculatePaginationSymbol(totalPages: number, currentPage: number): Array<number | string> {
-    const pagination: Array<number | string> = [];
-
-    const startPage = 1;
-    const endPage = totalPages;
+function calculatePaginationSymbol2(totalPages: number, currentPage: number): Array<number> {
     const pageNumberLimit = 5;
+    let pagination: Array<number> = [];
+    const limitPerSide = Math.floor(pageNumberLimit / 2);
 
-    // only limited pages can appear
-    const maxVisiblePages = (totalPages > pageNumberLimit) ? pageNumberLimit : totalPages;
+    const pageFrom = Math.max(Math.min(currentPage - limitPerSide, totalPages - pageNumberLimit + 1), 1)
+    const pageTo = Math.min(pageFrom + pageNumberLimit - 1, totalPages);
 
-    // first and the last always appear in the list
-    const maxVisibleBetweenPages = maxVisiblePages - 2;
 
-    const showFirstDots = totalPages > pageNumberLimit && currentPage - Math.floor(maxVisibleBetweenPages / 2) - 1 > startPage;
-    const showLastDots = totalPages > pageNumberLimit && currentPage + Math.floor(maxVisibleBetweenPages / 2) < endPage - 1;
-
-    pagination.push(startPage);
-    if (showFirstDots) {
-        pagination.push("...");
-    }
-
-    const PageFrom = showFirstDots ? Math.min(currentPage - Math.floor(maxVisibleBetweenPages / 2), endPage - maxVisibleBetweenPages) : startPage + 1;
-    const PageTo = showLastDots ? Math.max(currentPage + Math.floor(maxVisibleBetweenPages / 2), startPage + maxVisibleBetweenPages) : endPage - 1;
-
-    for (let page = PageFrom; page <= PageTo; page++) {
+    for (let page = pageFrom; page <= pageTo; page++) {
         pagination.push(page);
     }
 
-    if (showLastDots) {
-        pagination.push("...");
-    }
-    pagination.push(endPage);
-
     return pagination;
-}
-
-function PageDotSymbol() {
-    return (
-        <span className="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-gray-500">
-            ...
-        </span>
-    )
 }
 
 interface PageNumberSymbolProperties {
     page: number
     onClick: (page: number) => void
     currentPage: number
+    isFirst: boolean
+    isLast: boolean
 }
 
-function PageNumberSymbol({ onClick, page, currentPage }: PageNumberSymbolProperties) {
+function PageNumberSymbol({ onClick, page, currentPage, isFirst, isLast }: PageNumberSymbolProperties) {
     const isCurrent = page == currentPage;
     return (
         <button
             onClick={() => onClick(page)}
-            className={classNames("inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700",
+            className={classNames("py-2 px-4 border-y",
                 {
-                    "border-indigo-500": isCurrent,
-                    "text-indigo-600": isCurrent,
+                    "border-gray-300 focus:bg-gray-200 hover:bg-gray-100 hover:text-gray-700": !isCurrent,
+                    "border-blue-500 text-blue-600 bg-blue-50": isCurrent,
+                    "rounded-l-lg border-l": isFirst,
+                    "rounded-r-lg border-r": isLast,
                 }
             )}
             aria-current="page"
@@ -76,24 +52,23 @@ function PageNumberSymbol({ onClick, page, currentPage }: PageNumberSymbolProper
 }
 
 interface PageSymbolProperties {
-    paginationSymbols: (string | number)[]
+    paginationSymbols: number[]
     onClick: (page: number) => void
     currentPage: number
 }
 
 function PageSymbols({ paginationSymbols, onClick, currentPage }: PageSymbolProperties) {
-    let keyCount = 0;
     return (
         <>
-            {paginationSymbols.map(symbol => {
-                keyCount++
-                if (typeof (symbol) === "string") {
-                    return (
-                        <PageDotSymbol key={keyCount} />
-                    )
-                }
+            {paginationSymbols.map((symbol, index) => {
                 return (
-                    <PageNumberSymbol key={keyCount} onClick={onClick} page={symbol} currentPage={currentPage} />
+                    <PageNumberSymbol
+                        key={index}
+                        onClick={onClick}
+                        page={symbol}
+                        currentPage={currentPage}
+                        isFirst={index === 0}
+                        isLast={index === paginationSymbols.length - 1} />
                 )
             })}
         </>
@@ -101,29 +76,30 @@ function PageSymbols({ paginationSymbols, onClick, currentPage }: PageSymbolProp
 }
 
 export default function Pagination(props: PaginationProperties) {
-    const paginationSymbols = calculatePaginationSymbol(props.maxPage, props.currentPage)
+    const paginationSymbols = calculatePaginationSymbol2(props.maxPage, props.currentPage)
+
+    const arrowButton = "py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 focus:bg-gray-200"
+    const arrowIcon = "w-5 h-5 text-gray-700"
 
     return (
-        <nav className="flex items-center justify-between border-t border-gray-200 px-4 sm:px-0">
-            <div className="-mt-px flex w-0 flex-1">
+        <nav className="flex justify-center border-gray-200">
+            <div className="flex-auto hidden w-0 sm:flex">
                 <button
                     onClick={() => props.onClick(props.currentPage - 1)}
-                    className={classNames("inline-flex items-center border-t-2 border-transparent pr-1 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700", {hidden: props.currentPage <= 1})}
+                    className={classNames(arrowButton, { hidden: props.currentPage <= 1 })}
                 >
-                    <ArrowLongLeftIcon className="mr-3 h-5 w-5 text-gray-400" aria-hidden="true" />
-                    Previous
+                    <ArrowLongLeftIcon className={arrowIcon} aria-hidden="true" />
                 </button>
             </div>
-            <div className="hidden md:-mt-px md:flex">
+            <div className="flex">
                 <PageSymbols paginationSymbols={paginationSymbols} onClick={props.onClick} currentPage={props.currentPage} />
             </div>
-            <div className="-mt-px flex w-0 flex-1 justify-end">
+            <div className="justify-end flex-auto hidden w-0 sm:flex">
                 <button
-                    className={classNames("inline-flex items-center border-t-2 border-transparent pl-1 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700", {hidden: props.currentPage >= props.maxPage})}
+                    className={classNames(arrowButton, { hidden: props.currentPage >= props.maxPage })}
                     onClick={() => props.onClick(props.currentPage + 1)}
                 >
-                    Next
-                    <ArrowLongRightIcon className="ml-3 h-5 w-5 text-gray-400" aria-hidden="true" />
+                    <ArrowLongRightIcon className={arrowIcon} aria-hidden="true" />
                 </button>
             </div>
         </nav>
