@@ -23,9 +23,6 @@ function SearchBar({
     selectedSortLabel,
 }: SearchBarProperties) {
     return <div className="mt-3 sm:ml-4 sm:mt-0">
-        <label htmlFor="desktop-search-candidate" className="sr-only">
-            Search
-        </label>
         <div className="flex rounded-md shadow-sm">
             <SearchInput onChange={searchInputOnChange} search={searchInput} />
             <SortButton sortByLables={sortByLables} sortOnChange={sortOnChange} selectedSortLabel={selectedSortLabel}/>
@@ -40,7 +37,7 @@ interface SectionHeaderProperties extends SearchBarProperties, SortButtonPropert
 
 export default function SectionHeader(props: SectionHeaderProperties) {
     return (
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
             <div className="sm:flex sm:items-center">
                 <Header>{props.resourceName}</Header>
                 <SearchBar
