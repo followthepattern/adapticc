@@ -1,3 +1,4 @@
+import SearchIcon from '@/app/icons/search';
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 import classNames from 'classnames';
 import { Controller, useForm } from 'react-hook-form';
@@ -14,8 +15,6 @@ interface SearchInputProperties {
 export default function SearchInput(props: SearchInputProperties) {
     const { getValues, control } = useForm<SearchInputValues>();
 
-    const commonClasses = "w-full rounded-none rounded-l-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-gray-300 ring-inset placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600";
-
     const handleInputChange = (_: any) => {
         const formValues = getValues();
 
@@ -24,8 +23,8 @@ export default function SearchInput(props: SearchInputProperties) {
 
     return (
         <div className="relative flex-grow focus-within:z-10">
-            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <SearchIcon className="w-4 h-4 text-gray-400" aria-hidden="true" />
             </div>
             <Controller
                 control={control}
@@ -34,7 +33,7 @@ export default function SearchInput(props: SearchInputProperties) {
                 render={({ field: { onChange } }) => (
                     <input
                         type="text"
-                        className={classNames("block ring-inset", commonClasses)}
+                        className="w-full h-full py-2 pl-10 text-gray-900 border border-gray-300 rounded-lg placeholder:text-gray-400 focus:ring-0 focus:ring-inset"
                         placeholder="Search"
                         onChange={(e) => {
                             onChange(e);
