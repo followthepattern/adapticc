@@ -6,7 +6,7 @@ interface SingleLayoutTitleProperties {
 }
 
 function Title(props: SingleLayoutTitleProperties) {
-    return <h3 className={classNames("font-semibold", props.children)}>{props.children}</h3>
+    return <h3 className={classNames("font-semibold", props.className)}>{props.children}</h3>
 }
 
 interface SingleLayoutFooterProperties {
