@@ -22,10 +22,9 @@ export default function AccountLayout() {
     <WithGraphQL token={token}>
       <WithUserContext>
         <HeaderSidebar />
-        {/* <Breadcrumbs pages={segments.map(segment => ({name: segment, href: segment}))}/> */}
         <div className="lg:pl-72">
           <main className="py-10">
-            <div className="px-4 sm:px-6 lg:px-8">
+            <div className="px-1 xs:px-2 sm:px-6 lg:px-8">
               <Outlet />
             </div>
           </main>
