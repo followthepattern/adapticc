@@ -16,7 +16,7 @@ interface SingleLayoutFooterProperties {
 
 function Footer(props: SingleLayoutFooterProperties) {
     return (
-        <div className={classNames(props.className, "flex justify-end mt-6 gap-x-2")}>
+        <div className={classNames(props.className, "flex mt-6 gap-x-2")}>
             {props.children}
         </div>)
 }

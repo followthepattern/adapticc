@@ -53,7 +53,7 @@ export default function User() {
                     {data?.lastName}
                 </DataList.Row>
             </DataList>
-            <SingleLayout.Footer>
+            <SingleLayout.Footer className="justify-end">
                 <CancelButton onClick={onCancel} />
                 <EditButton onClick={onEdit} />
             </SingleLayout.Footer>

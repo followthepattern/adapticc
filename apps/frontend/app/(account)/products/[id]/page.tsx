@@ -50,7 +50,7 @@ export default function Product() {
                     {data?.description}
                 </DataList.Row>
             </DataList>
-            <SingleLayout.Footer>
+            <SingleLayout.Footer className="justify-end">
                 <CancelButton onClick={onCancel} />
                 <EditButton onClick={onEdit} />
             </SingleLayout.Footer>
