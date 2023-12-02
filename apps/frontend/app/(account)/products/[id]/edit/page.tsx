@@ -9,7 +9,7 @@ import { Product } from "@/models/product";
 import SingleLayout from "@/app/(account)/components/singlePage/layout";
 import SecondaryButton from "@/app/(account)/components/buttons/secondaryButton";
 import PrimaryButton from "@/app/(account)/components/buttons/primaryButton";
-import DeleteButton from "@/app/(account)/components/buttons/deleteButton";
+import AlertButton from "@/app/(account)/components/buttons/alertButton";
 
 export default function ProductEdit() {
     const { id } = useParams();
@@ -95,7 +95,7 @@ export default function ProductEdit() {
                 </div>
             </div>
             <SingleLayout.Footer className="justify-between">
-                <DeleteButton onClick={onDelete} />
+                <AlertButton onClick={onDelete} />
                 <div className="flex gap-x-2">
                     <SecondaryButton onClick={onCancel} />
                     <PrimaryButton onClick={onSave} />
