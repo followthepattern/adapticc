@@ -95,10 +95,12 @@ export default function ProductEdit() {
                 </div>
             </div>
             <SingleLayout.Footer className="justify-between">
-                <AlertButton onClick={onDelete} />
+                <AlertButton onClick={onDelete}>
+                    Delete
+                </AlertButton>
                 <div className="flex gap-x-2">
-                    <SecondaryButton onClick={onCancel} />
-                    <PrimaryButton onClick={onSave} />
+                    <SecondaryButton onClick={onCancel}>Cancel</SecondaryButton>
+                    <PrimaryButton onClick={onSave}>Save</PrimaryButton>
                 </div>
             </SingleLayout.Footer>
         </SingleLayout>

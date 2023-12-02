@@ -54,8 +54,12 @@ export default function User() {
                 </DataList.Row>
             </DataList>
             <SingleLayout.Footer className="justify-end">
-                <SecondaryButton onClick={onCancel} />
-                <PrimaryButton onClick={onEdit} />
+                <SecondaryButton onClick={onCancel}>
+                    Cancel
+                </SecondaryButton>
+                <PrimaryButton onClick={onEdit}>
+                    Edit
+                </PrimaryButton>
             </SingleLayout.Footer>
         </SingleLayout>
     )
