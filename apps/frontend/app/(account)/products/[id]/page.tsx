@@ -3,7 +3,7 @@ import useSingleProduct from "../hooks/singleProduct";
 import { RESOURCE_URL } from "../page";
 import SingleLayout from "../../components/singlePage/layout";
 import DataList from "../../components/dataList/dataList";
-import CancelButton from "../../components/buttons/cancelButton";
+import SecondaryButton from "../../components/buttons/secondaryButton";
 import PrimaryButton from "../../components/buttons/primaryButton";
 
 export default function Product() {
@@ -51,7 +51,7 @@ export default function Product() {
                 </DataList.Row>
             </DataList>
             <SingleLayout.Footer className="justify-end">
-                <CancelButton onClick={onCancel} />
+                <SecondaryButton onClick={onCancel} />
                 <PrimaryButton onClick={onEdit} />
             </SingleLayout.Footer>
         </SingleLayout>

@@ -7,7 +7,7 @@ import { RESOURCE_URL } from "../../page";
 import { useEffect } from "react";
 import { Product } from "@/models/product";
 import SingleLayout from "@/app/(account)/components/singlePage/layout";
-import CancelButton from "@/app/(account)/components/buttons/cancelButton";
+import SecondaryButton from "@/app/(account)/components/buttons/secondaryButton";
 import PrimaryButton from "@/app/(account)/components/buttons/primaryButton";
 import DeleteButton from "@/app/(account)/components/buttons/deleteButton";
 
@@ -97,7 +97,7 @@ export default function ProductEdit() {
             <SingleLayout.Footer className="justify-between">
                 <DeleteButton onClick={onDelete} />
                 <div className="flex gap-x-2">
-                    <CancelButton onClick={onCancel} />
+                    <SecondaryButton onClick={onCancel} />
                     <PrimaryButton onClick={onSave} />
                 </div>
             </SingleLayout.Footer>
