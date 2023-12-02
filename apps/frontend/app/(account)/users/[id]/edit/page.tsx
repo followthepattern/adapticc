@@ -6,6 +6,14 @@ import { RESOURCE_URL } from "../../page";
 import { useEffect } from "react";
 import useDeleteUser from "../../hooks/deleteUser";
 import { User } from "@/models/user";
+import SingleLayout from "@/app/(account)/components/singlePage/layout";
+import GridFields from "@/app/(account)/components/gridFields/gridFields";
+import Label from "@/app/(account)/components/labels/label";
+import Input from "@/app/(account)/components/inputs/input";
+import TextArea from "@/app/(account)/components/inputs/textarea";
+import AlertButton from "@/app/(account)/components/buttons/alertButton";
+import SecondaryButton from "@/app/(account)/components/buttons/secondaryButton";
+import PrimaryButton from "@/app/(account)/components/buttons/primaryButton";
 
 export default function UserEdit() {
     const { id } = useParams();
@@ -60,84 +68,55 @@ export default function UserEdit() {
     }
 
     return (
-        <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <form action="">
-                <div className="space-y-12">
-                    <div className="border-b border-gray-900/10 pb-12">
-                        <h2 className="text-base font-semibold leading-7 text-gray-900">{data?.id}</h2>
-
-                        <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                            <div className="sm:col-span-3">
-                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                                    Email
-                                </label>
-                                <div className="mt-2">
-                                    <input
-                                        type="text"
-                                        id="email"
-                                        defaultValue={data?.email}
-                                        disabled
-                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 disabled:ring-gray-200"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="col-span-full">
-                                <label htmlFor="first-name" className="block text-sm font-medium leading-6 text-gray-900">
-                                    First Name
-                                </label>
-                                <div className="mt-2">
-                                    <textarea
-                                        id="first-name"
-                                        {...register("firstName")}
-                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                        defaultValue={data?.firstName}
-                                    />
-                                </div>
-                            </div>
-                            <div className="col-span-full">
-                                <label htmlFor="last-name" className="block text-sm font-medium leading-6 text-gray-900">
-                                    Last Name
-                                </label>
-                                <div className="mt-2">
-                                    <textarea
-                                        id="last-name"
-                                        {...register("lastName")}
-                                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                        defaultValue={data?.lastName}
-                                    />
-                                </div>
-                            </div>
-                        </div>
+        <SingleLayout>
+            <SingleLayout.Title>User: {data?.id}</SingleLayout.Title>
+            <form>
+                <GridFields className="py-6">
+                    <div className="sm:col-span-2">
+                        <Label htmlFor="title">
+                            Email
+                        </Label>
+                        <Input
+                            {...register("email")}
+                            disabled={true}
+                            type="text"
+                            id="email"
+                            defaultValue={data?.email}
+                        />
                     </div>
-                </div>
-
-                <div className="mt-6 flex items-center justify-between gap-x-6">
-                    <button
-                        type="button"
-                        onClick={onDelete}
-                        className="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
-                    >
+                    <div className="sm:col-span-2">
+                        <Label htmlFor="firstName">
+                            First Name
+                        </Label>
+                        <Input
+                            id="firstName"
+                            type="text"
+                            {...register("firstName")}
+                            defaultValue={data?.firstName}
+                        />
+                    </div>
+                    <div className="sm:col-span-2">
+                        <Label htmlFor="lastName">
+                            Last Name
+                        </Label>
+                        <Input
+                            id="lastName"
+                            type="text"
+                            {...register("lastName")}
+                            defaultValue={data?.lastName}
+                        />
+                    </div>
+                </GridFields>
+                <SingleLayout.Footer className="justify-between">
+                    <AlertButton onClick={onDelete}>
                         Delete
-                    </button>
-                    <div className="flex gap-x-6">
-                        <button
-                            type="button"
-                            className="text-sm font-semibold leading-6 text-gray-900"
-                            onClick={onCancel}
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            type="button"
-                            onClick={onSave}
-                            className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                        >
-                            Save
-                        </button>
+                    </AlertButton>
+                    <div className="flex gap-x-2">
+                        <SecondaryButton onClick={onCancel}>Cancel</SecondaryButton>
+                        <PrimaryButton onClick={onSave}>Save</PrimaryButton>
                     </div>
-                </div>
+                </SingleLayout.Footer>
             </form>
-        </div>
+        </SingleLayout>
     )
 }
