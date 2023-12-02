@@ -36,7 +36,6 @@ type User {
 }
 
 input UserInput {
-	email: String!
 	firstName: String!
 	lastName: String!
 }

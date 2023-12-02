@@ -1,8 +1,10 @@
+import React from "react";
 import classNames from "classnames";
 
-export default function TextArea(props: React.DetailedHTMLProps<React.TextareaHTMLAttributes<HTMLTextAreaElement>, HTMLTextAreaElement>) {
+const TextArea = React.forwardRef((props: React.DetailedHTMLProps<React.TextareaHTMLAttributes<HTMLTextAreaElement>, HTMLTextAreaElement>, ref: React.ForwardedRef<HTMLTextAreaElement>) => {
     return (
         <textarea
+            ref={ref}
             {...props}
             className={classNames(
                 props.className,
@@ -12,4 +14,6 @@ export default function TextArea(props: React.DetailedHTMLProps<React.TextareaHT
                 })}
         />
     )
-}
+})
+
+export default TextArea;

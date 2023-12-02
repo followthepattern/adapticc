@@ -1,8 +1,10 @@
+import React from "react";
 import classNames from "classnames";
 
-export default function Input(props: React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>) {
+const Input = React.forwardRef((props: React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, ref:React.ForwardedRef<HTMLInputElement>) => {
     return (
         <input
+            ref={ref}
             {...props}
             className={classNames(
                 props.className,
@@ -13,4 +15,6 @@ export default function Input(props: React.DetailedHTMLProps<React.InputHTMLAttr
             )}
         />
     )
-}
+})
+
+export default Input;
