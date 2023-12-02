@@ -4,7 +4,7 @@ import { RESOURCE_URL } from "../page";
 import SingleLayout from "../../components/singlePage/layout";
 import DataList from "../../components/dataList/dataList";
 import CancelButton from "../../components/buttons/cancelButton";
-import EditButton from "../../components/buttons/editButton";
+import PrimaryButton from "../../components/buttons/primaryButton";
 
 export default function Product() {
     const { id } = useParams()
@@ -52,7 +52,7 @@ export default function Product() {
             </DataList>
             <SingleLayout.Footer className="justify-end">
                 <CancelButton onClick={onCancel} />
-                <EditButton onClick={onEdit} />
+                <PrimaryButton onClick={onEdit} />
             </SingleLayout.Footer>
         </SingleLayout>
     )

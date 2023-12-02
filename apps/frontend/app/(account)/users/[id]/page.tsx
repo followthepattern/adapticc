@@ -4,7 +4,7 @@ import useSingleUser from "../hooks/singleUser";
 import SingleLayout from "../../components/singlePage/layout";
 import DataList from "../../components/dataList/dataList";
 import CancelButton from "../../components/buttons/cancelButton";
-import EditButton from "../../components/buttons/editButton";
+import PrimaryButton from "../../components/buttons/primaryButton";
 
 export default function User() {
     const { id } = useParams()
@@ -55,7 +55,7 @@ export default function User() {
             </DataList>
             <SingleLayout.Footer className="justify-end">
                 <CancelButton onClick={onCancel} />
-                <EditButton onClick={onEdit} />
+                <PrimaryButton onClick={onEdit} />
             </SingleLayout.Footer>
         </SingleLayout>
     )

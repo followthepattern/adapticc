@@ -8,7 +8,7 @@ import { useEffect } from "react";
 import { Product } from "@/models/product";
 import SingleLayout from "@/app/(account)/components/singlePage/layout";
 import CancelButton from "@/app/(account)/components/buttons/cancelButton";
-import EditButton from "@/app/(account)/components/buttons/editButton";
+import PrimaryButton from "@/app/(account)/components/buttons/primaryButton";
 import DeleteButton from "@/app/(account)/components/buttons/deleteButton";
 
 export default function ProductEdit() {
@@ -98,7 +98,7 @@ export default function ProductEdit() {
                 <DeleteButton onClick={onDelete} />
                 <div className="flex gap-x-2">
                     <CancelButton onClick={onCancel} />
-                    <EditButton onClick={onSave} />
+                    <PrimaryButton onClick={onSave} />
                 </div>
             </SingleLayout.Footer>
         </SingleLayout>
