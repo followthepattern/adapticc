@@ -1,7 +1,7 @@
 import { Fragment, useContext } from 'react'
 
 import { Menu, Transition } from '@headlessui/react'
-import { ChevronDownIcon } from '@heroicons/react/24/outline'
+import ChevronDownIcon from '@/app/icons/chevronDown';
 import UserContext from '@/components/userContext'
 import { Link } from 'react-router-dom'
 import { useTokenStore } from '@/lib/store'
@@ -12,15 +12,16 @@ export default function ProfileMenu(props: ProfileMenuProperties) {
     const userProfile = useContext(UserContext);
     const { removeToken } = useTokenStore();
 
+    const menuItemClassName = "block px-3 py-1 text-sm hover:bg-gray-50";
+
     return (
         <Menu as="div" className="relative">
-            <Menu.Button className="-m-1.5 flex items-center p-1.5">
-                <span className="sr-only">Open user menu</span>
-                <span className="hidden lg:flex lg:items-center">
-                    <span className="text-sm font-semibold leading-6 text-gray-900" aria-hidden="true">
+            <Menu.Button className="flex items-center">
+                <span className="flex items-center">
+                    <span className="text-sm font-semibold" aria-hidden="true">
                         {userProfile.firstName} {userProfile.lastName}
                     </span>
-                    <ChevronDownIcon className="ml-2 h-5 w-5 text-gray-400" aria-hidden="true" />
+                    <ChevronDownIcon className="w-3 h-3 ml-2 text-gray-400" aria-hidden="true" />
                 </span>
             </Menu.Button>
             <Transition
@@ -32,18 +33,18 @@ export default function ProfileMenu(props: ProfileMenuProperties) {
                 leaveFrom="transform opacity-100 scale-100"
                 leaveTo="transform opacity-0 scale-95"
             >
-                <Menu.Items className="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+                <Menu.Items className="absolute right-0 z-10 w-32 py-2 mt-5 bg-white border border-gray-200 rounded-md shadow-lg">
                     <Menu.Item key="your-profile">
                         <Link
                             to="/profile"
-                            className="block px-3 py-1 text-sm leading-6 text-gray-900 hover:bg-gray-50"
+                            className={menuItemClassName}
                         >
                             Your Profile
                         </Link>
                     </Menu.Item>
-                    <Menu.Item key="sign out">
+                    <Menu.Item key="sign-out">
                         <button onClick={() => removeToken()}
-                            className="block px-3 py-1 text-sm leading-6 text-gray-900 hover:bg-gray-50"
+                            className={menuItemClassName}
                         >
                             Sign Out
                         </button>
