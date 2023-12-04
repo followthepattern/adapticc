@@ -6,8 +6,9 @@ import {
     XMarkIcon,
 } from '@heroicons/react/24/outline'
 import classNames from 'classnames'
-import {Link, useLocation} from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 import { IsSelected, NavigationItem } from './navigation'
+import Navbar from './navbar'
 
 interface MobileSidebarProperties {
     sidebarOpen: boolean
@@ -56,48 +57,13 @@ export default function MobileSidebar(props: MobileSidebarProperties) {
                             >
                                 <div className="absolute top-0 flex justify-center w-16 pt-5 left-full">
                                     <button type="button" className="-m-2.5 p-2.5" onClick={() => props.setSidebarOpen(false)}>
-                                        <span className="sr-only">Close sidebar</span>
                                         <XMarkIcon className="w-6 h-6 text-white" aria-hidden="true" />
                                     </button>
                                 </div>
                             </Transition.Child>
-                            {/* Sidebar component, swap this element with another sidebar if you like */}
-                            <div className="flex flex-col px-6 pb-4 overflow-y-auto bg-indigo-600 grow gap-y-5">
-                                <div className="flex items-center h-16 shrink-0">
-                                </div>
-                                <nav className="flex flex-col flex-1">
-                                    <ul role="list" className="flex flex-col flex-1 gap-y-7">
-                                        <li>
-                                            <ul role="list" className="-mx-2 space-y-1">
-                                                {props.navigationItems.map((item) => {
-                                                    const current = IsSelected(pathname, item.href)
-                                                    return (
-                                                        <li key={item.name}>
-                                                            <Link
-                                                                to={item.href}
-                                                                className={classNames(
-                                                                    current
-                                                                        ? 'bg-indigo-700 text-white'
-                                                                        : 'text-indigo-200 hover:text-white hover:bg-indigo-700',
-                                                                    'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
-                                                                )}
-                                                            >
-                                                                <item.icon
-                                                                    className={classNames(
-                                                                        current ? 'text-white' : 'text-indigo-200 group-hover:text-white',
-                                                                        'h-6 w-6 shrink-0'
-                                                                    )}
-                                                                    aria-hidden="true"
-                                                                />
-                                                                {item.name}
-                                                            </Link>
-                                                        </li>
-                                                    )
-                                                })}
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                </nav>
+                            <div className="flex flex-col px-6 pb-4 overflow-y-auto bg-blue-600 grow gap-y-5">
+                                <div className="flex items-center h-16 shrink-0"></div>
+                                <Navbar />
                             </div>
                         </Dialog.Panel>
                     </Transition.Child>
