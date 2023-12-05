@@ -39,13 +39,13 @@ export default function Navbar(props: NavbarProperties) {
                                             current
                                                 ? 'bg-blue-700 text-white'
                                                 : 'text-blue-200 hover:text-white hover:bg-blue-700',
-                                            'flex items-center gap-x-3 rounded-lg p-3 text-sm font-semibold'
+                                            'group flex items-center gap-x-3 rounded-lg p-3 text-sm font-semibold'
                                         )}
                                     >
                                         <item.icon
                                             className={classNames(
-                                                current ? 'text-white' : 'text-blue-200 hover:text-white',
-                                                'h-8 w-8 shrink-0'
+                                                current ? 'text-white' : 'text-blue-200 group-hover:text-white',
+                                                'h-5 w-5 shrink-0'
                                             )}
                                             aria-hidden="true"
                                         />
