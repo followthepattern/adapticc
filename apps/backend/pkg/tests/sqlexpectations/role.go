@@ -1,6 +1,7 @@
 package sqlexpectations
 
 import (
+	"database/sql/driver"
 	"fmt"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -8,7 +9,13 @@ import (
 	"github.com/followthepattern/adapticc/pkg/types"
 )
 
-func ExpectRolesByUserID(mock sqlmock.Sqlmock, result []models.Role, userID types.String) {
+var roleColumns = []string{
+	"id",
+	"code",
+	"name",
+}
+
+func ExpectRolesByUserID(mock sqlmock.Sqlmock, results []models.Role, userID types.String) {
 	sqlQuery := fmt.Sprintf(`
 	SELECT
 		"r".\*
@@ -18,6 +25,17 @@ func ExpectRolesByUserID(mock sqlmock.Sqlmock, result []models.Role, userID type
 		"usr"."roles" AS "r" ON ("r"."id" = "ur"."role_id")
 	WHERE ("user_id" = '%v')`, userID)
 
+	rows := sqlmock.NewRows(roleColumns)
+
+	for _, result := range results {
+		values := []driver.Value{
+			result.ID,
+			result.CreatedAt,
+			result.CreationUserID,
+		}
+		rows.AddRow(values...)
+	}
+
 	mock.ExpectQuery(sqlQuery).
-		WillReturnRows(ModelToSQLMockRows(result))
+		WillReturnRows(rows)
 }

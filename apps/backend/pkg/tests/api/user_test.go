@@ -343,7 +343,6 @@ var _ = Describe("User graphql queries", func() {
 		var graphql string = `mutation {
 			users {
 				update (id: "%v", model: {
-					email: ""
 					firstName: "%s"
 					lastName: "%s"
 				}) {

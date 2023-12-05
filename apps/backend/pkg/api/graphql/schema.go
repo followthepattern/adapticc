@@ -35,7 +35,13 @@ type User {
 	updatedAt: Time!
 }
 
-input UserInput {
+input CreateUserInput {
+	email: String!
+	firstName: String!
+	lastName: String!
+}
+
+input UpdateUserInput {
 	firstName: String!
 	lastName: String!
 }
@@ -132,8 +138,8 @@ type RoleQuery {
 }
 
 type UserMutation {
-	create(model: UserInput!): ResponseStatus
-	update(id: String!, model: UserInput!): ResponseStatus
+	create(model: CreateUserInput!): ResponseStatus
+	update(id: String!, model: UpdateUserInput!): ResponseStatus
 	delete(id: String!): ResponseStatus
 
 }

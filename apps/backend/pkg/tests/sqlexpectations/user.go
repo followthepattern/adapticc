@@ -24,8 +24,23 @@ var userColumns = []string{
 func ExpectGetUserByEmail(mock sqlmock.Sqlmock, result models.User, email types.String) {
 	sqlQuery := fmt.Sprintf(`SELECT "active", "created_at", "creation_user_id", "email", "first_name", "id", "last_name", "update_user_id", "updated_at" FROM "usr"."users" WHERE ("email" = '%v') LIMIT 1`, email)
 
+	rows := sqlmock.NewRows(userColumns)
+
+	values := []driver.Value{
+		result.Active,
+		result.CreatedAt,
+		result.CreationUserID,
+		result.Email,
+		result.FirstName,
+		result.ID,
+		result.LastName,
+		result.UpdateUserID,
+		result.UpdatedAt,
+	}
+	rows.AddRow(values...)
+
 	mock.ExpectQuery(sqlQuery).
-		WillReturnRows(ModelToSQLMockRows(result))
+		WillReturnRows(rows)
 }
 
 func ExpectGetUserByID(mock sqlmock.Sqlmock, result models.User, id types.String) {
