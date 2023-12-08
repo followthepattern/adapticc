@@ -10,7 +10,7 @@ import SingleLayout from "@/app/(account)/components/singleView/layout";
 import SecondaryButton from "@/app/(account)/components/buttons/secondaryButton";
 import PrimaryButton from "@/app/(account)/components/buttons/primaryButton";
 import AlertButton from "@/app/(account)/components/buttons/alertButton";
-import GridFields from "@/app/(account)/components/gridFields/gridFields";
+import GridFields from "@/app/(account)/components/singleView/gridFields/gridFields";
 import Label from "@/app/(account)/components/labels/label";
 import classNames from "classnames";
 import Input from "@/app/(account)/components/inputs/input";

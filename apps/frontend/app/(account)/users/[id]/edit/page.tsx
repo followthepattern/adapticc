@@ -7,7 +7,7 @@ import { useEffect } from "react";
 import useDeleteUser from "../../hooks/deleteUser";
 import { User } from "@/models/user";
 import SingleLayout from "@/app/(account)/components/singleView/layout";
-import GridFields from "@/app/(account)/components/gridFields/gridFields";
+import GridFields from "@/app/(account)/components/singleView/gridFields/gridFields";
 import Label from "@/app/(account)/components/labels/label";
 import Input from "@/app/(account)/components/inputs/input";
 import TextArea from "@/app/(account)/components/inputs/textarea";

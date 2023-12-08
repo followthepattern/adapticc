@@ -5,7 +5,7 @@ import { RESOURCE_URL } from "../page";
 import { useEffect } from "react";
 import { User } from "@/models/user";
 import SingleLayout from "../../components/singleView/layout";
-import GridFields from "../../components/gridFields/gridFields";
+import GridFields from "../../components/singleView/gridFields/gridFields";
 import Label from "../../components/labels/label";
 import Input from "../../components/inputs/input";
 import SecondaryButton from "../../components/buttons/secondaryButton";
