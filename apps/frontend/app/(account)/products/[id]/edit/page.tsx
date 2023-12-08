@@ -13,8 +13,8 @@ import AlertButton from "@/app/(account)/components/buttons/alertButton";
 import GridFields from "@/app/(account)/components/singleView/gridFields/gridFields";
 import Label from "@/app/(account)/components/labels/label";
 import classNames from "classnames";
-import Input from "@/app/(account)/components/inputs/input";
-import TextArea from "@/app/(account)/components/inputs/textarea";
+import Input from "@/app/(account)/components/inputFields/input";
+import TextArea from "@/app/(account)/components/inputFields/textarea";
 
 export default function ProductEdit() {
     const { id } = useParams();

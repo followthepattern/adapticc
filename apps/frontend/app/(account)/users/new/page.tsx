@@ -7,7 +7,7 @@ import { User } from "@/models/user";
 import SingleLayout from "../../components/singleView/layout";
 import GridFields from "../../components/singleView/gridFields/gridFields";
 import Label from "../../components/labels/label";
-import Input from "../../components/inputs/input";
+import Input from "../../components/inputFields/input";
 import SecondaryButton from "../../components/buttons/secondaryButton";
 import PrimaryButton from "../../components/buttons/primaryButton";
 

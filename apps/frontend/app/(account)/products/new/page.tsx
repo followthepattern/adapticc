@@ -7,8 +7,8 @@ import { Product } from "@/models/product";
 import SingleLayout from "../../components/singleView/layout";
 import GridFields from "../../components/singleView/gridFields/gridFields";
 import Label from "../../components/labels/label";
-import Input from "../../components/inputs/input";
-import TextArea from "../../components/inputs/textarea";
+import Input from "../../components/inputFields/input";
+import TextArea from "../../components/inputFields/textarea";
 import SecondaryButton from "../../components/buttons/secondaryButton";
 import PrimaryButton from "../../components/buttons/primaryButton";
 
