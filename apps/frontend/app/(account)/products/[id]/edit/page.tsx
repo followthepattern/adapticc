@@ -6,7 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { RESOURCE_URL } from "../../page";
 import { useEffect } from "react";
 import { Product } from "@/models/product";
-import SingleLayout from "@/app/(account)/components/singlePage/layout";
+import SingleLayout from "@/app/(account)/components/singleView/layout";
 import SecondaryButton from "@/app/(account)/components/buttons/secondaryButton";
 import PrimaryButton from "@/app/(account)/components/buttons/primaryButton";
 import AlertButton from "@/app/(account)/components/buttons/alertButton";

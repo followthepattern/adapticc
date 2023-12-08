@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { RESOURCE_URL } from "../page";
 import { useEffect } from "react";
 import { Product } from "@/models/product";
-import SingleLayout from "../../components/singlePage/layout";
+import SingleLayout from "../../components/singleView/layout";
 import GridFields from "../../components/gridFields/gridFields";
 import Label from "../../components/labels/label";
 import Input from "../../components/inputs/input";
