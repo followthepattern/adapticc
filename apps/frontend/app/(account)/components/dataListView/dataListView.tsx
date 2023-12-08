@@ -16,12 +16,12 @@ function DataRow(props: DataRowProperties) {
     )
 }
 
-interface DataListProperties {
+interface DataListViewProperties {
     children: any
     className?: string
 }
 
-export default function DataList(props: DataListProperties) {
+export default function DataListView(props: DataListViewProperties) {
     return (
         <div className={classNames(props.className, "border-gray-100 border-y")}>
             <div className="divide-y divide-gray-100">
@@ -31,4 +31,4 @@ export default function DataList(props: DataListProperties) {
     )
 }
 
-DataList.Row = DataRow
+DataListView.Row = DataRow

@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { RESOURCE_URL } from "../page";
 import useSingleUser from "../hooks/singleUser";
 import SingleLayout from "../../components/singlePage/layout";
-import DataList from "../../components/dataList/dataList";
+import DataListView from "../../components/DataListView/DataListView";
 import SecondaryButton from "../../components/buttons/secondaryButton";
 import PrimaryButton from "../../components/buttons/primaryButton";
 
@@ -39,20 +39,20 @@ export default function User() {
     return (
         <SingleLayout>
             <SingleLayout.Title>User</SingleLayout.Title>
-            <DataList className="mt-6">
-                <DataList.Row name={"ID"}>
+            <DataListView className="mt-6">
+                <DataListView.Row name={"ID"}>
                     {data?.id}
-                </DataList.Row>
-                <DataList.Row name={"Email"}>
+                </DataListView.Row>
+                <DataListView.Row name={"Email"}>
                     {data?.email}
-                </DataList.Row>
-                <DataList.Row name={"First Name"}>
+                </DataListView.Row>
+                <DataListView.Row name={"First Name"}>
                     {data?.firstName}
-                </DataList.Row>
-                <DataList.Row name={"Last Name"}>
+                </DataListView.Row>
+                <DataListView.Row name={"Last Name"}>
                     {data?.lastName}
-                </DataList.Row>
-            </DataList>
+                </DataListView.Row>
+            </DataListView>
             <SingleLayout.Footer className="justify-end">
                 <SecondaryButton onClick={onCancel}>
                     Cancel

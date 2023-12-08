@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import useSingleProduct from "../hooks/singleProduct";
 import { RESOURCE_URL } from "../page";
 import SingleLayout from "../../components/singlePage/layout";
-import DataList from "../../components/dataList/dataList";
+import DataListView from "../../components/DataListView/DataListView";
 import SecondaryButton from "../../components/buttons/secondaryButton";
 import PrimaryButton from "../../components/buttons/primaryButton";
 
@@ -39,17 +39,17 @@ export default function Product() {
     return (
         <SingleLayout>
             <SingleLayout.Title>Product</SingleLayout.Title>
-            <DataList className="mt-6">
-                <DataList.Row name={"ID"}>
+            <DataListView className="mt-6">
+                <DataListView.Row name={"ID"}>
                     {data?.id}
-                </DataList.Row>
-                <DataList.Row name={"Title"}>
+                </DataListView.Row>
+                <DataListView.Row name={"Title"}>
                     {data?.title}
-                </DataList.Row>
-                <DataList.Row name={"Description"}>
+                </DataListView.Row>
+                <DataListView.Row name={"Description"}>
                     {data?.description}
-                </DataList.Row>
-            </DataList>
+                </DataListView.Row>
+            </DataListView>
             <SingleLayout.Footer className="justify-end">
                 <SecondaryButton onClick={onCancel}>
                     Cancel
