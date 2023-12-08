@@ -1,7 +1,7 @@
 import classNames from 'classnames';
-import { IsSelected, NavigationItem } from './navigation';
+import { IsSelected, NavigationItem } from './navbar/navigation';
 import {Link, useLocation} from 'react-router-dom';
-import Navbar from './navbar';
+import Navbar from './navbar/navbar';
 
 interface StaticSidebarPorperties {
     navigationItems: NavigationItem[]

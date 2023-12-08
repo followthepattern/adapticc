@@ -7,8 +7,8 @@ import {
 } from '@heroicons/react/24/outline'
 import classNames from 'classnames'
 import { Link, useLocation } from "react-router-dom"
-import { IsSelected, NavigationItem } from './navigation'
-import Navbar from './navbar'
+import { IsSelected, NavigationItem } from './navbar/navigation'
+import Navbar from './navbar/navbar'
 
 interface MobileSidebarProperties {
     sidebarOpen: boolean
