@@ -1,18 +1,22 @@
 import classNames from "classnames"
 
-interface DataRowProperties {
-    name: any
-    children: any
-    classNames?: string
-
+function DataRow(props: React.HTMLAttributes<HTMLDivElement>) {
+    return (
+        <div className={classNames(props.className, "px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0")}>
+            {props.children}
+        </div>
+    )
 }
 
-function DataRow(props: DataRowProperties) {
+function Label(props: React.HTMLAttributes<HTMLDivElement>) {
     return (
-        <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-            <div className="text-sm font-medium">{props.name}</div>
-            <div className="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0">{props.children}</div>
-        </div>
+        <div {...props} className={classNames(props.className, "text-sm font-medium")}>{props.children}</div>
+    )
+}
+
+function Field(props: React.HTMLAttributes<HTMLDivElement>) {
+    return (
+        <div className={classNames(props.className, "mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0")}>{props.children}</div>
     )
 }
 
@@ -31,4 +35,6 @@ export default function DataListView(props: DataListViewProperties) {
     )
 }
 
+DataListView.Label = Label
+DataListView.Field = Field
 DataListView.Row = DataRow

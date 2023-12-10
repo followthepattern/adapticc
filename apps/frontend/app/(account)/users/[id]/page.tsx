@@ -40,17 +40,37 @@ export default function User() {
         <SingleLayout>
             <SingleLayout.Title>User</SingleLayout.Title>
             <DataListView className="mt-6">
-                <DataListView.Row name={"ID"}>
-                    {data?.id}
+                <DataListView.Row>
+                    <DataListView.Label>
+                        ID
+                    </DataListView.Label>
+                    <DataListView.Field>
+                        {data?.id}
+                    </DataListView.Field>
                 </DataListView.Row>
-                <DataListView.Row name={"Email"}>
-                    {data?.email}
+                <DataListView.Row>
+                    <DataListView.Label>
+                        Email
+                    </DataListView.Label>
+                    <DataListView.Field>
+                        {data?.email}
+                    </DataListView.Field>
                 </DataListView.Row>
-                <DataListView.Row name={"First Name"}>
-                    {data?.firstName}
+                <DataListView.Row>
+                    <DataListView.Label>
+                        First Name
+                    </DataListView.Label>
+                    <DataListView.Field>
+                        {data?.firstName}
+                    </DataListView.Field>
                 </DataListView.Row>
-                <DataListView.Row name={"Last Name"}>
-                    {data?.lastName}
+                <DataListView.Row>
+                    <DataListView.Label>
+                        Last Name
+                    </DataListView.Label>
+                    <DataListView.Field>
+                        {data?.lastName}
+                    </DataListView.Field>
                 </DataListView.Row>
             </DataListView>
             <SingleLayout.Footer className="justify-end">

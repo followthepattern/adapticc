@@ -9,6 +9,10 @@ function Title(props: SingleLayoutTitleProperties) {
     return <h3 className={classNames("font-semibold", props.className)}>{props.children}</h3>
 }
 
+function Subtitle(props: SingleLayoutTitleProperties) {
+    return <p className={classNames("text-sm text-gray-500", props.className)}>{props.children}</p>
+}
+
 interface SingleLayoutFooterProperties {
     children?: any
     className?: string
@@ -38,4 +42,5 @@ export default function SingleLayout(props: SingleLayoutProperties) {
 }
 
 SingleLayout.Title = Title
+SingleLayout.Subtitle = Subtitle
 SingleLayout.Footer = Footer

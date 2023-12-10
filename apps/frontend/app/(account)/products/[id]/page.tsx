@@ -40,14 +40,29 @@ export default function Product() {
         <SingleLayout>
             <SingleLayout.Title>Product</SingleLayout.Title>
             <DataListView className="mt-6">
-                <DataListView.Row name={"ID"}>
-                    {data?.id}
+                <DataListView.Row>
+                    <DataListView.Label>
+                        ID
+                    </DataListView.Label>
+                    <DataListView.Field>
+                        {data?.id}
+                    </DataListView.Field>
                 </DataListView.Row>
-                <DataListView.Row name={"Title"}>
-                    {data?.title}
+                <DataListView.Row>
+                <DataListView.Label>
+                        Title
+                    </DataListView.Label>
+                    <DataListView.Field>
+                        {data?.title}
+                    </DataListView.Field>
                 </DataListView.Row>
-                <DataListView.Row name={"Description"}>
-                    {data?.description}
+                <DataListView.Row>
+                <DataListView.Label>
+                        Description
+                    </DataListView.Label>
+                    <DataListView.Field>
+                        {data?.description}
+                    </DataListView.Field>
                 </DataListView.Row>
             </DataListView>
             <SingleLayout.Footer className="justify-end">
