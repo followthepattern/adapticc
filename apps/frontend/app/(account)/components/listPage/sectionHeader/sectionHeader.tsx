@@ -24,7 +24,7 @@ export default function SectionHeader(props: SectionHeaderProperties) {
             <Header>{props.resourceName}</Header>
             <div className="grid mt-4 sm:justify-between sm:flex gap-x-4 gap-y-2">
                 <SearchInput className="sm:max-w-3xl" onChange={props.searchInputOnChange} />
-                <div className="grid grid-cols-2 gap-x-4">
+                <div className="grid grid-cols-2 gap-x-2">
                     <NewResourceLink className="grow" {...props} />
                     <SortButton className="grow" {...props} />
                 </div>
