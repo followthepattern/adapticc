@@ -4,7 +4,7 @@ import { ListPageComponentProperties } from '../components/listPage/listPageWrap
 import { SortLabel, SetPageParams, SetSearchPatternParams, SetSortPatternParrams } from '../components/listPage/listPageWrapper/listingFunctions';
 import useListUsers from './hooks/listUser';
 import { User } from '@/models/user';
-import CreateTable, { CreateTableProperties} from '../components/listPage/table/table';
+import CreateTable, { CreateTableProperties } from '../components/listPage/table/table';
 
 export const RESOURCE_NAME = "Users"
 export const RESOURCE_URL = "/users"
@@ -60,7 +60,7 @@ export default function Users(props: ListPageComponentProperties) {
   const userTable = CreateTable(createTableProperties);
 
   return (
-    <div>
+    <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
       <SectionHeader
         resourceName={RESOURCE_NAME}
         resourceUrl={RESOURCE_URL}
@@ -71,14 +71,12 @@ export default function Users(props: ListPageComponentProperties) {
         selectedSortLabel={selectedSortLabel}
       />
       <div className="flow-root mt-8 overflow-hidden">
-        <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-          <List {...props}
-            sortProps={{ sortLabel: selectedSortLabel }}
-            onPageChange={pageOnChange}
-            useList={useListUsers}
-            tableComponent={userTable}
-          />
-        </div>
+        <List {...props}
+          sortProps={{ sortLabel: selectedSortLabel }}
+          onPageChange={pageOnChange}
+          useList={useListUsers}
+          tableComponent={userTable}
+        />
       </div>
     </div>
   )

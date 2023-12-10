@@ -59,7 +59,7 @@ export default function Products(props: ListPageComponentProperties) {
   const productTable = CreateTable(createTableProperties);
 
   return (
-    <div>
+    <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
       <SectionHeader
         resourceName={RESOURCE_NAME}
         resourceUrl={RESOURCE_URL}
@@ -70,14 +70,12 @@ export default function Products(props: ListPageComponentProperties) {
         selectedSortLabel={selectedSortLabel}
       />
       <div className="flow-root mt-8 overflow-hidden">
-        <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-          <List {...props}
-            sortProps={{ sortLabel: selectedSortLabel }}
-            onPageChange={pageOnChange}
-            useList={useListProduct}
-            tableComponent={productTable}
-          />
-        </div>
+        <List {...props}
+          sortProps={{ sortLabel: selectedSortLabel }}
+          onPageChange={pageOnChange}
+          useList={useListProduct}
+          tableComponent={productTable}
+        />
       </div>
     </div>
   )

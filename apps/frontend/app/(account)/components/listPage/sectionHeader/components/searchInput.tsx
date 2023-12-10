@@ -1,5 +1,4 @@
 import SearchIcon from '@/app/icons/search';
-import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 import classNames from 'classnames';
 import { Controller, useForm } from 'react-hook-form';
 
@@ -10,6 +9,7 @@ interface SearchInputValues {
 interface SearchInputProperties {
     onChange: (s: string) => void
     search?: string
+    className?: string
 }
 
 export default function SearchInput(props: SearchInputProperties) {
@@ -22,7 +22,7 @@ export default function SearchInput(props: SearchInputProperties) {
     };
 
     return (
-        <div className="relative flex-grow focus-within:z-10">
+        <div className={classNames(props.className, "relative flex-grow focus-within:z-10")}>
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                 <SearchIcon className="w-4 h-4 text-gray-400" aria-hidden="true" />
             </div>

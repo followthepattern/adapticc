@@ -4,22 +4,24 @@ import { Fragment } from 'react';
 import { CheckIcon } from '@heroicons/react/24/outline';
 import { SortLabel } from '../../listPageWrapper/listingFunctions';
 import ChevronDownIcon from '@/app/icons/chevronDown';
+import classNames from 'classnames';
 
 export interface SortButtonProperties {
     sortByLables: SortLabel[]
     selectedSortLabel?: SortLabel
     sortOnChange: (v: SortLabel) => void
+    className?: string
 }
 
-export default function SortButton({ sortByLables, selectedSortLabel, sortOnChange }: SortButtonProperties) {
+export default function SortButton(props: SortButtonProperties) {
     const OnChange = (v: SortLabel) => {
-        sortOnChange(v);
+        props.sortOnChange(v);
     }
 
-    const initValue: SortLabel | null = selectedSortLabel ? selectedSortLabel : null;
+    const initValue: SortLabel | null = props.selectedSortLabel ? props.selectedSortLabel : null;
 
     return (
-        <div className="relative flex-auto ">
+        <div className={classNames(props.className, "relative")}>
             <Listbox value={initValue} onChange={OnChange}>
                 <Listbox.Button className="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-semibold rounded-lg gap-x-2 ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
                     {initValue ? initValue.name : "Sort"}
@@ -36,7 +38,7 @@ export default function SortButton({ sortByLables, selectedSortLabel, sortOnChan
                 >
                     <Listbox.Options className="absolute right-0 z-10 w-40 mt-2 origin-top-right bg-white border rounded-lg shadow-lg border-gray-50">
                         <div className="py-1">
-                            {sortByLables.map((sortLabel) => (
+                            {props.sortByLables.map((sortLabel) => (
                                 <Listbox.Option
                                     key={sortLabel.code}
                                     value={sortLabel}

@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { RESOURCE_URL } from "../page";
 import useSingleUser from "../hooks/singleUser";
 import SingleLayout from "../../components/singleView/layout";
-import DataListView from "../../components/singleView/dataListView/DataListView";
+import DataListView from "../../components/singleView/dataListView/dataListView";
 import SecondaryButton from "../../components/buttons/secondaryButton";
 import PrimaryButton from "../../components/buttons/primaryButton";
 
