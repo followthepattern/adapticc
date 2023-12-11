@@ -1,4 +1,5 @@
 import { ApolloClient, ApolloProvider, InMemoryCache, createHttpLink } from "@apollo/client";
+import { RetryLink } from "@apollo/client/link/retry";
 import { setContext } from "@apollo/client/link/context";
 import { API_GRAPHQL } from "@/lib/config";
 
@@ -21,10 +22,19 @@ const WithGraphQL = ({children, token}: WithGraphQLProperties) => {
                 Authorization: authorizationHeaderText,
             },
         };
-    });
+    }).concat(httpLink);
+
+    const retryLink = new RetryLink({
+        attempts: (count, operation, error) => {
+            return !!error && operation.operationName != 'specialCase';
+        },
+        delay: (count, operation, error) => {
+            return count * 1000 * Math.random();
+        },
+    }).concat(authLink) ;
 
     const client = new ApolloClient({
-        link: authLink.concat(httpLink),
+        link: retryLink,
         cache: new InMemoryCache(),
     })
 
