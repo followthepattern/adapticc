@@ -1,7 +1,6 @@
 import PlusIcon from "@/app/icons/plus";
 import classNames from "classnames";
-import React from "react";
-import { Link, LinkProps } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 interface NewResourceLinkProperties {
     resourceUrl: string;

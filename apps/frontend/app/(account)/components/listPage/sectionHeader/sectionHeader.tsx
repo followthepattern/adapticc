@@ -1,4 +1,4 @@
-import NewResourceLink from './components/newResourceButton';
+import NewResourceLink from './components/newResourceLink';
 import SearchInput from './components/searchInput';
 import SortButton, { SortButtonProperties } from './components/sortButton';
 
