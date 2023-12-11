@@ -76,7 +76,7 @@ export default function LoginForm() {
                 <div>
                     <button
                         type="submit"
-                        className="w-full px-3 py-3 text-sm font-semibold text-white bg-blue-600 rounded-md shadow-sm mx:auto hover:bg-blue-500"
+                        className="w-full px-3 py-3 text-sm font-semibold text-white bg-blue-500 rounded-md shadow-sm mx:auto hover:bg-blue-700 focus:bg-blue-900"
                     >
                         Sign in
                     </button>
