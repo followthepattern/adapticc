@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import useDeleteProduct from "../../hooks/deleteProduct";
 import { useNavigate, useParams } from "react-router-dom";
 import { RESOURCE_URL } from "../../page";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { Product } from "@/models/product";
 import SingleLayout from "@/app/(account)/components/singleView/layout";
 import SecondaryButton from "@/app/(account)/components/buttons/secondaryButton";
@@ -12,23 +12,31 @@ import PrimaryButton from "@/app/(account)/components/buttons/primaryButton";
 import AlertButton from "@/app/(account)/components/buttons/alertButton";
 import GridFields from "@/app/(account)/components/singleView/gridFields/gridFields";
 import Label from "@/app/(account)/components/labels/label";
-import classNames from "classnames";
 import Input from "@/app/(account)/components/inputFields/input";
 import TextArea from "@/app/(account)/components/inputFields/textarea";
+import { Id, toast } from "react-toastify";
 
 export default function ProductEdit() {
     const { id } = useParams();
 
     const { loading, data, error, itemNotFound } = useSingleProduct(id ?? "");
 
-    const [executeUpdateMutation, { updateLoading, updateError, updateResult }] = useUpdateProduct();
+    const [executeUpdateMutation, { updateError, updateResult }] = useUpdateProduct();
 
-    const [executeDeleteMutation, { deleteLoading, deleteError, deleteResult }] = useDeleteProduct();
+    const [executeDeleteMutation, { deleteError, deleteResult }] = useDeleteProduct();
 
     const navigate = useNavigate();
 
+    const toastId = React.useRef<Id | null>(null);
+
     useEffect(() => {
         if (updateResult && updateResult > 0) {
+            if (toastId.current) {
+                toast.update(toastId.current, {
+                    render: "Success!",
+                    type: toast.TYPE.SUCCESS,
+                })
+            }
             navigate(RESOURCE_URL);
         }
     }, [updateResult])
@@ -55,6 +63,9 @@ export default function ProductEdit() {
 
     const onSave = () => {
         const values = getValues();
+
+        toastId.current = toast("Saving...", { autoClose: false })
+
         executeUpdateMutation(id ?? "", values)
     }
 

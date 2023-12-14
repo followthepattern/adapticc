@@ -4,6 +4,8 @@ import { useTokenStore } from "@/lib/store"
 import { Outlet } from "react-router-dom";
 import LoginExpired from "@/app/(auth)/login/components/loginLoggedOut";
 import HeaderSidebar from "./components/headerSidebar/headerSidebar";
+import "react-toastify/dist/ReactToastify.css";
+import AccountToastContainer from "./components/toastContainer/accountToastContainer";
 
 export default function AccountLayout() {
   // const segments = [];
@@ -28,6 +30,7 @@ export default function AccountLayout() {
               <Outlet />
             </div>
           </main>
+          <AccountToastContainer />
         </div>
       </WithUserContext>
     </WithGraphQL>

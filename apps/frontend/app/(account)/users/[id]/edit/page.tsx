@@ -3,31 +3,39 @@ import useUpdateUser from "../../hooks/updateUser";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { RESOURCE_URL } from "../../page";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import useDeleteUser from "../../hooks/deleteUser";
 import { User } from "@/models/user";
 import SingleLayout from "@/app/(account)/components/singleView/layout";
 import GridFields from "@/app/(account)/components/singleView/gridFields/gridFields";
 import Label from "@/app/(account)/components/labels/label";
 import Input from "@/app/(account)/components/inputFields/input";
-import TextArea from "@/app/(account)/components/inputFields/textarea";
 import AlertButton from "@/app/(account)/components/buttons/alertButton";
 import SecondaryButton from "@/app/(account)/components/buttons/secondaryButton";
 import PrimaryButton from "@/app/(account)/components/buttons/primaryButton";
+import { Id, toast } from 'react-toastify';
 
 export default function UserEdit() {
     const { id } = useParams();
 
     const { loading, data, error, itemNotFound } = useSingleUser(id ?? "");
 
-    const [executeUpdateMutation, { updateLoading, updateError, updateResult }] = useUpdateUser();
+    const [executeUpdateMutation, { updateError, updateResult }] = useUpdateUser();
 
-    const [executeDeleteMutation, { deleteLoading, deleteError, deleteResult }] = useDeleteUser();
+    const [executeDeleteMutation, { deleteError, deleteResult }] = useDeleteUser();
 
     const navigate = useNavigate();
 
+    const toastId = React.useRef<Id | null>(null);
+
     useEffect(() => {
         if (updateResult && updateResult > 0) {
+            if (toastId.current) {
+                toast.update(toastId.current, {
+                    render: "Success!",
+                    type: toast.TYPE.SUCCESS,
+                })
+            }
             navigate(RESOURCE_URL);
         }
     }, [updateResult])
@@ -55,8 +63,9 @@ export default function UserEdit() {
     const onSave = () => {
         const values = getValues();
 
-        executeUpdateMutation(id ?? "", values)
+        toastId.current = toast("Saving...", { autoClose: false });
 
+        executeUpdateMutation(id ?? "", values)
     }
 
     const onDelete = () => {
@@ -70,7 +79,7 @@ export default function UserEdit() {
     return (
         <SingleLayout>
             <SingleLayout.Title>User: {data?.id}</SingleLayout.Title>
-            <form>
+            <form action="">
                 <GridFields className="py-6">
                     <div className="sm:col-span-2">
                         <Label htmlFor="title">
@@ -117,6 +126,7 @@ export default function UserEdit() {
                     </div>
                 </SingleLayout.Footer>
             </form>
+
         </SingleLayout>
     )
 }
