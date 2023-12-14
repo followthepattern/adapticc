@@ -1,5 +1,5 @@
 export const createUser = `
-mutation CreateUser($model: UserInput!) {
+mutation CreateUser($model: CreateUserInput!) {
 	users {
 		create(model: $model) {
 			code
@@ -9,7 +9,7 @@ mutation CreateUser($model: UserInput!) {
 `
 
 export const updateUser = `
-mutation UpdateUser($id: String!, $model: UserInput!) {
+mutation UpdateUser($id: String!, $model: UpdateUserInput!) {
 	users {
 		update(id: $id, model: $model) {
 			code
