@@ -17,6 +17,7 @@ services:
 
   cerbos:
     image: ghcr.io/cerbos/cerbos:latest
+    restart: unless-stopped
     command: ["server", "--config=/data/.cerbos.yaml"]
     ports:
       - 3592:3592
