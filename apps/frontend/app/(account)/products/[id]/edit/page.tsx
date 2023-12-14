@@ -35,6 +35,7 @@ export default function ProductEdit() {
                 toast.update(toastId.current, {
                     render: "Success!",
                     type: toast.TYPE.SUCCESS,
+                    autoClose: 3000,
                 })
             }
             navigate(RESOURCE_URL);

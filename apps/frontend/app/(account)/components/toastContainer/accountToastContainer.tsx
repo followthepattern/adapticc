@@ -15,7 +15,7 @@ export default function AccountToastContainer() {
             newestOnTop={false}
             closeOnClick
             rtl={false}
-            pauseOnFocusLoss
+            pauseOnFocusLoss={false}
             draggable
             pauseOnHover
         />
