@@ -14,6 +14,7 @@ import AlertButton from "@/app/(account)/components/buttons/alertButton";
 import SecondaryButton from "@/app/(account)/components/buttons/secondaryButton";
 import PrimaryButton from "@/app/(account)/components/buttons/primaryButton";
 import { Id, toast } from 'react-toastify';
+import ConfirmModal from "@/app/(account)/components/modals/confirmModal";
 
 export default function UserEdit() {
     const { id } = useParams();
@@ -118,9 +119,9 @@ export default function UserEdit() {
                     </div>
                 </GridFields>
                 <SingleLayout.Footer className="justify-between">
-                    <AlertButton onClick={onDelete}>
+                    <ConfirmModal onConfirm={onDelete} title="Delete users" body={`Are you sure you want to delete ${data?.firstName} ${data?.lastName}?`}>
                         Delete
-                    </AlertButton>
+                    </ConfirmModal>
                     <div className="flex gap-x-2">
                         <SecondaryButton onClick={onCancel}>Cancel</SecondaryButton>
                         <PrimaryButton onClick={onSave}>Save</PrimaryButton>

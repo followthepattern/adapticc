@@ -9,12 +9,12 @@ import { Product } from "@/models/product";
 import SingleLayout from "@/app/(account)/components/singleView/layout";
 import SecondaryButton from "@/app/(account)/components/buttons/secondaryButton";
 import PrimaryButton from "@/app/(account)/components/buttons/primaryButton";
-import AlertButton from "@/app/(account)/components/buttons/alertButton";
 import GridFields from "@/app/(account)/components/singleView/gridFields/gridFields";
 import Label from "@/app/(account)/components/labels/label";
 import Input from "@/app/(account)/components/inputFields/input";
 import TextArea from "@/app/(account)/components/inputFields/textarea";
 import { Id, toast } from "react-toastify";
+import ConfirmModal from "@/app/(account)/components/modals/confirmModal";
 
 export default function ProductEdit() {
     const { id } = useParams();
@@ -81,7 +81,7 @@ export default function ProductEdit() {
     return (
         <SingleLayout>
             <SingleLayout.Title>Product: {data?.id}</SingleLayout.Title>
-            <form>
+            <form action="">
                 <GridFields className="py-6">
                     <div className="sm:col-span-2">
                         <Label htmlFor="title">
@@ -106,9 +106,9 @@ export default function ProductEdit() {
                     </div>
                 </GridFields>
                 <SingleLayout.Footer className="justify-between">
-                    <AlertButton onClick={onDelete}>
+                    <ConfirmModal onConfirm={onDelete} title="Delete products" body={`Are you sure you want to delete ${data?.title}?`}>
                         Delete
-                    </AlertButton>
+                    </ConfirmModal>
                     <div className="flex gap-x-2">
                         <SecondaryButton onClick={onCancel}>Cancel</SecondaryButton>
                         <PrimaryButton onClick={onSave}>Save</PrimaryButton>
