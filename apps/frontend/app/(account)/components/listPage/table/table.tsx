@@ -32,7 +32,7 @@ export default function CreateTable<T extends Entity>({
                             <th scope="col" key="action" className="px-6 py-3 text-right">Action</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200">
+                    <tbody className="divide-y divide-gray-100">
                         {entities.map(entity => (
                             <tr key={entity.id} className="bg-white hover:bg-gray-50">
                                 {getCells(entity).map(cell => (
