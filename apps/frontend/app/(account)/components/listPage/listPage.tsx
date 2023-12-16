@@ -3,6 +3,7 @@ import Pagination from "./pagination/pagination";
 import { useEffect } from "react";
 import { ListQueryParams, ListQueryResult, ListResponse, OrderBy } from "@/graphql/utils/list";
 import { ListPageComponentProperties } from "./listPageWrapper/listPageWrapper";
+import TableSkeleton from "../skeletons/tableSkeleton";
 
 interface TableProperties<T> {
     entities: T[]
@@ -41,7 +42,7 @@ export default function List<T>(props: ListProperties<T>) {
     }, [props.searchParams])
 
     if (loading) {
-        return <div>Loading...</div>
+        return <TableSkeleton />
     }
 
     if (error) {
