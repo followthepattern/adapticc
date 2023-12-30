@@ -10,11 +10,11 @@ import (
 	"github.com/graph-gophers/graphql-go/relay"
 )
 
-func New(controllers controllers.Controllers) http.Handler {
+func New(controllers controllers.Controllers, schemaDef string) http.Handler {
 	resolver := resolvers.New(controllers)
 
 	opts := []graphql.SchemaOpt{graphql.UseFieldResolvers()}
 
-	schema := graphql.MustParseSchema(Schema, &resolver, opts...)
+	schema := graphql.MustParseSchema(schemaDef, &resolver, opts...)
 	return &relay.Handler{Schema: schema}
 }

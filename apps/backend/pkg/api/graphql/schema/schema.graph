@@ -1,6 +1,3 @@
-package graphql
-
-const Schema = `
 scalar Time
 scalar Int64
 scalar Uint
@@ -159,4 +156,3 @@ type RoleMutation {
 	addRoleToUser(userID: String!, roleID: String!): ResponseStatus
 	deleteRoleFromUser(userID: String!, roleID: String!): ResponseStatus
 }
-`

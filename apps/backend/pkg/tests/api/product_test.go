@@ -55,7 +55,8 @@ var _ = Describe("Product Test", func() {
 	BeforeEach(func() {
 		cfg = config.Config{
 			Server: config.Server{
-				HmacSecret: "test",
+				HmacSecret:            "test",
+				GraphqlSchemaFilepath: "./../../api/graphql/schema/schema.graph",
 			}}
 		var err error
 

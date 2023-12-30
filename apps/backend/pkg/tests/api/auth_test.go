@@ -62,7 +62,8 @@ var _ = Describe("Authentication", func() {
 		Expect(err).To(BeNil())
 		cfg = config.Config{
 			Server: config.Server{
-				HmacSecret: "test",
+				HmacSecret:            "test",
+				GraphqlSchemaFilepath: "./../../api/graphql/schema/schema.graph",
 			},
 			Mail: config.Mail{
 				Addr:     "addr",
