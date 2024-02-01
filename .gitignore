@@ -1,0 +1,11 @@
+config.yaml
+db/dump/*
+/**/dev.env
+
+__debug_bin*
+
+/**/.DS_Store
+
+.DS_Store
+
+.vscode

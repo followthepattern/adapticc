@@ -1,0 +1,26 @@
+version: 0.0.0
+organization:
+  name: "FollowThePattern"
+  email: info@followthepattern.net
+  url: 0.0.0.0
+server:
+  hmac_secret: ""
+  log_level: 0
+  host: 0.0.0.0
+  port: 8080
+  ed25519_private_key: ./configs/dev_private.pem
+  ed25519_public_key: ./configs/dev_public.pem
+  graphql_schema_filepath: "./../pkg/api/graphql/schema/schema.graph"
+db:
+  host: adapticc_db
+  port: 5432
+  user: adapticcuser
+  password: dbpass
+  db_name: adapticc
+mail:
+  host:
+  addr:
+  username:
+  password:
+cerbos:
+  address: cerbos:3592

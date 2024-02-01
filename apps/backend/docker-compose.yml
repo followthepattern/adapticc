@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:latest
+    restart: unless-stopped
+    hostname: adapticc_db
+    container_name: adapticc_db
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_DB: adapticc
+      POSTGRES_USER: adapticcuser
+      POSTGRES_PASSWORD: dbpass
+    volumes:
+      - ./db/dump/testdata.sql:/docker-entrypoint-initdb.d/testdata.sql
+
+  cerbos:
+    image: ghcr.io/cerbos/cerbos:latest
+    restart: unless-stopped
+    command: ["server", "--config=/data/.cerbos.yaml"]
+    ports:
+      - 3592:3592
+    volumes:
+      - ./cerbos:/data:rw
+      # - shared-tmpfs:/sock
+
+  backend:
+    image: golang:1.21
+    hostname: adapticc_backend
+    container_name: adapticc_backend
+    command: bash -c "go run ./cmd/adapticc"
+    working_dir: /backend
+    depends_on:
+      - db
+      - cerbos
+    ports:
+      - 8080:8080
+    volumes:
+      - ./:/backend:rw
+      # - shared-tmpfs:/sock

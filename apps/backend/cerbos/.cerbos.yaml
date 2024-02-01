@@ -1,0 +1,20 @@
+---
+server:
+  httpListenAddr: ":3592"
+  grpcListenAddr: ":3593"
+  apiExplorerEnabled: false
+  adminAPI:
+    enabled: false
+
+engine:
+  defaultPolicyVersion: "default"
+
+auxData:
+  jwt:
+    disableVerification: true
+
+storage:
+  driver: "disk"
+  disk:
+    directory: "/data"
+    watchForChanges: true

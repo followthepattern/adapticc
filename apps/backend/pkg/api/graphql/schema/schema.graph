@@ -1,0 +1,158 @@
+scalar Time
+scalar Int64
+scalar Uint
+
+type ResponseStatus {
+	code: Int!
+}
+
+input Pagination {
+	pageSize: Uint
+	page: Uint
+}
+
+input OrderBy {
+	name: String!
+	desc: Boolean
+}
+
+input ListFilter {
+	search: String
+}
+
+type User {
+	id: String!
+	email: String!
+	firstName: String!
+	lastName: String!
+	active: Boolean!
+	creationUserID: String!
+	updateUserID: String!
+	createdAt: Time!
+	updatedAt: Time!
+}
+
+input CreateUserInput {
+	email: String!
+	firstName: String!
+	lastName: String!
+}
+
+input UpdateUserInput {
+	firstName: String!
+	lastName: String!
+}
+
+type UserListResponse {
+	count: Int64!
+	pageSize: Uint!
+	page: Uint!
+	data: [User!]!
+}
+
+type Product {
+	id: String!
+	title: String!
+	description: String!
+	creationUserID: String!
+	updateUserID: String!
+	createdAt: Time!
+	updatedAt: Time!
+}
+
+input ProductInput {
+	title: String!
+	description: String!
+}
+
+type ProductListResponse {
+	count: Int64!
+	pageSize: Uint!
+	page: Uint!
+	data: [Product!]!
+}
+
+type Role {
+	id: String!
+	code: String!
+	name: String!
+	creationUserID: String!
+	updateUserID: String!
+	createdAt: Time!
+	updatedAt: Time!
+}
+
+type RoleListResponse {
+	count: Int64!
+	pageSize: Uint!
+	page: Uint!
+	data: [Role!]!
+}
+
+type LoginResponse {
+	jwt: String!
+	expires_at: Time!
+}
+
+type RegisterResponse {
+	email: String!
+	first_name: String!
+	last_name: String!
+}
+
+schema {
+	query: Query
+	mutation: Mutation
+}
+
+type Query {
+	users: UserQuery!
+	products: ProductQuery!
+	roles: RoleQuery!
+}
+
+type Mutation {
+	authentication: AuthMutation!
+	users: UserMutation!
+	products: ProductMutation!
+	roles: RoleMutation!
+}
+
+type UserQuery {
+	single(id: String!): User
+	list(pagination: Pagination, filter: ListFilter, orderBy: [OrderBy!]): UserListResponse
+	profile: User
+}
+
+type ProductQuery {
+	single(id: String!): Product
+	list(pagination: Pagination, filter: ListFilter, orderBy: [OrderBy!]): ProductListResponse
+}
+
+type RoleQuery {
+	single(id: String!): Role
+	list(pagination: Pagination, filter: ListFilter, orderBy: [OrderBy!]): RoleListResponse
+}
+
+type UserMutation {
+	create(model: CreateUserInput!): ResponseStatus
+	update(id: String!, model: UpdateUserInput!): ResponseStatus
+	delete(id: String!): ResponseStatus
+
+}
+
+type ProductMutation {
+	create(model: ProductInput!): ResponseStatus
+	update(id: String!, model: ProductInput!): ResponseStatus
+	delete(id: String!): ResponseStatus
+}
+
+type AuthMutation {
+	login(email: String!, password: String!): LoginResponse
+	register(email: String!, firstName: String!, lastName: String!, password: String!): RegisterResponse
+}
+
+type RoleMutation {
+	addRoleToUser(userID: String!, roleID: String!): ResponseStatus
+	deleteRoleFromUser(userID: String!, roleID: String!): ResponseStatus
+}

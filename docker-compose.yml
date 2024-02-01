@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  db:
+    extends:
+      file: ${BACKEND_APP_PATH}/docker-compose.yml
+      service: db
+
+  cerbos:
+    extends:
+      file: ${BACKEND_APP_PATH}/docker-compose.yml
+      service: cerbos
+
+  backend:
+    extends:
+      file: ${BACKEND_APP_PATH}/docker-compose.yml
+      service: backend
+
+  frontend:
+    image: node:21.2.0
+    hostname: adapticc_frontend
+    container_name: adapticc_frontend
+    command: bash -c "npm install && npm start"
+    environment:
+      - NODE_ENV=development
+    ports:
+      - 3000:3000
+      - 9999:9999
+    user: node
+    working_dir: /usr/src/app
+    volumes:
+      - ${FRONTEND_APP_PATH}:/usr/src/app:rw

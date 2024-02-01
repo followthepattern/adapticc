@@ -1,0 +1,18 @@
+apiVersion: api.cerbos.dev/v1
+resourcePolicy:
+  version: "default"
+  resource: "role"
+  rules:
+    - actions:
+        - read
+      effect: EFFECT_ALLOW
+      roles:
+        - role:viewer
+    - actions:
+        - create
+        - read
+        - update
+        - delete
+      effect: EFFECT_ALLOW
+      roles:
+        - role:editor
