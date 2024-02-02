@@ -39,7 +39,11 @@ module.exports = (env, argv) => {
       new HtmlWebpackPlugin({
         template: './public/index.html',
       }),
-      new TailwindCSSWebpackPlugin(),
+      new TailwindCSSWebpackPlugin({
+        devtools: {
+          host: '0.0.0.0'
+        }
+      }),
       new Dotenv({
         path: `.env.${argv.mode}`
       }),
