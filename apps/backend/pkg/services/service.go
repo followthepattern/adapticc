@@ -3,20 +3,20 @@ package services
 import (
 	"context"
 	"errors"
+	"log/slog"
 
 	cerbos "github.com/cerbos/cerbos/client"
 	"github.com/followthepattern/adapticc/pkg/config"
-	"go.uber.org/zap"
 )
 
 type Service struct {
 	name         string
-	logger       *zap.Logger
+	logger       *slog.Logger
 	cfg          config.Config
 	cerbosClient cerbos.Client
 }
 
-func NewService(name string, cerbosClient cerbos.Client, cfg config.Config, logger *zap.Logger) Service {
+func NewService(name string, cerbosClient cerbos.Client, cfg config.Config, logger *slog.Logger) Service {
 	service := Service{
 		name:         name,
 		cerbosClient: cerbosClient,

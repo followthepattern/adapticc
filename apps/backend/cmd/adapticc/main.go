@@ -22,7 +22,6 @@ import (
 	"github.com/followthepattern/adapticc/pkg/repositories/email"
 
 	_ "github.com/lib/pq"
-	"go.uber.org/zap"
 )
 
 func main() {
@@ -84,6 +83,6 @@ func main() {
 	}()
 
 	if err := server.Serve(ctx, cfg.Server.Host, cfg.Server.Port); err != nil {
-		logger.Error("failed to serve server", zap.Error(err))
+		logger.Error("failed to serve server", err)
 	}
 }

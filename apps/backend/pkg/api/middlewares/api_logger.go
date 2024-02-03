@@ -5,7 +5,6 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"go.uber.org/zap"
 )
 
 type LoggerInterface interface {
@@ -20,7 +19,7 @@ func (f logPrinter) Print(v ...interface{}) {
 
 func AddMiddlewareLogger(r *chi.Mux, logger *slog.Logger) {
 	logFunc := logPrinter(func(values ...interface{}) {
-		logger.Debug("HTTP", zap.Any("values", values))
+		logger.Debug("HTTP", slog.Any("values", values))
 	})
 
 	middleware.DefaultLogger = middleware.RequestLogger(&middleware.DefaultLogFormatter{

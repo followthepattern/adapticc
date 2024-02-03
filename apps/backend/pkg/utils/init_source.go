@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"go.uber.org/zap"
+	"log/slog"
 )
 
 const (
@@ -14,10 +14,10 @@ const (
 
 type InitFunc = func() error
 
-func InitSource(ctx context.Context, initFunc InitFunc, source string, logger *zap.Logger) {
+func InitSource(ctx context.Context, initFunc InitFunc, source string, logger *slog.Logger) {
 	isConnDB := func() bool {
 		if err := initFunc(); err != nil {
-			logger.Info("unable to init source:", zap.Error(err))
+			logger.Error("unable to init source:", err)
 			return false
 		}
 		return true
@@ -29,6 +29,6 @@ func InitSource(ctx context.Context, initFunc InitFunc, source string, logger *z
 	)
 
 	if !ok {
-		logger.Fatal("Can't init source", zap.String("source", source))
+		logger.Error("Can't init source", slog.String("source", source))
 	}
 }
