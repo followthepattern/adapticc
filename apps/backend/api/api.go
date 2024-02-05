@@ -5,8 +5,8 @@ import (
 
 	"log/slog"
 
-	"github.com/followthepattern/adapticc/pkg/api/middlewares"
-	"github.com/followthepattern/adapticc/pkg/config"
+	"github.com/followthepattern/adapticc/api/middlewares"
+	"github.com/followthepattern/adapticc/config"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"

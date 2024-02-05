@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"github.com/followthepattern/adapticc/pkg/types"
+	"github.com/followthepattern/adapticc/types"
 	validation "github.com/go-ozzo/ozzo-validation"
 )
 

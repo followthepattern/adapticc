@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/followthepattern/adapticc/pkg/models"
-	"github.com/followthepattern/adapticc/pkg/types"
+	"github.com/followthepattern/adapticc/models"
+	"github.com/followthepattern/adapticc/types"
 )
 
 var roleColumns = []string{

@@ -3,8 +3,8 @@ package graphql
 import (
 	"net/http"
 
-	"github.com/followthepattern/adapticc/pkg/api/graphql/resolvers"
-	"github.com/followthepattern/adapticc/pkg/controllers"
+	"github.com/followthepattern/adapticc/api/graphql/resolvers"
+	"github.com/followthepattern/adapticc/controllers"
 
 	"github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/relay"

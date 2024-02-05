@@ -4,9 +4,9 @@ import (
 	"database/sql"
 	"log/slog"
 
-	"github.com/followthepattern/adapticc/pkg/accesscontrol"
-	"github.com/followthepattern/adapticc/pkg/config"
-	"github.com/followthepattern/adapticc/pkg/repositories/email"
+	"github.com/followthepattern/adapticc/accesscontrol"
+	"github.com/followthepattern/adapticc/config"
+	"github.com/followthepattern/adapticc/repositories/email"
 )
 
 type Container struct {

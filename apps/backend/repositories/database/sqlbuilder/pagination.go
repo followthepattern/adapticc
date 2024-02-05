@@ -1,8 +1,8 @@
 package sqlbuilder
 
 import (
-	"github.com/followthepattern/adapticc/pkg/models"
-	"github.com/followthepattern/adapticc/pkg/types"
+	"github.com/followthepattern/adapticc/models"
+	"github.com/followthepattern/adapticc/types"
 	. "github.com/followthepattern/goqu/v9"
 	"github.com/followthepattern/goqu/v9/exp"
 )

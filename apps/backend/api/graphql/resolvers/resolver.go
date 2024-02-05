@@ -1,7 +1,7 @@
 package resolvers
 
 import (
-	"github.com/followthepattern/adapticc/pkg/controllers"
+	"github.com/followthepattern/adapticc/controllers"
 )
 
 type Resolver struct {

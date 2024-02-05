@@ -3,9 +3,9 @@ package resolvers
 import (
 	"context"
 
-	"github.com/followthepattern/adapticc/pkg/controllers"
-	"github.com/followthepattern/adapticc/pkg/models"
-	"github.com/followthepattern/adapticc/pkg/types"
+	"github.com/followthepattern/adapticc/controllers"
+	"github.com/followthepattern/adapticc/models"
+	"github.com/followthepattern/adapticc/types"
 )
 
 type Auth struct {

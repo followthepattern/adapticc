@@ -1,6 +1,6 @@
 package models
 
-import "github.com/followthepattern/adapticc/pkg/types"
+import "github.com/followthepattern/adapticc/types"
 
 const (
 	DefaultPageSize = 20

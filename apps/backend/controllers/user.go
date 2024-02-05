@@ -5,11 +5,11 @@ import (
 
 	"log/slog"
 
-	"github.com/followthepattern/adapticc/pkg/config"
-	"github.com/followthepattern/adapticc/pkg/container"
-	"github.com/followthepattern/adapticc/pkg/models"
-	"github.com/followthepattern/adapticc/pkg/services"
-	"github.com/followthepattern/adapticc/pkg/types"
+	"github.com/followthepattern/adapticc/config"
+	"github.com/followthepattern/adapticc/container"
+	"github.com/followthepattern/adapticc/models"
+	"github.com/followthepattern/adapticc/services"
+	"github.com/followthepattern/adapticc/types"
 	validation "github.com/go-ozzo/ozzo-validation"
 )
 

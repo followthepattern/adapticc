@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/followthepattern/adapticc/pkg/types"
+	"github.com/followthepattern/adapticc/types"
 	validation "github.com/go-ozzo/ozzo-validation"
 )
 

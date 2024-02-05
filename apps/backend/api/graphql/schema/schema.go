@@ -3,7 +3,7 @@ package schema
 import (
 	"os"
 
-	"github.com/followthepattern/adapticc/pkg/config"
+	"github.com/followthepattern/adapticc/config"
 )
 
 func GetSchema(cfg config.Server) (string, error) {

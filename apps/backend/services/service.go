@@ -6,7 +6,7 @@ import (
 	"log/slog"
 
 	cerbos "github.com/cerbos/cerbos/client"
-	"github.com/followthepattern/adapticc/pkg/config"
+	"github.com/followthepattern/adapticc/config"
 )
 
 type Service struct {

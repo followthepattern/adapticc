@@ -1,9 +1,9 @@
 package datagenerator
 
 import (
-	"github.com/followthepattern/adapticc/pkg/models"
-	"github.com/followthepattern/adapticc/pkg/types"
-	"github.com/followthepattern/adapticc/pkg/utils"
+	"github.com/followthepattern/adapticc/models"
+	"github.com/followthepattern/adapticc/types"
+	"github.com/followthepattern/adapticc/utils"
 
 	"github.com/google/uuid"
 )

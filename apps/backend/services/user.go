@@ -3,12 +3,12 @@ package services
 import (
 	"context"
 
-	"github.com/followthepattern/adapticc/pkg/accesscontrol"
-	"github.com/followthepattern/adapticc/pkg/container"
-	"github.com/followthepattern/adapticc/pkg/models"
-	"github.com/followthepattern/adapticc/pkg/repositories/database"
-	"github.com/followthepattern/adapticc/pkg/types"
-	"github.com/followthepattern/adapticc/pkg/utils"
+	"github.com/followthepattern/adapticc/accesscontrol"
+	"github.com/followthepattern/adapticc/container"
+	"github.com/followthepattern/adapticc/models"
+	"github.com/followthepattern/adapticc/repositories/database"
+	"github.com/followthepattern/adapticc/types"
+	"github.com/followthepattern/adapticc/utils"
 	"github.com/google/uuid"
 )
 

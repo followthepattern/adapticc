@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"github.com/followthepattern/adapticc/pkg/container"
+	"github.com/followthepattern/adapticc/container"
 )
 
 type Controllers struct {

@@ -6,9 +6,9 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/followthepattern/adapticc/pkg/config"
-	"github.com/followthepattern/adapticc/pkg/models"
-	"github.com/followthepattern/adapticc/pkg/utils"
+	"github.com/followthepattern/adapticc/config"
+	"github.com/followthepattern/adapticc/models"
+	"github.com/followthepattern/adapticc/utils"
 	"github.com/golang-jwt/jwt/v4"
 )
 

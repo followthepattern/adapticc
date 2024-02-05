@@ -7,12 +7,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/followthepattern/adapticc/pkg/config"
-	"github.com/followthepattern/adapticc/pkg/models"
-	"github.com/followthepattern/adapticc/pkg/repositories/database"
-	"github.com/followthepattern/adapticc/pkg/repositories/email"
-	"github.com/followthepattern/adapticc/pkg/types"
-	"github.com/followthepattern/adapticc/pkg/utils"
+	"github.com/followthepattern/adapticc/config"
+	"github.com/followthepattern/adapticc/models"
+	"github.com/followthepattern/adapticc/repositories/database"
+	"github.com/followthepattern/adapticc/repositories/email"
+	"github.com/followthepattern/adapticc/types"
+	"github.com/followthepattern/adapticc/utils"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
 )

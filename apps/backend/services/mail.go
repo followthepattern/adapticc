@@ -3,9 +3,9 @@ package services
 import (
 	"net/smtp"
 
-	"github.com/followthepattern/adapticc/pkg/config"
-	"github.com/followthepattern/adapticc/pkg/models"
-	"github.com/followthepattern/adapticc/pkg/repositories/email"
+	"github.com/followthepattern/adapticc/config"
+	"github.com/followthepattern/adapticc/models"
+	"github.com/followthepattern/adapticc/repositories/email"
 )
 
 type Mail struct {

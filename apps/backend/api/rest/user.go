@@ -3,7 +3,7 @@ package rest
 import (
 	"net/http"
 
-	"github.com/followthepattern/adapticc/pkg/controllers"
+	"github.com/followthepattern/adapticc/controllers"
 	"github.com/go-chi/chi"
 )
 

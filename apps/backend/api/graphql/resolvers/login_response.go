@@ -1,7 +1,7 @@
 package resolvers
 
 import (
-	"github.com/followthepattern/adapticc/pkg/models"
+	"github.com/followthepattern/adapticc/models"
 
 	"github.com/graph-gophers/graphql-go"
 )

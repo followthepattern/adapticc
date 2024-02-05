@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/followthepattern/adapticc/pkg/utils"
+	"github.com/followthepattern/adapticc/utils"
 	"github.com/google/uuid"
 )
 
