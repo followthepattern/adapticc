@@ -10,16 +10,16 @@ import (
 
 	"log/slog"
 
-	"github.com/followthepattern/adapticc/pkg/accesscontrol"
-	"github.com/followthepattern/adapticc/pkg/api"
-	"github.com/followthepattern/adapticc/pkg/api/graphql"
-	"github.com/followthepattern/adapticc/pkg/api/graphql/schema"
-	"github.com/followthepattern/adapticc/pkg/api/rest"
-	"github.com/followthepattern/adapticc/pkg/config"
-	"github.com/followthepattern/adapticc/pkg/container"
-	"github.com/followthepattern/adapticc/pkg/controllers"
-	"github.com/followthepattern/adapticc/pkg/hostserver"
-	"github.com/followthepattern/adapticc/pkg/repositories/email"
+	"github.com/followthepattern/adapticc/accesscontrol"
+	"github.com/followthepattern/adapticc/api"
+	"github.com/followthepattern/adapticc/api/graphql"
+	"github.com/followthepattern/adapticc/api/graphql/schema"
+	"github.com/followthepattern/adapticc/api/rest"
+	"github.com/followthepattern/adapticc/config"
+	"github.com/followthepattern/adapticc/container"
+	"github.com/followthepattern/adapticc/controllers"
+	"github.com/followthepattern/adapticc/hostserver"
+	"github.com/followthepattern/adapticc/repositories/email"
 
 	_ "github.com/lib/pq"
 )
