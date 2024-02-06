@@ -9,12 +9,12 @@ import (
 )
 
 type Config struct {
-	Version      string       `mapstructure:"version"`
-	Server       Server       `mapstructure:"server"`
-	DB           DB           `mapstructure:"db"`
-	Mail         Mail         `mapstructure:"mail"`
-	Organization Organization `mapstructure:"organization"`
-	Cerbos       Cerbos       `mapstructure:"cerbos"`
+	Version      string
+	Server       Server
+	DB           DB
+	Mail         Mail
+	Organization Organization
+	Cerbos       Cerbos
 }
 
 func (cfg Config) Validate() error {

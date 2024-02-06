@@ -3,7 +3,7 @@ package config
 import validation "github.com/go-ozzo/ozzo-validation"
 
 type Cerbos struct {
-	Address string `mapstructure:"address"`
+	Address string
 }
 
 func (cfg Cerbos) Validate() error {
