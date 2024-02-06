@@ -12,8 +12,8 @@ type Server struct {
 	GraphqlSchemaFilepath string `mapstructure:"graphql_schema_filepath"`
 }
 
-func (cfg *Server) Validate() error {
-	return validation.ValidateStruct(cfg,
+func (cfg Server) Validate() error {
+	return validation.ValidateStruct(&cfg,
 		validation.Field(&cfg.LogLevel, validation.Required),
 		validation.Field(&cfg.Host, validation.Required),
 		validation.Field(&cfg.Port, validation.Required),

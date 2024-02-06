@@ -17,8 +17,8 @@ type Config struct {
 	Cerbos       Cerbos       `mapstructure:"cerbos"`
 }
 
-func (cfg *Config) Validate() error {
-	return validation.ValidateStruct(cfg,
+func (cfg Config) Validate() error {
+	return validation.ValidateStruct(&cfg,
 		validation.Field(&cfg.Server, validation.Required),
 		validation.Field(&cfg.DB, validation.Required),
 		validation.Field(&cfg.Mail, validation.Required),
