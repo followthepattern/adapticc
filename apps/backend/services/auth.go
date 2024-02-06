@@ -15,6 +15,7 @@ import (
 	"github.com/followthepattern/adapticc/utils"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
 const WRONG_EMAIL_OR_PASSWORD = "WRONG_EMAIL_OR_PASSWORD"
@@ -46,9 +47,7 @@ func (service Auth) Login(ctx context.Context, email types.String, password type
 		return nil, errors.New(WRONG_EMAIL_OR_PASSWORD)
 	}
 
-	requestPasswordHash := utils.GeneratePasswordHash(password, authUser.Salt)
-
-	if requestPasswordHash != authUser.PasswordHash.Data {
+	if err = bcrypt.CompareHashAndPassword([]byte(authUser.PasswordHash), []byte(password.Data)); err != nil {
 		return nil, errors.New(WRONG_EMAIL_OR_PASSWORD)
 	}
 
@@ -80,8 +79,10 @@ func (service Auth) Register(ctx context.Context, register models.RegisterReques
 		return nil, fmt.Errorf(EMAIL_IS_ALREADY_IN_USE_PATTERN, register.Email)
 	}
 
-	salt := types.StringFrom(utils.GenerateSaltString())
-	passwordHash := types.StringFrom(utils.GeneratePasswordHash(register.Password, salt))
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(register.Password.Data), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, err
+	}
 
 	creationUser := models.AuthUser{
 		User: models.User{
@@ -92,8 +93,7 @@ func (service Auth) Register(ctx context.Context, register models.RegisterReques
 			Active:    types.FALSE,
 		},
 		Password: models.Password{
-			PasswordHash: passwordHash,
-			Salt:         salt,
+			PasswordHash: string(passwordHash),
 		},
 	}
 

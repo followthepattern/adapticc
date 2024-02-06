@@ -18,6 +18,7 @@ import (
 	"github.com/followthepattern/adapticc/tests/sqlexpectations"
 	"github.com/followthepattern/adapticc/types"
 	"github.com/golang/mock/gomock"
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/graph-gophers/graphql-go/errors"
@@ -83,7 +84,10 @@ var _ = Describe("Authentication", func() {
 
 		testResponse = &graphqlAuthResponse{}
 		password = datagenerator.String(13)
-		generatedUser = datagenerator.NewRandomAuthUser(password)
+		passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+		Expect(err).Should(BeNil())
+
+		generatedUser = datagenerator.NewRandomAuthUser(passwordHash)
 	})
 
 	Context("Login", func() {

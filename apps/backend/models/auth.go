@@ -41,8 +41,7 @@ func (r RegisterRequestParams) Validate() error {
 }
 
 type Password struct {
-	PasswordHash types.String `db:"password_hash"`
-	Salt         types.String `db:"salt"`
+	PasswordHash string `db:"password_hash"`
 }
 
 func (p *Password) IsEmpty() bool {
@@ -50,7 +49,7 @@ func (p *Password) IsEmpty() bool {
 		return true
 	}
 
-	if p.PasswordHash.Len() < 1 {
+	if len(p.PasswordHash) < 1 {
 		return true
 	}
 
