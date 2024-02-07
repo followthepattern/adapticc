@@ -9,7 +9,6 @@ import (
 	"github.com/followthepattern/adapticc/models"
 	"github.com/followthepattern/adapticc/repositories/database"
 	"github.com/followthepattern/adapticc/types"
-	"github.com/followthepattern/adapticc/utils"
 	"github.com/google/uuid"
 )
 
@@ -32,7 +31,7 @@ func NewProduct(cont container.Container, productRepository database.Product, ro
 }
 
 func (service Product) GetByID(ctx context.Context, id string) (*models.Product, error) {
-	ctxu, err := utils.GetUserContext(ctx)
+	ctxu, err := GetUserContext(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +50,7 @@ func (service Product) GetByID(ctx context.Context, id string) (*models.Product,
 }
 
 func (service Product) Get(ctx context.Context, request models.ProductListRequestParams) (*models.ProductListResponse, error) {
-	ctxu, err := utils.GetUserContext(ctx)
+	ctxu, err := GetUserContext(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +71,7 @@ func (service Product) Get(ctx context.Context, request models.ProductListReques
 }
 
 func (service Product) Create(ctx context.Context, value models.Product) error {
-	ctxu, err := utils.GetUserContext(ctx)
+	ctxu, err := GetUserContext(ctx)
 	if err != nil {
 		return err
 	}
@@ -94,7 +93,7 @@ func (service Product) Create(ctx context.Context, value models.Product) error {
 }
 
 func (service Product) Update(ctx context.Context, value models.Product) error {
-	ctxu, err := utils.GetUserContext(ctx)
+	ctxu, err := GetUserContext(ctx)
 	if err != nil {
 		return err
 	}
@@ -115,7 +114,7 @@ func (service Product) Update(ctx context.Context, value models.Product) error {
 }
 
 func (service Product) Delete(ctx context.Context, id string) error {
-	ctxu, err := utils.GetUserContext(ctx)
+	ctxu, err := GetUserContext(ctx)
 	if err != nil {
 		return err
 	}

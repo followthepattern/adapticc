@@ -12,7 +12,6 @@ import (
 	"github.com/followthepattern/adapticc/repositories/database"
 	"github.com/followthepattern/adapticc/repositories/email"
 	"github.com/followthepattern/adapticc/types"
-	"github.com/followthepattern/adapticc/utils"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -20,6 +19,38 @@ import (
 
 const WRONG_EMAIL_OR_PASSWORD = "WRONG_EMAIL_OR_PASSWORD"
 const EMAIL_IS_ALREADY_IN_USE_PATTERN = "%v is already in use, please try a different email address"
+
+type ContextKey struct {
+	Name string
+}
+
+var CtxUserKey = ContextKey{Name: "ctx-user"}
+
+func GetModelFromContext[T any](ctx context.Context, ctxKey ContextKey) *T {
+	obj := ctx.Value(ctxKey)
+
+	model, ok := obj.(T)
+	if !ok {
+		return nil
+	}
+
+	return &model
+}
+
+func GetUserContext(ctx context.Context) (models.User, error) {
+	obj := ctx.Value(CtxUserKey)
+
+	model, ok := obj.(models.User)
+	if !ok {
+		return models.User{}, errors.New("invalid user context")
+	}
+
+	if model.IsDefault() {
+		return models.User{}, errors.New("invalid user context")
+	}
+
+	return model, nil
+}
 
 type Auth struct {
 	repository database.Auth
@@ -65,7 +96,7 @@ func (service Auth) Login(ctx context.Context, email types.String, password type
 }
 
 func (service Auth) Register(ctx context.Context, register models.RegisterRequestParams) (*models.RegisterResponse, error) {
-	ctxu := utils.GetModelFromContext[models.User](ctx, utils.CtxUserKey)
+	ctxu := GetModelFromContext[models.User](ctx, CtxUserKey)
 	if ctxu == nil {
 		return nil, fmt.Errorf("invalid user context")
 	}

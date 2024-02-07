@@ -7,7 +7,6 @@ import (
 	"github.com/followthepattern/adapticc/container"
 	"github.com/followthepattern/adapticc/models"
 	"github.com/followthepattern/adapticc/repositories/database"
-	"github.com/followthepattern/adapticc/utils"
 )
 
 type Role struct {
@@ -23,7 +22,7 @@ func NewRole(cont container.Container, roleRepository database.Role) Role {
 }
 
 func (service Role) GetByID(ctx context.Context, id string) (*models.Role, error) {
-	ctxu, err := utils.GetUserContext(ctx)
+	ctxu, err := GetUserContext(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +46,7 @@ func (service Role) GetByID(ctx context.Context, id string) (*models.Role, error
 }
 
 func (service Role) Get(ctx context.Context, filter models.RoleListRequestParams) (*models.RoleListResponse, error) {
-	ctxu, err := utils.GetUserContext(ctx)
+	ctxu, err := GetUserContext(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +65,7 @@ func (service Role) Get(ctx context.Context, filter models.RoleListRequestParams
 }
 
 func (service Role) AddRoleToUser(ctx context.Context, value models.UserRole) error {
-	ctxu, err := utils.GetUserContext(ctx)
+	ctxu, err := GetUserContext(ctx)
 	if err != nil {
 		return err
 	}
@@ -87,7 +86,7 @@ func (service Role) AddRoleToUser(ctx context.Context, value models.UserRole) er
 }
 
 func (service Role) RemoveRoleFromUser(ctx context.Context, value models.UserRole) error {
-	ctxu, err := utils.GetUserContext(ctx)
+	ctxu, err := GetUserContext(ctx)
 	if err != nil {
 		return err
 	}

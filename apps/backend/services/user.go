@@ -8,7 +8,6 @@ import (
 	"github.com/followthepattern/adapticc/models"
 	"github.com/followthepattern/adapticc/repositories/database"
 	"github.com/followthepattern/adapticc/types"
-	"github.com/followthepattern/adapticc/utils"
 	"github.com/google/uuid"
 )
 
@@ -32,7 +31,7 @@ func NewUser(cont container.Container) User {
 }
 
 func (service User) GetByID(ctx context.Context, id types.String) (*models.User, error) {
-	ctxu, err := utils.GetUserContext(ctx)
+	ctxu, err := GetUserContext(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +59,7 @@ func (service User) GetByID(ctx context.Context, id types.String) (*models.User,
 }
 
 func (service User) Profile(ctx context.Context) (*models.User, error) {
-	ctxu, err := utils.GetUserContext(ctx)
+	ctxu, err := GetUserContext(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +68,7 @@ func (service User) Profile(ctx context.Context) (*models.User, error) {
 }
 
 func (service User) Get(ctx context.Context, request models.UserListRequestParams) (models.UserListResponse, error) {
-	ctxu, err := utils.GetUserContext(ctx)
+	ctxu, err := GetUserContext(ctx)
 	if err != nil {
 		return models.UserListResponse{}, err
 	}
@@ -95,7 +94,7 @@ func (service User) Get(ctx context.Context, request models.UserListRequestParam
 }
 
 func (service User) Create(ctx context.Context, value models.User) error {
-	ctxu, err := utils.GetUserContext(ctx)
+	ctxu, err := GetUserContext(ctx)
 	if err != nil {
 		return nil
 	}
@@ -118,7 +117,7 @@ func (service User) Create(ctx context.Context, value models.User) error {
 }
 
 func (service User) Update(ctx context.Context, value models.User) error {
-	ctxu, err := utils.GetUserContext(ctx)
+	ctxu, err := GetUserContext(ctx)
 	if err != nil {
 		return nil
 	}
@@ -143,7 +142,7 @@ func (service User) ActivateUser(ctx context.Context, userID string) error {
 }
 
 func (service User) Delete(ctx context.Context, id types.String) error {
-	ctxu, err := utils.GetUserContext(ctx)
+	ctxu, err := GetUserContext(ctx)
 	if err != nil {
 		return err
 	}
