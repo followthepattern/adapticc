@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"os"
-	"time"
 
 	"log/slog"
+
+	"github.com/oklog/run"
 )
 
 const serveShutDownTimeout = 5
@@ -30,30 +30,15 @@ func (s Server) Serve(ctx context.Context, host string, port string) (err error)
 		Handler: s.router,
 	}
 
-	go func() {
-		if err = srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			s.logger.Error("server listen err:", err)
-			os.Exit(1)
-		}
-	}()
+	var g run.Group
 
-	s.logger.Info(fmt.Sprintf("Server start listnening on %s:%s", host, port))
+	g.Add(func() error {
+		s.logger.Info(fmt.Sprintf("Server start listnening on %s:%s", host, port))
+		return srv.ListenAndServe()
+	}, func(error) {
+		srv.Close()
+		srv.Shutdown(ctx)
+	})
 
-	<-ctx.Done()
-
-	s.logger.Info("Server stopped")
-
-	ctxShutDown, cancel := context.WithTimeout(context.Background(), serveShutDownTimeout*time.Second)
-	defer cancel()
-
-	if err = srv.Shutdown(ctxShutDown); err != nil {
-		s.logger.Error("Server Shutdown Failed: ", err)
-	}
-	s.logger.Info("Server Graceful shutdown success")
-
-	if err == http.ErrServerClosed {
-		err = nil
-	}
-
-	return nil
+	return g.Run()
 }
