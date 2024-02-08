@@ -7,14 +7,14 @@ import (
 )
 
 type DB struct {
-	Host     string `mapstructure:"host"`
-	Port     int    `mapstructure:"port"`
-	User     string `mapstructure:"user"`
-	Password string `mapstructure:"password"`
+	Host     string
+	Port     int
+	User     string
+	Password string
 	DBName   string `mapstructure:"db_name"`
 }
 
-func (db *DB) Validate() error {
+func (db DB) Validate() error {
 	return validation.ValidateStruct(&db,
 		validation.Field(&db.Host, validation.Required),
 		validation.Field(&db.Port, validation.Required),
@@ -24,7 +24,7 @@ func (db *DB) Validate() error {
 	)
 }
 
-func (db *DB) ConnectionURL() string {
+func (db DB) ConnectionURL() string {
 	return fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		db.Host, db.Port, db.User, db.Password, db.DBName)

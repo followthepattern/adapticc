@@ -10,10 +10,10 @@ import (
 )
 
 func ExpectGetAuthUserByEmail(mock sqlmock.Sqlmock, result models.AuthUser, email types.String) {
-	sqlQuery := fmt.Sprintf(`SELECT "active", "created_at", "creation_user_id", "email", "first_name", "id", "last_name", "password_hash", "salt", "update_user_id", "updated_at" FROM "usr"."users" WHERE ("email" = '%v') LIMIT 1`, email)
+	sqlQuery := fmt.Sprintf(`SELECT "active", "created_at", "creation_user_id", "email", "first_name", "id", "last_name", "password_hash", "update_user_id", "updated_at" FROM "usr"."users" WHERE ("email" = '%v') LIMIT 1`, email)
 
 	columns := []string{
-		"active", "created_at", "creation_user_id", "email", "first_name", "id", "last_name", "password_hash", "salt", "update_user_id", "updated_at",
+		"active", "created_at", "creation_user_id", "email", "first_name", "id", "last_name", "password_hash", "update_user_id", "updated_at",
 	}
 
 	rows := sqlmock.NewRows(columns)
@@ -27,7 +27,6 @@ func ExpectGetAuthUserByEmail(mock sqlmock.Sqlmock, result models.AuthUser, emai
 		result.ID,
 		result.LastName,
 		result.PasswordHash,
-		result.Salt,
 		result.UpdateUserID,
 		result.UpdatedAt,
 	}
@@ -54,9 +53,8 @@ func ExpectCreateAuthUser(mock sqlmock.Sqlmock, insert models.AuthUser) {
 		"first_name",
 		"id",
 		"last_name",
-		"password_hash",
-		"salt")
-	VALUES (FALSE, '.*', '%s', '%s', '.*', '%s', '.*', '.*')`,
+		"password_hash")
+	VALUES (FALSE, '.*', '%s', '%s', '.*', '%s', '.*')`,
 		insert.Email,
 		insert.FirstName,
 		insert.LastName,

@@ -9,16 +9,16 @@ import (
 )
 
 type Config struct {
-	Version      string       `mapstructure:"version"`
-	Server       Server       `mapstructure:"server"`
-	DB           DB           `mapstructure:"db"`
-	Mail         Mail         `mapstructure:"mail"`
-	Organization Organization `mapstructure:"organization"`
-	Cerbos       Cerbos       `mapstructure:"cerbos"`
+	Version      string
+	Server       Server
+	DB           DB
+	Mail         Mail
+	Organization Organization
+	Cerbos       Cerbos
 }
 
-func (cfg *Config) Validate() error {
-	return validation.ValidateStruct(cfg,
+func (cfg Config) Validate() error {
+	return validation.ValidateStruct(&cfg,
 		validation.Field(&cfg.Server, validation.Required),
 		validation.Field(&cfg.DB, validation.Required),
 		validation.Field(&cfg.Mail, validation.Required),

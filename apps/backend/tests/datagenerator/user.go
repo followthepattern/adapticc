@@ -3,7 +3,6 @@ package datagenerator
 import (
 	"github.com/followthepattern/adapticc/models"
 	"github.com/followthepattern/adapticc/types"
-	"github.com/followthepattern/adapticc/utils"
 
 	"github.com/google/uuid"
 )
@@ -24,9 +23,7 @@ func NewRandomUser() models.User {
 	}
 }
 
-func NewRandomAuthUser(password string) models.AuthUser {
-	salt := types.StringFrom(utils.GenerateSaltString())
-	passwordString := types.StringFrom(password)
+func NewRandomAuthUser(password []byte) models.AuthUser {
 	return models.AuthUser{
 		User: models.User{
 			ID:        types.StringFrom(uuid.NewString()),
@@ -41,9 +38,9 @@ func NewRandomAuthUser(password string) models.AuthUser {
 				UpdatedAt:      types.TimeNow(),
 			},
 		},
+
 		Password: models.Password{
-			Salt:         salt,
-			PasswordHash: types.StringFrom(utils.GeneratePasswordHash(passwordString, salt)),
+			PasswordHash: string(password),
 		},
 	}
 }
