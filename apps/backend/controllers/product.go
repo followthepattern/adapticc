@@ -9,6 +9,7 @@ import (
 	"github.com/followthepattern/adapticc/models"
 	"github.com/followthepattern/adapticc/repositories/database"
 	"github.com/followthepattern/adapticc/services"
+	"github.com/followthepattern/adapticc/types"
 
 	validation "github.com/go-ozzo/ozzo-validation"
 )
@@ -32,7 +33,7 @@ func NewProduct(cont container.Container) Product {
 }
 
 func (ctrl Product) GetByID(ctx context.Context, id string) (*models.Product, error) {
-	if err := validation.Validate(id, Required("productID")); err != nil {
+	if err := validation.Validate(id, types.Required("productID")); err != nil {
 		return nil, err
 	}
 
@@ -68,7 +69,7 @@ func (ctrl Product) Update(ctx context.Context, value models.Product) error {
 }
 
 func (ctrl Product) Delete(ctx context.Context, id string) error {
-	if err := validation.Validate(id, Required("productID")); err != nil {
+	if err := validation.Validate(id, types.Required("productID")); err != nil {
 		return err
 	}
 

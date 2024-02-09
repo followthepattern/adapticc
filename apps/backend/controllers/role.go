@@ -9,6 +9,7 @@ import (
 	"github.com/followthepattern/adapticc/models"
 	"github.com/followthepattern/adapticc/repositories/database"
 	"github.com/followthepattern/adapticc/services"
+	"github.com/followthepattern/adapticc/types"
 
 	validation "github.com/go-ozzo/ozzo-validation"
 )
@@ -31,7 +32,7 @@ func NewRole(cont container.Container) Role {
 }
 
 func (ctrl Role) GetByID(ctx context.Context, id string) (*models.Role, error) {
-	if err := validation.Validate(id, Required("productID")); err != nil {
+	if err := validation.Validate(id, types.Required("productID")); err != nil {
 		return nil, err
 	}
 

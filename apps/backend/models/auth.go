@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/followthepattern/adapticc/types"
+	"github.com/followthepattern/adapticc/user"
 	validation "github.com/go-ozzo/ozzo-validation"
 )
 
@@ -57,7 +58,7 @@ func (p *Password) IsEmpty() bool {
 }
 
 type AuthUser struct {
-	User
+	user.UserModel
 	Password
 }
 

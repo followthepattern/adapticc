@@ -2,10 +2,11 @@ package controllers
 
 import (
 	"github.com/followthepattern/adapticc/container"
+	"github.com/followthepattern/adapticc/user"
 )
 
 type Controllers struct {
-	user    User
+	user    user.UserController
 	auth    Auth
 	product Product
 	role    Role
@@ -13,14 +14,14 @@ type Controllers struct {
 
 func New(cont container.Container) Controllers {
 	return Controllers{
-		user:    NewUser(cont),
+		user:    user.NewUserController(cont),
 		auth:    NewAuth(cont),
 		product: NewProduct(cont),
 		role:    NewRole(cont),
 	}
 }
 
-func (c Controllers) User() User {
+func (c Controllers) User() user.UserController {
 	return c.user
 }
 

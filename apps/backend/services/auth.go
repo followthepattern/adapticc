@@ -12,6 +12,7 @@ import (
 	"github.com/followthepattern/adapticc/repositories/database"
 	"github.com/followthepattern/adapticc/repositories/email"
 	"github.com/followthepattern/adapticc/types"
+	"github.com/followthepattern/adapticc/user"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -37,16 +38,16 @@ func GetModelFromContext[T any](ctx context.Context, ctxKey ContextKey) *T {
 	return &model
 }
 
-func GetUserContext(ctx context.Context) (models.User, error) {
+func GetUserContext(ctx context.Context) (user.UserModel, error) {
 	obj := ctx.Value(CtxUserKey)
 
-	model, ok := obj.(models.User)
+	model, ok := obj.(user.UserModel)
 	if !ok {
-		return models.User{}, errors.New("invalid user context")
+		return user.UserModel{}, errors.New("invalid user context")
 	}
 
 	if model.IsDefault() {
-		return models.User{}, errors.New("invalid user context")
+		return user.UserModel{}, errors.New("invalid user context")
 	}
 
 	return model, nil
@@ -96,7 +97,7 @@ func (service Auth) Login(ctx context.Context, email types.String, password type
 }
 
 func (service Auth) Register(ctx context.Context, register models.RegisterRequestParams) (*models.RegisterResponse, error) {
-	ctxu := GetModelFromContext[models.User](ctx, CtxUserKey)
+	ctxu := GetModelFromContext[user.UserModel](ctx, CtxUserKey)
 	if ctxu == nil {
 		return nil, fmt.Errorf("invalid user context")
 	}
@@ -116,7 +117,7 @@ func (service Auth) Register(ctx context.Context, register models.RegisterReques
 	}
 
 	creationUser := models.AuthUser{
-		User: models.User{
+		User: user.UserModel{
 			ID:        types.StringFrom(uuid.NewString()),
 			Email:     register.Email,
 			FirstName: register.FirstName,

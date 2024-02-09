@@ -1,9 +1,10 @@
-package resolvers
+package api
 
 import (
 	"context"
 	"net/http"
 
+	"github.com/followthepattern/adapticc/api/graphql/resolvers"
 	"github.com/followthepattern/adapticc/models"
 	"github.com/followthepattern/adapticc/types"
 	"github.com/followthepattern/adapticc/user"
@@ -59,12 +60,12 @@ func (resolver UserResolver) Profile(ctx context.Context) (*user.UserModel, erro
 
 func (resolver UserResolver) Create(ctx context.Context, args struct {
 	Model user.UserModel
-}) (*ResponseStatus, error) {
+}) (*resolvers.ResponseStatus, error) {
 	err := resolver.ctrl.Create(ctx, args.Model)
 	if err != nil {
 		return nil, err
 	}
-	return &ResponseStatus{
+	return &resolvers.ResponseStatus{
 		Code: http.StatusCreated,
 	}, nil
 }
@@ -72,25 +73,25 @@ func (resolver UserResolver) Create(ctx context.Context, args struct {
 func (resolver UserResolver) Update(ctx context.Context, args struct {
 	Id    types.String
 	Model user.UserModel
-}) (*ResponseStatus, error) {
+}) (*resolvers.ResponseStatus, error) {
 	args.Model.ID = args.Id
 	err := resolver.ctrl.Update(ctx, args.Model)
 	if err != nil {
 		return nil, err
 	}
-	return &ResponseStatus{
+	return &resolvers.ResponseStatus{
 		Code: http.StatusOK,
 	}, nil
 }
 
 func (resolver UserResolver) Delete(ctx context.Context, args struct {
 	Id types.String
-}) (*ResponseStatus, error) {
+}) (*resolvers.ResponseStatus, error) {
 	err := resolver.ctrl.Delete(ctx, args.Id)
 	if err != nil {
 		return nil, err
 	}
-	return &ResponseStatus{
+	return &resolvers.ResponseStatus{
 		Code: http.StatusOK,
 	}, nil
 }

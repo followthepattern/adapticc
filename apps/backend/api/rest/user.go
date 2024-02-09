@@ -3,24 +3,24 @@ package rest
 import (
 	"net/http"
 
-	"github.com/followthepattern/adapticc/controllers"
+	"github.com/followthepattern/adapticc/user"
 	"github.com/go-chi/chi"
 )
 
 type User struct {
-	user controllers.User
+	user user.UserController
 }
 
-func NewUser(ctrl controllers.User) User {
+func NewUser(ctrl user.UserController) User {
 	return User{
 		user: ctrl,
 	}
 }
 
-func (service User) ActivateUser(w http.ResponseWriter, r *http.Request) {
+func (rest User) ActivateUser(w http.ResponseWriter, r *http.Request) {
 	userID := chi.URLParam(r, "userID")
 
-	if err := service.user.ActivateUser(r.Context(), userID); err != nil {
+	if err := rest.user.ActivateUser(r.Context(), userID); err != nil {
 		BadRequest(w, err.Error())
 		return
 	}
