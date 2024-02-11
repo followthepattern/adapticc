@@ -1,8 +1,6 @@
 package models
 
-import (
-	"github.com/followthepattern/adapticc/types"
-)
+import "github.com/followthepattern/adapticc/types"
 
 type Userlog struct {
 	CreationUserID types.String `db:"creation_user_id" goqu:"skipupdate,omitempty"`

@@ -2,18 +2,20 @@ package resolvers
 
 import (
 	"github.com/followthepattern/adapticc/controllers"
+	"github.com/followthepattern/adapticc/features/auth"
+	"github.com/followthepattern/adapticc/features/user"
 )
 
 type Resolver struct {
-	users        UserResolver
+	users        user.UserResolver
 	products     ProductResolver
 	roles        RoleResolver
-	authMutation Auth
+	authMutation auth.AuthResolver
 }
 
 func New(controllers controllers.Controllers) Resolver {
-	uq := NewUserQuery(controllers.User())
-	am := NewAuthMutation(controllers.Auth())
+	uq := user.NewUserQuery(controllers.User())
+	am := auth.NewAuthGraphQL(controllers.Auth())
 	pq := NewProductQuery(controllers.Product())
 	rq := NewRoleQuery(controllers.Role())
 
@@ -27,11 +29,11 @@ func New(controllers controllers.Controllers) Resolver {
 	return resolver
 }
 
-func (r Resolver) Users() (UserResolver, error) {
+func (r Resolver) Users() (user.UserResolver, error) {
 	return r.users, nil
 }
 
-func (r Resolver) Authentication() (Auth, error) {
+func (r Resolver) Authentication() (auth.AuthResolver, error) {
 	return r.authMutation, nil
 }
 
