@@ -17,7 +17,7 @@ import (
 	"github.com/followthepattern/adapticc/api/rest"
 	"github.com/followthepattern/adapticc/config"
 	"github.com/followthepattern/adapticc/container"
-	controllers "github.com/followthepattern/adapticc/controller"
+	"github.com/followthepattern/adapticc/controllers"
 	"github.com/followthepattern/adapticc/features/mail"
 	"github.com/followthepattern/adapticc/hostserver"
 
@@ -67,7 +67,7 @@ func main() {
 
 	ctrls := controllers.New(cont)
 
-	graphqlHandler := graphql.New(ctrls, schemaDef)
+	graphqlHandler := graphql.NewHandler(ctrls, schemaDef)
 
 	restHandler := rest.New(ctrls)
 

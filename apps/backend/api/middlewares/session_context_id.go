@@ -4,11 +4,11 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/followthepattern/adapticc/services"
+	"github.com/followthepattern/adapticc/features/auth"
 	"github.com/google/uuid"
 )
 
-var SessionContextHeader = &services.ContextKey{Name: "session-context-id"}
+var SessionContextHeader = &auth.ContextKey{Name: "session-context-id"}
 
 func SessionContextID(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {

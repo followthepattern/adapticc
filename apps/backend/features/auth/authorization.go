@@ -8,13 +8,15 @@ import (
 )
 
 type AuthorizationService struct {
-	repository AuthDatabase
-	ac         accesscontrol.AccessControl
+	authDatabase AuthDatabase
+	ac           accesscontrol.AccessControl
 }
 
 func NewAuthorizationService(cont container.Container, kind string) AuthorizationService {
+	authDatabase := NewAuthDatabase(cont.GetDB())
 	return AuthorizationService{
-		ac: cont.GetAccessControl().WithKind(kind),
+		ac:           cont.GetAccessControl().WithKind(kind),
+		authDatabase: authDatabase,
 	}
 }
 
@@ -24,7 +26,7 @@ func (service AuthorizationService) AuthorizedUser(ctx context.Context, action s
 		return "", err
 	}
 
-	roles, err := service.repository.GetRoleIDs(ctxu.ID.Data)
+	roles, err := service.authDatabase.GetRoleIDs(ctxu.ID.Data)
 	if err != nil {
 		return "", err
 	}
@@ -38,7 +40,7 @@ func (service AuthorizationService) Authorize(ctx context.Context, action string
 		return err
 	}
 
-	roles, err := service.repository.GetRoleIDs(ctxu.ID.Data)
+	roles, err := service.authDatabase.GetRoleIDs(ctxu.ID.Data)
 	if err != nil {
 		return err
 	}

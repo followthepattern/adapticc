@@ -15,8 +15,8 @@ type AuthController struct {
 }
 
 func NewAuthController(cont container.Container) AuthController {
-	auth := NewAuthDatabase(cont.GetDB(), cont.GetLogger())
-	authService := NewAuthenticationService(cont.GetConfig(), auth, cont.GetEmail(), cont.GetJWTKeys())
+	authDatabase := NewAuthDatabase(cont.GetDB())
+	authService := NewAuthenticationService(cont.GetConfig(), authDatabase, cont.GetEmail(), cont.GetJWTKeys())
 
 	return AuthController{
 		authService: authService,

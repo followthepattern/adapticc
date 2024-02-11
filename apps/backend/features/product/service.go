@@ -12,28 +12,24 @@ import (
 )
 
 type ProductService struct {
-	ac                accesscontrol.AccessControl
-	logger            *slog.Logger
-	productRepository ProductDatabase
+	authorizationService auth.AuthorizationService
+	logger               *slog.Logger
+	productRepository    ProductDatabase
 }
 
-func NewProductService(cont container.Container, productRepository ProductDatabase) ProductService {
+func NewProductService(cont container.Container, authorizationService auth.AuthorizationService) ProductService {
+	productRepository := NewProductDatabase(cont.GetDB())
 	product := ProductService{
-		ac:                cont.GetAccessControl().WithKind("product"),
-		productRepository: productRepository,
-		logger:            cont.GetLogger(),
+		authorizationService: authorizationService,
+		productRepository:    productRepository,
+		logger:               cont.GetLogger(),
 	}
 
 	return product
 }
 
 func (service ProductService) GetByID(ctx context.Context, id string) (*ProductModel, error) {
-	ctxu, err := auth.GetUserContext(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	err = service.ac.Authorize(ctx, ctxu.ID.Data, accesscontrol.READ, id, roles...)
+	err := service.authorizationService.Authorize(ctx, accesscontrol.READ, id)
 	if err != nil {
 		return nil, err
 	}
@@ -42,17 +38,7 @@ func (service ProductService) GetByID(ctx context.Context, id string) (*ProductM
 }
 
 func (service ProductService) Get(ctx context.Context, request ProductListRequestParams) (*ProductListResponse, error) {
-	ctxu, err := auth.GetUserContext(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	roles, err := service.roleRepository.GetRoleCodes(ctxu.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	err = service.ac.Authorize(ctx, ctxu.ID.Data, accesscontrol.READ, accesscontrol.ALLRESOURCE, roles...)
+	err := service.authorizationService.Authorize(ctx, accesscontrol.READ, accesscontrol.ALLRESOURCE)
 	if err != nil {
 		return nil, err
 	}
@@ -63,60 +49,30 @@ func (service ProductService) Get(ctx context.Context, request ProductListReques
 }
 
 func (service ProductService) Create(ctx context.Context, value ProductModel) error {
-	ctxu, err := auth.GetUserContext(ctx)
-	if err != nil {
-		return err
-	}
-
-	roles, err := service.roleRepository.GetRoleCodes(ctxu.ID)
-	if err != nil {
-		return err
-	}
-
-	err = service.ac.Authorize(ctx, ctxu.ID.Data, accesscontrol.CREATE, accesscontrol.NEW, roles...)
+	userID, err := service.authorizationService.AuthorizedUser(ctx, accesscontrol.CREATE, accesscontrol.NEW)
 	if err != nil {
 		return err
 	}
 
 	value.ID = types.StringFrom(uuid.NewString())
-	value.Userlog.CreationUserID = ctxu.ID
+	value.Userlog.CreationUserID = types.StringFrom(userID)
 
 	return service.productRepository.Create([]ProductModel{value})
 }
 
 func (service ProductService) Update(ctx context.Context, value ProductModel) error {
-	ctxu, err := auth.GetUserContext(ctx)
+	userID, err := service.authorizationService.AuthorizedUser(ctx, accesscontrol.UPDATE, value.ID.Data)
 	if err != nil {
 		return err
 	}
 
-	roles, err := service.roleRepository.GetRoleCodes(ctxu.ID)
-	if err != nil {
-		return err
-	}
-
-	err = service.ac.Authorize(ctx, ctxu.ID.Data, accesscontrol.UPDATE, value.ID.Data, roles...)
-	if err != nil {
-		return err
-	}
-
-	value.UpdateUserID = ctxu.ID
+	value.UpdateUserID = types.StringFrom(userID)
 
 	return service.productRepository.Update(value)
 }
 
 func (service ProductService) Delete(ctx context.Context, id string) error {
-	ctxu, err := auth.GetUserContext(ctx)
-	if err != nil {
-		return err
-	}
-
-	roles, err := service.roleRepository.GetRoleCodes(ctxu.ID)
-	if err != nil {
-		return err
-	}
-
-	err = service.ac.Authorize(ctx, ctxu.ID.Data, accesscontrol.DELETE, id, roles...)
+	err := service.authorizationService.Authorize(ctx, accesscontrol.DELETE, id)
 	if err != nil {
 		return err
 	}

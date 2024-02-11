@@ -3,15 +3,14 @@ package graphql
 import (
 	"net/http"
 
-	"github.com/followthepattern/adapticc/api/graphql/resolvers"
 	"github.com/followthepattern/adapticc/controllers"
 
 	"github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/relay"
 )
 
-func New(controllers controllers.Controllers, schemaDef string) http.Handler {
-	resolver := resolvers.New(controllers)
+func NewHandler(controllers controllers.Controllers, schemaDef string) http.Handler {
+	resolver := NewResolver(controllers)
 
 	opts := []graphql.SchemaOpt{graphql.UseFieldResolvers()}
 

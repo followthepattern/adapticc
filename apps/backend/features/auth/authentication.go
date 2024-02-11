@@ -20,23 +20,23 @@ const WRONG_EMAIL_OR_PASSWORD = "WRONG_EMAIL_OR_PASSWORD"
 const EMAIL_IS_ALREADY_IN_USE_PATTERN = "%v is already in use, please try a different email address"
 
 type AuthenticationService struct {
-	repository AuthDatabase
-	cfg        config.Config
-	mail       mail.Mail
-	jwtKeys    config.JwtKeyPair
+	authDatabase AuthDatabase
+	cfg          config.Config
+	mail         mail.Mail
+	jwtKeys      config.JwtKeyPair
 }
 
 func NewAuthenticationService(cfg config.Config, repository AuthDatabase, emailClient mail.Email, jwtKeys config.JwtKeyPair) AuthenticationService {
 	return AuthenticationService{
-		cfg:        cfg,
-		repository: repository,
-		mail:       mail.NewMail(cfg.Mail, emailClient),
-		jwtKeys:    jwtKeys,
+		cfg:          cfg,
+		authDatabase: repository,
+		mail:         mail.NewMail(cfg.Mail, emailClient),
+		jwtKeys:      jwtKeys,
 	}
 }
 
 func (service AuthenticationService) Login(ctx context.Context, email types.String, password types.String) (*LoginResponse, error) {
-	authUser, err := service.repository.VerifyLogin(email)
+	authUser, err := service.authDatabase.VerifyLogin(email)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func (service AuthenticationService) Register(ctx context.Context, register Regi
 		return nil, fmt.Errorf("invalid user context")
 	}
 
-	valid, err := service.repository.VerifyEmail(register.Email)
+	valid, err := service.authDatabase.VerifyEmail(register.Email)
 	if err != nil {
 		return nil, err
 	}
@@ -92,7 +92,7 @@ func (service AuthenticationService) Register(ctx context.Context, register Regi
 		PasswordHash: string(passwordHash),
 	}
 
-	err = service.repository.RegisterUser(creationUser)
+	err = service.authDatabase.RegisterUser(creationUser)
 	if err != nil {
 		return nil, err
 	}

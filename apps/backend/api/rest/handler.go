@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/followthepattern/adapticc/controllers"
+	"github.com/followthepattern/adapticc/features/product"
 	"github.com/followthepattern/adapticc/features/user"
 	"github.com/go-chi/chi"
 )
@@ -11,7 +12,7 @@ import (
 func New(ctrls controllers.Controllers) http.Handler {
 	r := chi.NewMux()
 
-	product := product.NewProduct(ctrls.Product())
+	product := product.NewProductRest(ctrls.Product())
 	user := user.NewUserRest(ctrls.User())
 
 	r.Route("/products", func(r chi.Router) {

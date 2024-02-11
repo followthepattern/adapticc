@@ -38,13 +38,15 @@ func (service RoleService) GetByID(ctx context.Context, id string) (*RoleModel, 
 	return result, nil
 }
 
-func (service RoleService) Get(ctx context.Context, filter RoleListRequestParams) (*RoleListResponse, error) {
+func (service RoleService) Get(ctx context.Context, request RoleListRequestParams) (*RoleListResponse, error) {
 	err := service.authorization.Authorize(ctx, accesscontrol.READ, accesscontrol.ALLRESOURCE)
 	if err != nil {
 		return nil, err
 	}
 
-	return service.roleRepository.Get(filter)
+	request.Pagination.SetDefaultIfEmpty()
+
+	return service.roleRepository.Get(request)
 }
 
 func (service RoleService) AddRoleToUser(ctx context.Context, value UserRoleModel) error {

@@ -8,23 +8,23 @@ import (
 	"github.com/followthepattern/adapticc/types"
 )
 
-type RoleResolver struct {
+type RoleGraphQL struct {
 	ctrl RoleController
 }
 
-func NewRoleQuery(ctrl RoleController) RoleResolver {
-	return RoleResolver{ctrl: ctrl}
+func NewroleGraphql(ctrl RoleController) RoleGraphQL {
+	return RoleGraphQL{ctrl: ctrl}
 }
 
-func (resolver RoleResolver) Single(ctx context.Context, args struct{ Id string }) (*RoleModel, error) {
-	value, err := resolver.ctrl.GetByID(ctx, args.Id)
+func (graphQL RoleGraphQL) Single(ctx context.Context, args struct{ Id string }) (*RoleModel, error) {
+	value, err := graphQL.ctrl.GetByID(ctx, args.Id)
 	if err != nil {
 		return nil, err
 	}
 	return value, nil
 }
 
-func (resolver RoleResolver) List(ctx context.Context, args struct {
+func (graphQL RoleGraphQL) List(ctx context.Context, args struct {
 	Pagination *models.Pagination
 	Filter     *models.ListFilter
 	OrderBy    *[]models.OrderBy
@@ -46,7 +46,7 @@ func (resolver RoleResolver) List(ctx context.Context, args struct {
 		request.OrderBy = *args.OrderBy
 	}
 
-	values, err := resolver.ctrl.Get(ctx, request)
+	values, err := graphQL.ctrl.Get(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -54,11 +54,11 @@ func (resolver RoleResolver) List(ctx context.Context, args struct {
 	return values, nil
 }
 
-func (resolver RoleResolver) AddRoleToUser(ctx context.Context, args struct {
+func (graphQL RoleGraphQL) AddRoleToUser(ctx context.Context, args struct {
 	UserID types.String
 	RoleID types.String
 }) (*models.ResponseStatus, error) {
-	err := resolver.ctrl.AddRoleToUser(ctx, UserRoleModel{UserID: args.UserID, RoleID: args.RoleID})
+	err := graphQL.ctrl.AddRoleToUser(ctx, UserRoleModel{UserID: args.UserID, RoleID: args.RoleID})
 	if err != nil {
 		return nil, err
 	}
@@ -67,11 +67,11 @@ func (resolver RoleResolver) AddRoleToUser(ctx context.Context, args struct {
 	}, nil
 }
 
-func (resolver RoleResolver) DeleteRoleFromUser(ctx context.Context, args struct {
+func (graphQL RoleGraphQL) DeleteRoleFromUser(ctx context.Context, args struct {
 	UserID types.String
 	RoleID types.String
 }) (*models.ResponseStatus, error) {
-	err := resolver.ctrl.DeleteRoleFromUser(ctx, UserRoleModel{UserID: args.UserID, RoleID: args.RoleID})
+	err := graphQL.ctrl.DeleteRoleFromUser(ctx, UserRoleModel{UserID: args.UserID, RoleID: args.RoleID})
 	if err != nil {
 		return nil, err
 	}

@@ -34,7 +34,12 @@ func (ctrl UserController) GetByID(ctx context.Context, userID types.String) (*U
 		return nil, err
 	}
 
-	return ctrl.userService.GetByID(ctx, userID)
+	result, err := ctrl.userService.GetByID(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
 func (ctrl UserController) Profile(ctx context.Context) (*UserModel, error) {

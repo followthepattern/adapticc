@@ -6,6 +6,7 @@ import (
 
 	"github.com/followthepattern/adapticc/config"
 	"github.com/followthepattern/adapticc/container"
+	"github.com/followthepattern/adapticc/features/auth"
 	"github.com/followthepattern/adapticc/types"
 
 	validation "github.com/go-ozzo/ozzo-validation"
@@ -18,8 +19,8 @@ type ProductController struct {
 }
 
 func NewProductController(cont container.Container) ProductController {
-	productRepository := NewProductDatabase(cont.GetDB())
-	productService := NewProductService(cont, productRepository)
+	authorizationService := auth.NewAuthorizationService(cont, "product")
+	productService := NewProductService(cont, authorizationService)
 
 	return ProductController{
 		product: productService,

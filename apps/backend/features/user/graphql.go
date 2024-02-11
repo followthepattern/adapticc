@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/followthepattern/adapticc/models"
@@ -46,6 +47,7 @@ func (graphQL UserGraphQL) List(ctx context.Context, args struct {
 
 	results, err := graphQL.ctrl.Get(ctx, request)
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 
