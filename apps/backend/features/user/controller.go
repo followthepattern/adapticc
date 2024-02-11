@@ -7,6 +7,7 @@ import (
 
 	"github.com/followthepattern/adapticc/config"
 	"github.com/followthepattern/adapticc/container"
+	"github.com/followthepattern/adapticc/features/auth"
 	"github.com/followthepattern/adapticc/types"
 	validation "github.com/go-ozzo/ozzo-validation"
 )
@@ -18,7 +19,8 @@ type UserController struct {
 }
 
 func NewUserController(cont container.Container) UserController {
-	userService := NewUserService(cont)
+	authorizationService := auth.NewAuthorizationService(cont, "user")
+	userService := NewUserService(cont, authorizationService)
 
 	return UserController{
 		cfg:         cont.GetConfig(),
@@ -45,12 +47,7 @@ func (ctrl UserController) Profile(ctx context.Context) (*UserModel, error) {
 }
 
 func (ctrl UserController) Get(ctx context.Context, filter UserListRequestParams) (*UserListResponse, error) {
-	result, err := ctrl.userService.Get(ctx, filter)
-	if err != nil {
-		return nil, err
-	}
-
-	return &result, nil
+	return ctrl.userService.Get(ctx, filter)
 }
 
 func (ctrl UserController) Create(ctx context.Context, value UserModel) error {

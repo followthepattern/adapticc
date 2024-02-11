@@ -5,39 +5,29 @@ import (
 
 	"github.com/followthepattern/adapticc/accesscontrol"
 	"github.com/followthepattern/adapticc/container"
-	"github.com/followthepattern/adapticc/services"
+	"github.com/followthepattern/adapticc/features/auth"
 	"github.com/followthepattern/adapticc/types"
 	"github.com/google/uuid"
 )
 
 type UserService struct {
-	userRepository UserDatabase
-	ac             accesscontrol.AccessControl
+	userRepository       UserDatabase
+	authorizationService auth.AuthorizationService
 }
 
-func NewUserService(cont container.Container) UserService {
+func NewUserService(cont container.Container, authorizationService auth.AuthorizationService) UserService {
 	repository := NewUserDatabase(cont.GetDB())
 
 	user := UserService{
-		userRepository: repository,
-		ac:             cont.GetAccessControl().WithKind("user"),
+		userRepository:       repository,
+		authorizationService: authorizationService,
 	}
 
 	return user
 }
 
 func (service UserService) GetByID(ctx context.Context, id types.String) (*UserModel, error) {
-	ctxu, err := services.GetUserContext(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	roles, err := service.roleRepository.GetRoleCodes(ctxu.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	err = service.ac.Authorize(ctx, ctxu.ID.Data, accesscontrol.READ, id.Data, roles...)
+	err := service.authorizationService.Authorize(ctx, accesscontrol.READ, id.Data)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +45,7 @@ func (service UserService) GetByID(ctx context.Context, id types.String) (*UserM
 }
 
 func (service UserService) Profile(ctx context.Context) (*UserModel, error) {
-	ctxu, err := GetUserContext(ctx)
+	ctxu, err := auth.GetUserContext(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -63,72 +53,37 @@ func (service UserService) Profile(ctx context.Context) (*UserModel, error) {
 	return service.userRepository.GetByID(ctxu.ID)
 }
 
-func (service UserService) Get(ctx context.Context, request UserListRequestParams) (UserListResponse, error) {
-	ctxu, err := GetUserContext(ctx)
+func (service UserService) Get(ctx context.Context, request UserListRequestParams) (*UserListResponse, error) {
+	err := service.authorizationService.Authorize(ctx, accesscontrol.READ, accesscontrol.ALLRESOURCE)
 	if err != nil {
-		return UserListResponse{}, err
-	}
-
-	roles, err := service.roleRepository.GetRoleCodes(ctxu.ID)
-	if err != nil {
-		return UserListResponse{}, err
-	}
-
-	err = service.ac.Authorize(ctx, ctxu.ID.Data, accesscontrol.READ, accesscontrol.ALLRESOURCE, roles...)
-	if err != nil {
-		return UserListResponse{}, err
+		return nil, err
 	}
 
 	request.Pagination.SetDefaultIfEmpty()
 
-	result, err := service.userRepository.Get(request)
-	if err != nil {
-		return UserListResponse{}, err
-	}
-
-	return *result, nil
+	return service.userRepository.Get(request)
 }
 
 func (service UserService) Create(ctx context.Context, value UserModel) error {
-	ctxu, err := GetUserContext(ctx)
-	if err != nil {
-		return nil
-	}
-
-	roles, err := service.roleRepository.GetRoleCodes(ctxu.ID)
-	if err != nil {
-		return err
-	}
-
-	err = service.ac.Authorize(ctx, ctxu.ID.Data, accesscontrol.CREATE, accesscontrol.NEW, roles...)
+	userID, err := service.authorizationService.AuthorizedUser(ctx, accesscontrol.CREATE, accesscontrol.NEW)
 	if err != nil {
 		return err
 	}
 
 	value.ID = types.StringFrom(uuid.NewString())
-	value.CreationUserID = ctxu.ID
+	value.CreationUserID = types.StringFrom(userID)
 	value.Active = types.FALSE
 
 	return service.userRepository.Create([]UserModel{value})
 }
 
 func (service UserService) Update(ctx context.Context, value UserModel) error {
-	ctxu, err := GetUserContext(ctx)
-	if err != nil {
-		return nil
-	}
-
-	roles, err := service.roleRepository.GetRoleCodes(ctxu.ID)
+	userID, err := service.authorizationService.AuthorizedUser(ctx, accesscontrol.UPDATE, value.ID.Data)
 	if err != nil {
 		return err
 	}
 
-	err = service.ac.Authorize(ctx, ctxu.ID.Data, accesscontrol.UPDATE, value.ID.Data, roles...)
-	if err != nil {
-		return err
-	}
-
-	value.UpdateUserID = ctxu.ID
+	value.UpdateUserID = types.StringFrom(userID)
 
 	return service.userRepository.Update(value)
 }
@@ -138,17 +93,7 @@ func (service UserService) ActivateUser(ctx context.Context, userID string) erro
 }
 
 func (service UserService) Delete(ctx context.Context, id types.String) error {
-	ctxu, err := GetUserContext(ctx)
-	if err != nil {
-		return err
-	}
-
-	roles, err := service.roleRepository.GetRoleCodes(ctxu.ID)
-	if err != nil {
-		return err
-	}
-
-	err = service.ac.Authorize(ctx, ctxu.ID.Data, accesscontrol.DELETE, id.Data, roles...)
+	err := service.authorizationService.Authorize(ctx, accesscontrol.DELETE, id.Data)
 	if err != nil {
 		return err
 	}

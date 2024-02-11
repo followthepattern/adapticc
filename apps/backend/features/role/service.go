@@ -16,8 +16,8 @@ type RoleService struct {
 
 func NewRoleService(
 	cont container.Container,
-	authorization auth.AuthorizationService,
-	roleRepository RoleDatabase) RoleService {
+	authorization auth.AuthorizationService) RoleService {
+	roleRepository := NewRoleDatabase(cont.GetDB())
 	return RoleService{
 		roleRepository: roleRepository,
 		authorization:  authorization,
