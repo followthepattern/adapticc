@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/followthepattern/adapticc/models"
+	"github.com/followthepattern/adapticc/features/role"
 	"github.com/followthepattern/adapticc/types"
 )
 
@@ -15,7 +15,7 @@ var roleColumns = []string{
 	"name",
 }
 
-func ExpectRolesByUserID(mock sqlmock.Sqlmock, results []models.Role, userID types.String) {
+func ExpectRolesByUserID(mock sqlmock.Sqlmock, results []role.RoleModel, userID types.String) {
 	sqlQuery := fmt.Sprintf(`
 	SELECT
 		"r".\*

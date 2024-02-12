@@ -11,9 +11,8 @@ import (
 
 	"github.com/followthepattern/adapticc/accesscontrol"
 	"github.com/followthepattern/adapticc/config"
+	"github.com/followthepattern/adapticc/features/auth"
 	"github.com/followthepattern/adapticc/mocks"
-	"github.com/followthepattern/adapticc/models"
-	"github.com/followthepattern/adapticc/services"
 	"github.com/followthepattern/adapticc/tests/datagenerator"
 	"github.com/followthepattern/adapticc/tests/sqlexpectations"
 	"github.com/followthepattern/adapticc/types"
@@ -37,8 +36,8 @@ type authenticationData struct {
 }
 
 type authentication struct {
-	Register models.RegisterResponse `json:"register"`
-	Login    models.LoginResponse    `json:"login"`
+	Register auth.RegisterResponse `json:"register"`
+	Login    auth.LoginResponse    `json:"login"`
 }
 
 var _ = Describe("Authentication", func() {
@@ -53,7 +52,7 @@ var _ = Describe("Authentication", func() {
 		mockEmail *mocks.MockEmail
 
 		testResponse  *graphqlAuthResponse
-		generatedUser models.AuthUser
+		generatedUser auth.AuthUser
 		password      string
 	)
 
@@ -134,7 +133,7 @@ var _ = Describe("Authentication", func() {
 			Expect(err).To(BeNil())
 
 			Expect(testResponse.Errors).To(HaveLen(1))
-			Expect(testResponse.Errors[0].Message).To(Equal(services.WRONG_EMAIL_OR_PASSWORD))
+			Expect(testResponse.Errors[0].Message).To(Equal(auth.WRONG_EMAIL_OR_PASSWORD))
 
 			Expect(mock.ExpectationsWereMet()).To(BeNil())
 			Expect(code).To(Equal(http.StatusOK))
@@ -163,7 +162,7 @@ var _ = Describe("Authentication", func() {
 
 			sqlexpectations.ExpectCreateAuthUser(mock, generatedUser)
 
-			mailTemplate := services.GetActivationMailTemplate(cfg, types.StringFrom(""), generatedUser.Email)
+			mailTemplate := auth.GetActivationMailTemplate(cfg, types.StringFrom(""), generatedUser.Email)
 
 			mockEmail.EXPECT().SetFrom(gomock.Any())
 			mockEmail.EXPECT().SetTo(mailTemplate.To)
@@ -206,7 +205,7 @@ var _ = Describe("Authentication", func() {
 			Expect(code).To(Equal(http.StatusOK))
 
 			Expect(testResponse.Errors).To(HaveLen(1))
-			Expect(testResponse.Errors[0].Message).To(Equal(fmt.Sprintf(services.EMAIL_IS_ALREADY_IN_USE_PATTERN, generatedUser.Email)))
+			Expect(testResponse.Errors[0].Message).To(Equal(fmt.Sprintf(auth.EMAIL_IS_ALREADY_IN_USE_PATTERN, generatedUser.Email)))
 		})
 	})
 })

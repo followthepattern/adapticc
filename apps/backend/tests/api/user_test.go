@@ -9,16 +9,18 @@ import (
 	"net/http/httptest"
 
 	"github.com/followthepattern/adapticc/accesscontrol"
-	"github.com/followthepattern/adapticc/api/graphql/resolvers"
 	"github.com/followthepattern/adapticc/api/middlewares"
 	"github.com/followthepattern/adapticc/config"
+	"github.com/followthepattern/adapticc/features/auth"
+	"github.com/followthepattern/adapticc/features/role"
+	"github.com/followthepattern/adapticc/features/user"
 	"github.com/followthepattern/adapticc/mocks"
 	"github.com/followthepattern/adapticc/models"
-	"github.com/followthepattern/adapticc/services"
 	"github.com/followthepattern/adapticc/tests/datagenerator"
 	"github.com/followthepattern/adapticc/tests/sqlexpectations"
 	"github.com/followthepattern/adapticc/types"
 	"github.com/golang/mock/gomock"
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/graph-gophers/graphql-go/errors"
@@ -37,23 +39,24 @@ type userData struct {
 }
 
 type users struct {
-	Single  models.User                      `json:"single,omitempty"`
-	Profile models.User                      `json:"profile,omitempty"`
-	List    models.ListResponse[models.User] `json:"list,omitempty"`
-	Create  resolvers.ResponseStatus         `json:"create,omitempty"`
-	Update  resolvers.ResponseStatus         `json:"update,omitempty"`
-	Delete  resolvers.ResponseStatus         `json:"delete,omitempty"`
+	Single  user.UserModel                      `json:"single,omitempty"`
+	Profile user.UserModel                      `json:"profile,omitempty"`
+	List    models.ListResponse[user.UserModel] `json:"list,omitempty"`
+	Create  models.ResponseStatus               `json:"create,omitempty"`
+	Update  models.ResponseStatus               `json:"update,omitempty"`
+	Delete  models.ResponseStatus               `json:"delete,omitempty"`
 }
 
 var _ = Describe("User graphql queries", func() {
 	var (
-		mdb        *sql.DB
-		mock       sqlmock.Sqlmock
-		cfg        config.Config
-		jwtKeys    config.JwtKeyPair
-		handler    http.Handler
-		mockCtrl   *gomock.Controller
-		mockCerbos *mocks.MockClient
+		mdb         *sql.DB
+		mock        sqlmock.Sqlmock
+		cfg         config.Config
+		jwtKeys     config.JwtKeyPair
+		handler     http.Handler
+		mockCtrl    *gomock.Controller
+		mockCerbos  *mocks.MockClient
+		contextUser auth.AuthUser
 	)
 
 	BeforeEach(func() {
@@ -79,12 +82,16 @@ var _ = Describe("User graphql queries", func() {
 
 		handler = NewMockHandler(ac, nil, mdb, cfg, jwtKeys)
 
+		password := datagenerator.String(18)
+		passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+		Expect(err).ShouldNot(BeNil())
+		contextUser = datagenerator.NewRandomAuthUser(passwordHash)
+
 	})
 
 	Context("Single", func() {
 		It("Success", func() {
 			user := datagenerator.NewRandomUser()
-			role1 := datagenerator.NewRandomRole()
 
 			queryTemplate := `
 			query {
@@ -101,14 +108,13 @@ var _ = Describe("User graphql queries", func() {
 			}
 			request, _ := json.Marshal(graphRequest)
 
-			tokenString, err := services.GenerateTokenStringFromUser(user, jwtKeys.Private)
+			tokenString, err := auth.GenerateTokenStringFromUser(contextUser, jwtKeys.Private)
 			Expect(err).To(BeNil())
 
 			testResponse := &graphqlUserResponse{}
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
 			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("Bearer %s", tokenString))
 
-			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, user.ID)
 			mockCerbos.EXPECT().IsAllowed(gomock.Any(), gomock.Any(), gomock.Any(), accesscontrol.READ).Return(true, nil)
 			sqlexpectations.ExpectGetUserByID(mock, user, user.ID)
 
@@ -125,10 +131,9 @@ var _ = Describe("User graphql queries", func() {
 
 	Context("List", func() {
 		It("Success default query", func() {
-			users := []models.User{datagenerator.NewRandomUser(), datagenerator.NewRandomUser(), datagenerator.NewRandomUser()}
-			role1 := datagenerator.NewRandomRole()
+			users := []user.UserModel{datagenerator.NewRandomUser(), datagenerator.NewRandomUser(), datagenerator.NewRandomUser()}
 
-			listRequestParams := models.UserListRequestParams{
+			listRequestParams := user.UserListRequestParams{
 				Pagination: models.Pagination{
 					PageSize: types.UintFrom(5),
 					Page:     types.UintFrom(1),
@@ -164,14 +169,13 @@ var _ = Describe("User graphql queries", func() {
 			}
 			request, _ := json.Marshal(graphRequest)
 
-			tokenString, err := services.GenerateTokenStringFromUser(users[0], jwtKeys.Private)
+			tokenString, err := auth.GenerateTokenStringFromUser(contextUser, jwtKeys.Private)
 			Expect(err).To(BeNil())
 
 			testResponse := &graphqlUserResponse{}
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
 			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("Bearer %s", tokenString))
 
-			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, users[0].ID)
 			mockCerbos.EXPECT().IsAllowed(gomock.Any(), gomock.Any(), gomock.Any(), accesscontrol.READ).Return(true, nil)
 			sqlexpectations.ExpectUsers(mock, users, listRequestParams)
 
@@ -192,10 +196,10 @@ var _ = Describe("User graphql queries", func() {
 		})
 
 		It("Success withouth page and pageSize params", func() {
-			users := []models.User{datagenerator.NewRandomUser(), datagenerator.NewRandomUser(), datagenerator.NewRandomUser()}
+			users := []user.UserModel{datagenerator.NewRandomUser(), datagenerator.NewRandomUser(), datagenerator.NewRandomUser()}
 			role1 := datagenerator.NewRandomRole()
 
-			listRequestParams := models.UserListRequestParams{
+			listRequestParams := user.UserListRequestParams{
 				Filter: models.ListFilter{
 					Search: types.StringFrom(datagenerator.RandomEmail(8, 8)),
 				},
@@ -224,14 +228,14 @@ var _ = Describe("User graphql queries", func() {
 			}
 			request, _ := json.Marshal(graphRequest)
 
-			tokenString, err := services.GenerateTokenStringFromUser(users[0], jwtKeys.Private)
+			tokenString, err := auth.GenerateTokenStringFromUser(contextUser, jwtKeys.Private)
 			Expect(err).To(BeNil())
 
 			testResponse := &graphqlUserResponse{}
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
 			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("Bearer %s", tokenString))
 
-			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, users[0].ID)
+			sqlexpectations.ExpectRolesByUserID(mock, []role.RoleModel{role1}, users[0].ID)
 			mockCerbos.EXPECT().IsAllowed(gomock.Any(), gomock.Any(), gomock.Any(), accesscontrol.READ).Return(true, nil)
 			sqlexpectations.ExpectUsersWithoutPaging(mock, users, listRequestParams)
 
@@ -273,7 +277,7 @@ var _ = Describe("User graphql queries", func() {
 			}
 			request, _ := json.Marshal(graphRequest)
 
-			tokenString, err := services.GenerateTokenStringFromUser(user, jwtKeys.Private)
+			tokenString, err := auth.GenerateTokenStringFromUser(contextUser, jwtKeys.Private)
 			Expect(err).To(BeNil())
 
 			testResponse := &graphqlUserResponse{}
@@ -295,9 +299,7 @@ var _ = Describe("User graphql queries", func() {
 
 	Context("Create", func() {
 		It("Succeeds", func() {
-			contextUser := datagenerator.NewRandomUser()
 			user := datagenerator.NewRandomUser()
-			role1 := datagenerator.NewRandomRole()
 
 			queryTemplate := `
 			mutation {
@@ -318,14 +320,13 @@ var _ = Describe("User graphql queries", func() {
 			}
 			request, _ := json.Marshal(graphRequest)
 
-			tokenString, err := services.GenerateTokenStringFromUser(contextUser, jwtKeys.Private)
+			tokenString, err := auth.GenerateTokenStringFromUser(contextUser, jwtKeys.Private)
 			Expect(err).To(BeNil())
 
 			testResponse := &graphqlUserResponse{}
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
 			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("%s %s", middlewares.BearerPrefix, tokenString))
 
-			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, contextUser.ID)
 			mockCerbos.EXPECT().IsAllowed(gomock.Any(), gomock.Any(), gomock.Any(), accesscontrol.CREATE).Return(true, nil)
 			sqlexpectations.ExpectCreateUser(mock, contextUser.ID, user)
 
@@ -353,23 +354,20 @@ var _ = Describe("User graphql queries", func() {
 		}`
 
 		It("Success", func() {
-			contextUser := datagenerator.NewRandomUser()
 			user := datagenerator.NewRandomUser()
-			role1 := datagenerator.NewRandomRole()
 
 			graphRequest := graphqlRequest{
 				Query: fmt.Sprintf(graphql, user.ID, user.FirstName, user.LastName),
 			}
 			request, _ := json.Marshal(graphRequest)
 
-			tokenString, err := services.GenerateTokenStringFromUser(contextUser, jwtKeys.Private)
+			tokenString, err := auth.GenerateTokenStringFromUser(contextUser, jwtKeys.Private)
 			Expect(err).To(BeNil())
 
 			testResponse := &graphqlUserResponse{}
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
 			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("Bearer %s", tokenString))
 
-			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, contextUser.ID)
 			mockCerbos.EXPECT().IsAllowed(gomock.Any(), gomock.Any(), gomock.Any(), accesscontrol.UPDATE).Return(true, nil)
 			sqlexpectations.ExpectUpdateUser(mock, contextUser.ID, user)
 
@@ -394,23 +392,20 @@ var _ = Describe("User graphql queries", func() {
 		}`
 
 		It("Success", func() {
-			contextUser := datagenerator.NewRandomUser()
 			user := datagenerator.NewRandomUser()
-			role1 := datagenerator.NewRandomRole()
 
 			graphRequest := graphqlRequest{
 				Query: fmt.Sprintf(graphql, user.ID),
 			}
 			request, _ := json.Marshal(graphRequest)
 
-			tokenString, err := services.GenerateTokenStringFromUser(contextUser, jwtKeys.Private)
+			tokenString, err := auth.GenerateTokenStringFromUser(contextUser, jwtKeys.Private)
 			Expect(err).To(BeNil())
 
 			testResponse := &graphqlUserResponse{}
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
 			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("%s %s", middlewares.BearerPrefix, tokenString))
 
-			sqlexpectations.ExpectRolesByUserID(mock, []models.Role{role1}, contextUser.ID)
 			mockCerbos.EXPECT().IsAllowed(gomock.Any(), gomock.Any(), gomock.Any(), accesscontrol.DELETE).Return(true, nil)
 			sqlexpectations.ExpectDeleteUser(mock, user.ID)
 

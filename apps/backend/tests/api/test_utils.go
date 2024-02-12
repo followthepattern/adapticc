@@ -21,7 +21,8 @@ import (
 	"github.com/followthepattern/adapticc/config"
 	"github.com/followthepattern/adapticc/container"
 	"github.com/followthepattern/adapticc/controllers"
-	"github.com/followthepattern/adapticc/repositories/email"
+	"github.com/followthepattern/adapticc/features/mail"
+
 	"github.com/golang-jwt/jwt/v4"
 )
 
@@ -44,7 +45,7 @@ func runRequest(srv http.Handler, r *http.Request, data interface{}) (int, error
 	return response.Code, nil
 }
 
-func NewMockHandler(ac accesscontrol.AccessControl, emailClient email.Email, db *sql.DB, cfg config.Config, jwtKeys config.JwtKeyPair) http.Handler {
+func NewMockHandler(ac accesscontrol.AccessControl, emailClient mail.Email, db *sql.DB, cfg config.Config, jwtKeys config.JwtKeyPair) http.Handler {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
 	cont := container.New(ac, emailClient, db, cfg, logger, jwtKeys)
@@ -53,7 +54,7 @@ func NewMockHandler(ac accesscontrol.AccessControl, emailClient email.Email, db 
 
 	schemaDef, _ := schema.GetSchema(cfg.Server)
 
-	graphqlHandler := graphql.New(ctrls, schemaDef)
+	graphqlHandler := graphql.NewHandler(ctrls, schemaDef)
 
 	restHandler := rest.New(ctrls)
 
