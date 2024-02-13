@@ -12,7 +12,6 @@ import (
 	"github.com/followthepattern/adapticc/api/middlewares"
 	"github.com/followthepattern/adapticc/config"
 	"github.com/followthepattern/adapticc/features/auth"
-	"github.com/followthepattern/adapticc/features/role"
 	"github.com/followthepattern/adapticc/features/user"
 	"github.com/followthepattern/adapticc/mocks"
 	"github.com/followthepattern/adapticc/models"
@@ -57,6 +56,7 @@ var _ = Describe("User graphql queries", func() {
 		mockCtrl    *gomock.Controller
 		mockCerbos  *mocks.MockClient
 		contextUser auth.AuthUser
+		roleIDs     []string
 	)
 
 	BeforeEach(func() {
@@ -84,9 +84,9 @@ var _ = Describe("User graphql queries", func() {
 
 		password := datagenerator.String(18)
 		passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-		Expect(err).ShouldNot(BeNil())
+		Expect(err).Should(BeNil())
 		contextUser = datagenerator.NewRandomAuthUser(passwordHash)
-
+		roleIDs = []string{datagenerator.String(18), datagenerator.String(18)}
 	})
 
 	Context("Single", func() {
@@ -115,6 +115,7 @@ var _ = Describe("User graphql queries", func() {
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
 			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("Bearer %s", tokenString))
 
+			sqlexpectations.ExpectRoleIDsByUserID(mock, roleIDs, contextUser.ID)
 			mockCerbos.EXPECT().IsAllowed(gomock.Any(), gomock.Any(), gomock.Any(), accesscontrol.READ).Return(true, nil)
 			sqlexpectations.ExpectGetUserByID(mock, user, user.ID)
 
@@ -176,6 +177,7 @@ var _ = Describe("User graphql queries", func() {
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
 			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("Bearer %s", tokenString))
 
+			sqlexpectations.ExpectRoleIDsByUserID(mock, roleIDs, contextUser.ID)
 			mockCerbos.EXPECT().IsAllowed(gomock.Any(), gomock.Any(), gomock.Any(), accesscontrol.READ).Return(true, nil)
 			sqlexpectations.ExpectUsers(mock, users, listRequestParams)
 
@@ -197,7 +199,6 @@ var _ = Describe("User graphql queries", func() {
 
 		It("Success withouth page and pageSize params", func() {
 			users := []user.UserModel{datagenerator.NewRandomUser(), datagenerator.NewRandomUser(), datagenerator.NewRandomUser()}
-			role1 := datagenerator.NewRandomRole()
 
 			listRequestParams := user.UserListRequestParams{
 				Filter: models.ListFilter{
@@ -235,7 +236,7 @@ var _ = Describe("User graphql queries", func() {
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
 			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("Bearer %s", tokenString))
 
-			sqlexpectations.ExpectRolesByUserID(mock, []role.RoleModel{role1}, users[0].ID)
+			sqlexpectations.ExpectRoleIDsByUserID(mock, roleIDs, contextUser.ID)
 			mockCerbos.EXPECT().IsAllowed(gomock.Any(), gomock.Any(), gomock.Any(), accesscontrol.READ).Return(true, nil)
 			sqlexpectations.ExpectUsersWithoutPaging(mock, users, listRequestParams)
 
@@ -284,7 +285,7 @@ var _ = Describe("User graphql queries", func() {
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
 			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("%s %s", middlewares.BearerPrefix, tokenString))
 
-			sqlexpectations.ExpectGetUserByID(mock, user, user.ID)
+			sqlexpectations.ExpectGetUserByID(mock, user, contextUser.ID)
 
 			code, err := runRequest(handler, httpRequest, testResponse)
 			Expect(err).To(BeNil())
@@ -327,6 +328,7 @@ var _ = Describe("User graphql queries", func() {
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
 			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("%s %s", middlewares.BearerPrefix, tokenString))
 
+			sqlexpectations.ExpectRoleIDsByUserID(mock, roleIDs, contextUser.ID)
 			mockCerbos.EXPECT().IsAllowed(gomock.Any(), gomock.Any(), gomock.Any(), accesscontrol.CREATE).Return(true, nil)
 			sqlexpectations.ExpectCreateUser(mock, contextUser.ID, user)
 
@@ -368,6 +370,7 @@ var _ = Describe("User graphql queries", func() {
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
 			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("Bearer %s", tokenString))
 
+			sqlexpectations.ExpectRoleIDsByUserID(mock, roleIDs, contextUser.ID)
 			mockCerbos.EXPECT().IsAllowed(gomock.Any(), gomock.Any(), gomock.Any(), accesscontrol.UPDATE).Return(true, nil)
 			sqlexpectations.ExpectUpdateUser(mock, contextUser.ID, user)
 
@@ -406,6 +409,7 @@ var _ = Describe("User graphql queries", func() {
 			httpRequest := httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request))
 			httpRequest.Header.Set(middlewares.AuthorizationHeader, fmt.Sprintf("%s %s", middlewares.BearerPrefix, tokenString))
 
+			sqlexpectations.ExpectRoleIDsByUserID(mock, roleIDs, contextUser.ID)
 			mockCerbos.EXPECT().IsAllowed(gomock.Any(), gomock.Any(), gomock.Any(), accesscontrol.DELETE).Return(true, nil)
 			sqlexpectations.ExpectDeleteUser(mock, user.ID)
 

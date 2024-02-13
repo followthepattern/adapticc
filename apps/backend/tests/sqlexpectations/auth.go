@@ -63,3 +63,26 @@ func ExpectCreateAuthUser(mock sqlmock.Sqlmock, insert auth.AuthUser) {
 	mock.ExpectExec(sqlQuery).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 }
+
+func ExpectRoleIDsByUserID(mock sqlmock.Sqlmock, results []string, userID types.String) {
+	sqlQuery := fmt.Sprintf(`
+	SELECT
+		"r"."code"
+	FROM
+		"usr"."user_role" AS "ur"
+	INNER JOIN
+		"usr"."roles" AS "r" ON ("r"."id" = "ur"."role_id")
+	WHERE ("user_id" = '%v')`, userID)
+
+	rows := sqlmock.NewRows([]string{"code"})
+
+	for _, result := range results {
+		values := []driver.Value{
+			result,
+		}
+		rows.AddRow(values...)
+	}
+
+	mock.ExpectQuery(sqlQuery).
+		WillReturnRows(rows)
+}
