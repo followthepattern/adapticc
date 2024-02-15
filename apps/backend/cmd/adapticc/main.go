@@ -18,8 +18,8 @@ import (
 	"github.com/followthepattern/adapticc/config"
 	"github.com/followthepattern/adapticc/container"
 	"github.com/followthepattern/adapticc/controllers"
+	"github.com/followthepattern/adapticc/features/mail"
 	"github.com/followthepattern/adapticc/hostserver"
-	"github.com/followthepattern/adapticc/repositories/email"
 
 	_ "github.com/lib/pq"
 )
@@ -58,7 +58,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	emailClient := email.NewClient()
+	emailClient := mail.NewClient()
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
@@ -67,7 +67,7 @@ func main() {
 
 	ctrls := controllers.New(cont)
 
-	graphqlHandler := graphql.New(ctrls, schemaDef)
+	graphqlHandler := graphql.NewHandler(ctrls, schemaDef)
 
 	restHandler := rest.New(ctrls)
 

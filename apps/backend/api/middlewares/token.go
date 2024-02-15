@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/followthepattern/adapticc/models"
+	"github.com/followthepattern/adapticc/features/auth"
 	"github.com/followthepattern/adapticc/types"
 	"github.com/golang-jwt/jwt/v4"
 )
@@ -22,7 +22,7 @@ func invalidTokenError(field string) error {
 	return fmt.Errorf("%s - missing field: %s", InvalidToken, field)
 }
 
-func getAuthorizedUserFromClaims(claims jwt.MapClaims) (*models.User, error) {
+func getAuthorizedUserFromClaims(claims jwt.MapClaims) (*auth.AuthUser, error) {
 	id, ok := claims["ID"].(string)
 	if !ok {
 		return nil, invalidTokenError("ID")
@@ -52,7 +52,7 @@ func getAuthorizedUserFromClaims(claims jwt.MapClaims) (*models.User, error) {
 		return nil, errors.New(ExpiredToken)
 	}
 
-	return &models.User{
+	return &auth.AuthUser{
 		ID:        types.StringFrom(id),
 		Email:     types.StringFrom(email),
 		FirstName: types.StringFrom(firstName),

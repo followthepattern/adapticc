@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/followthepattern/adapticc/features/product"
 	"github.com/followthepattern/adapticc/models"
 	"github.com/followthepattern/adapticc/types"
 )
@@ -18,7 +19,7 @@ var productColumns = []string{
 	"update_user_id",
 	"updated_at"}
 
-func ExpectProduct(mock sqlmock.Sqlmock, result models.Product) {
+func ExpectProduct(mock sqlmock.Sqlmock, result product.ProductModel) {
 	sqlQuery := fmt.Sprintf(
 		`SELECT
 			"created_at",
@@ -51,7 +52,7 @@ func ExpectProduct(mock sqlmock.Sqlmock, result models.Product) {
 		WillReturnRows(rows)
 }
 
-func ExpectProducts(mock sqlmock.Sqlmock, filter models.ListFilter, page int, pageSize int, results []models.Product) {
+func ExpectProducts(mock sqlmock.Sqlmock, filter models.ListFilter, page int, pageSize int, results []product.ProductModel) {
 	countQuery := fmt.Sprintf(`
 	SELECT
 		COUNT(\*) AS "count"
@@ -108,7 +109,7 @@ func ExpectProducts(mock sqlmock.Sqlmock, filter models.ListFilter, page int, pa
 		WillReturnRows(rows)
 }
 
-func CreateProduct(mock sqlmock.Sqlmock, userID types.String, product models.Product) {
+func CreateProduct(mock sqlmock.Sqlmock, userID types.String, product product.ProductModel) {
 	sqlQuery := fmt.Sprintf(`
 		INSERT INTO "usr"."products"
 			("created_at",
@@ -126,7 +127,7 @@ func CreateProduct(mock sqlmock.Sqlmock, userID types.String, product models.Pro
 		WillReturnResult(sqlmock.NewResult(1, 1))
 }
 
-func UpdateProduct(mock sqlmock.Sqlmock, userID types.String, product models.Product) {
+func UpdateProduct(mock sqlmock.Sqlmock, userID types.String, product product.ProductModel) {
 	sqlQuery := fmt.Sprintf(`
 	UPDATE
 		"usr"."products"
@@ -142,7 +143,7 @@ func UpdateProduct(mock sqlmock.Sqlmock, userID types.String, product models.Pro
 		WillReturnResult(sqlmock.NewResult(1, 1))
 }
 
-func DeleteProduct(mock sqlmock.Sqlmock, product models.Product) {
+func DeleteProduct(mock sqlmock.Sqlmock, product product.ProductModel) {
 	sqlQuery := fmt.Sprintf(`DELETE FROM "usr"."products" WHERE ("id" = '%s')`,
 		product.ID.Data)
 

@@ -5,11 +5,11 @@ import (
 	"fmt"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/followthepattern/adapticc/models"
+	"github.com/followthepattern/adapticc/features/auth"
 	"github.com/followthepattern/adapticc/types"
 )
 
-func ExpectGetAuthUserByEmail(mock sqlmock.Sqlmock, result models.AuthUser, email types.String) {
+func ExpectGetAuthUserByEmail(mock sqlmock.Sqlmock, result auth.AuthUser, email types.String) {
 	sqlQuery := fmt.Sprintf(`SELECT "active", "created_at", "creation_user_id", "email", "first_name", "id", "last_name", "password_hash", "update_user_id", "updated_at" FROM "usr"."users" WHERE ("email" = '%v') LIMIT 1`, email)
 
 	columns := []string{
@@ -44,7 +44,7 @@ func ExpectVerifyEmail(mock sqlmock.Sqlmock, count int, email types.String) {
 		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(count))
 }
 
-func ExpectCreateAuthUser(mock sqlmock.Sqlmock, insert models.AuthUser) {
+func ExpectCreateAuthUser(mock sqlmock.Sqlmock, insert auth.AuthUser) {
 	sqlQuery := fmt.Sprintf(`
 	INSERT INTO
 		"usr"."users" ("active",
@@ -62,4 +62,27 @@ func ExpectCreateAuthUser(mock sqlmock.Sqlmock, insert models.AuthUser) {
 
 	mock.ExpectExec(sqlQuery).
 		WillReturnResult(sqlmock.NewResult(1, 1))
+}
+
+func ExpectRoleIDsByUserID(mock sqlmock.Sqlmock, results []string, userID types.String) {
+	sqlQuery := fmt.Sprintf(`
+	SELECT
+		"r"."code"
+	FROM
+		"usr"."user_role" AS "ur"
+	INNER JOIN
+		"usr"."roles" AS "r" ON ("r"."id" = "ur"."role_id")
+	WHERE ("user_id" = '%v')`, userID)
+
+	rows := sqlmock.NewRows([]string{"code"})
+
+	for _, result := range results {
+		values := []driver.Value{
+			result,
+		}
+		rows.AddRow(values...)
+	}
+
+	mock.ExpectQuery(sqlQuery).
+		WillReturnRows(rows)
 }

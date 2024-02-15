@@ -6,19 +6,19 @@ import (
 
 	"github.com/followthepattern/adapticc/accesscontrol"
 	"github.com/followthepattern/adapticc/config"
-	"github.com/followthepattern/adapticc/repositories/email"
+	"github.com/followthepattern/adapticc/features/mail"
 )
 
 type Container struct {
 	ac      accesscontrol.AccessControl
-	email   email.Email
+	email   mail.Email
 	db      *sql.DB
 	cfg     config.Config
 	jwtKeys config.JwtKeyPair
 	logger  *slog.Logger
 }
 
-func New(ac accesscontrol.AccessControl, emailClient email.Email, db *sql.DB, cfg config.Config, logger *slog.Logger, jwtKeys config.JwtKeyPair) Container {
+func New(ac accesscontrol.AccessControl, emailClient mail.Email, db *sql.DB, cfg config.Config, logger *slog.Logger, jwtKeys config.JwtKeyPair) Container {
 	return Container{
 		ac:      ac,
 		db:      db,
@@ -45,7 +45,7 @@ func (c Container) GetLogger() *slog.Logger {
 	return c.logger
 }
 
-func (c Container) GetEmail() email.Email {
+func (c Container) GetEmail() mail.Email {
 	return c.email
 }
 

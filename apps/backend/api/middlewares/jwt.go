@@ -7,8 +7,7 @@ import (
 	"net/http"
 
 	"github.com/followthepattern/adapticc/config"
-	"github.com/followthepattern/adapticc/models"
-	"github.com/followthepattern/adapticc/services"
+	"github.com/followthepattern/adapticc/features/auth"
 	"github.com/golang-jwt/jwt/v4"
 )
 
@@ -27,10 +26,10 @@ func NewJWT(logger *slog.Logger, jwtKeys config.JwtKeyPair) JWT {
 
 func (a JWT) Authenticate(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
-		var userContext models.User
+		var userContext auth.AuthUser
 
 		defer func() {
-			ctx := context.WithValue(r.Context(), services.CtxUserKey, userContext)
+			ctx := context.WithValue(r.Context(), auth.CtxUserKey, userContext)
 			r = r.WithContext(ctx)
 			next.ServeHTTP(w, r)
 		}()

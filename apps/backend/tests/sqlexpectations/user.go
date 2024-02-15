@@ -4,7 +4,7 @@ import (
 	"database/sql/driver"
 	"fmt"
 
-	"github.com/followthepattern/adapticc/models"
+	"github.com/followthepattern/adapticc/features/user"
 	"github.com/followthepattern/adapticc/types"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -21,7 +21,7 @@ var userColumns = []string{
 	"update_user_id",
 	"updated_at"}
 
-func ExpectGetUserByEmail(mock sqlmock.Sqlmock, result models.User, email types.String) {
+func ExpectGetUserByEmail(mock sqlmock.Sqlmock, result user.UserModel, email types.String) {
 	sqlQuery := fmt.Sprintf(`SELECT "active", "created_at", "creation_user_id", "email", "first_name", "id", "last_name", "update_user_id", "updated_at" FROM "usr"."users" WHERE ("email" = '%v') LIMIT 1`, email)
 
 	rows := sqlmock.NewRows(userColumns)
@@ -43,7 +43,7 @@ func ExpectGetUserByEmail(mock sqlmock.Sqlmock, result models.User, email types.
 		WillReturnRows(rows)
 }
 
-func ExpectGetUserByID(mock sqlmock.Sqlmock, result models.User, id types.String) {
+func ExpectGetUserByID(mock sqlmock.Sqlmock, result user.UserModel, id types.String) {
 	sqlQuery := fmt.Sprintf(`SELECT "active", "created_at", "creation_user_id", "email", "first_name", "id", "last_name", "update_user_id", "updated_at" FROM "usr"."users" WHERE ("id" = '%v') LIMIT 1`, id)
 
 	rows := sqlmock.NewRows(userColumns)
@@ -65,7 +65,7 @@ func ExpectGetUserByID(mock sqlmock.Sqlmock, result models.User, id types.String
 		WillReturnRows(rows)
 }
 
-func ExpectUsers(mock sqlmock.Sqlmock, results []models.User, listRequestParams models.UserListRequestParams) {
+func ExpectUsers(mock sqlmock.Sqlmock, results []user.UserModel, listRequestParams user.UserListRequestParams) {
 	countQuery := fmt.Sprintf(`
 	SELECT
 		COUNT(\*) AS "count"
@@ -126,7 +126,7 @@ func ExpectUsers(mock sqlmock.Sqlmock, results []models.User, listRequestParams 
 		WillReturnRows(rows)
 }
 
-func ExpectUsersWithoutPaging(mock sqlmock.Sqlmock, results []models.User, listRequestParams models.UserListRequestParams) {
+func ExpectUsersWithoutPaging(mock sqlmock.Sqlmock, results []user.UserModel, listRequestParams user.UserListRequestParams) {
 	countQuery := fmt.Sprintf(`
 	SELECT
 		COUNT(\*) AS "count"
@@ -187,7 +187,7 @@ func ExpectUsersWithoutPaging(mock sqlmock.Sqlmock, results []models.User, listR
 		WillReturnRows(rows)
 }
 
-func ExpectCreateUser(mock sqlmock.Sqlmock, userID types.String, insert models.User) {
+func ExpectCreateUser(mock sqlmock.Sqlmock, userID types.String, insert user.UserModel) {
 	sqlQuery := fmt.Sprintf(`
 	INSERT INTO
 		"usr"."users" ("active",
@@ -208,7 +208,7 @@ func ExpectCreateUser(mock sqlmock.Sqlmock, userID types.String, insert models.U
 		WillReturnResult(sqlmock.NewResult(1, 1))
 }
 
-func ExpectUpdateUser(mock sqlmock.Sqlmock, userID types.String, model models.User) {
+func ExpectUpdateUser(mock sqlmock.Sqlmock, userID types.String, model user.UserModel) {
 	sqlQuery := fmt.Sprintf(`
 	UPDATE
 		"usr"."users"
