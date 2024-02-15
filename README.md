@@ -1,5 +1,7 @@
 # adapticc
 
+[followthepattern.net](https://followthepattern.net)
+
 **adapticc** is a web application template designed to help you build modern web applications quickly and efficiently. With a backend written in Golang and a frontend in React-TypeScript, adapticc provides a solid foundation for small to medium businesses or anyone looking to create a web app with a modern, fancy UI that is cloud-ready, containerized, fast, and well-tested.
 
 ## Features
