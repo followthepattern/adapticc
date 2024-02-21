@@ -1,5 +1,4 @@
 import { RouteObject } from "react-router-dom"
-import Home from "./(public)/home"
 import Login from "./(auth)/login/page"
 import AuthLayout from "./(auth)/layout"
 import AccountLayout from "./(account)/layout"
@@ -17,7 +16,12 @@ import UserEdit from "./(account)/users/[id]/edit/page"
 export const Routes: RouteObject[] = [
     {
         path: "/",
-        element: <Home />,
+        element: <AuthLayout />,
+        children: [{
+            path: "/",
+            element: <Login />,
+
+    }]
     },
     {
         path: "/",
