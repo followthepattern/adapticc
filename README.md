@@ -41,7 +41,11 @@ To get adapticc up and running, simply follow these steps:
     docker-compose up
     ```
 
-4. Open your browser and navigate to `http://localhost:3000` to view the application.
+4. Open your browser and navigate to `http://localhost:3000` to view the application and log in.
+
+- Test email address: `admin@admin.com`
+- Test Password: `Admin@123!`
+
 
 ## Usage
 
