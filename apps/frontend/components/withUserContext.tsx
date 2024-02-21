@@ -1,9 +1,10 @@
 import { getUserProfile } from "@/graphql/users/query";
-import { gql, useLazyQuery } from "@apollo/client";
+import { ApolloError, gql, useLazyQuery } from "@apollo/client";
 import { useEffect } from "react";
 import UserContext from "./userContext";
 import { useTokenStore } from "@/lib/store";
 import { QueryResponse } from "@/graphql/query";
+import LoginExpired from "@/app/(auth)/login/components/loginLoggedOut";
 
 interface WithUserContextProperties {
     children?: any;
@@ -21,8 +22,11 @@ const WithUserContext = (props: WithUserContextProperties) => {
     }, [called, executeGetUserProfile]);
 
     if (error) {
-        removeToken();
-        return <div>Something went wrong...</div>
+        if (!(error instanceof ApolloError)) {
+            console.debug(error);
+        }
+
+        return <LoginExpired />
     }
 
     const profile = data?.users?.profile;

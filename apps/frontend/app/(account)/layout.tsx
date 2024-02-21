@@ -8,8 +8,6 @@ import "react-toastify/dist/ReactToastify.css";
 import AccountToastContainer from "./components/toastContainer/accountToastContainer";
 
 export default function AccountLayout() {
-  // const segments = [];
-
   const { token } = useTokenStore();
 
   if (token == "") {
