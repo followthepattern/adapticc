@@ -2,47 +2,62 @@ package test_integration
 
 import (
 	"context"
+	"fmt"
 	"os"
+	"path/filepath"
 
 	"dagger.io/dagger"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Health", func() {
+var _ = Describe("HealthCheck", func() {
 	var (
-		ctx    context.Context
-		client *dagger.Client
+		backendAbsolutePath, _ = filepath.Abs("./../../")
+
+		ctx     context.Context
+		client  *dagger.Client
+		backend *dagger.Service
 	)
+
 	BeforeEach(func() {
 		var err error
 		ctx = context.Background()
 		client, err = dagger.Connect(ctx, dagger.WithLogOutput(os.Stderr))
+		backendDirectory := client.Host().Directory(backendAbsolutePath)
+
+		// Database service used for application tests
+		backend = client.Container().From("golang:1.21").
+			WithDirectory("/backend", backendDirectory).
+			WithWorkdir("/backend").
+			WithExec([]string{"go", "run", "./cmd/adapticc"}).
+			WithExposedPort(8080).
+			AsService()
+
 		Expect(err).Should(BeNil())
 	})
 
-	Context("Register", func() {
+	When("backend service successfully runs", func() {
+		Context("http tester client", func() {
+			FIt("calles healthcheck endpoint", func() {
 
-		FIt("Success", func() {
-			var err error
-			src := client.Host().Directory(".")
+				testFolder := client.Host().Directory(".")
 
-			// get `golang` image
-			golang := client.Container().From("golang:latest")
+				// Run application tests
+				out, err := client.Container().From("golang:1.21").
+					WithServiceBinding("backend", backend).
+					WithDirectory("/httpClient", testFolder).
+					WithWorkdir("/httpClient").
+					WithExec([]string{"go", "run", "./tester_client/client.go"}). // execute go test
+					Stdout(ctx)
 
-			// mount cloned repository into `golang` image
-			golang = golang.WithDirectory("/apps/backend", src).WithWorkdir("/apps/backend")
+				Expect(err).Should(BeNil())
 
-			// define the application build command
-			outputPath := "build/"
-			golang = golang.WithExec([]string{"go", "build", "./cmd/adapticc", "-o", outputPath})
-
-			// get reference to build output directory in container
-			output := golang.Directory(outputPath)
-
-			// write contents of container build/ directory to the host
-			_, err = output.Export(ctx, outputPath)
-			Expect(err).Should(BeNil())
+				fmt.Println(out)
+			})
+			FIt("just test", func() {
+				Expect(1).To(Equal(1))
+			})
 		})
 	})
 
