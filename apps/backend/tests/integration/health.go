@@ -1,4 +1,4 @@
-package test_api
+package test_integration
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Dagger", func() {
+var _ = Describe("Health", func() {
 	var (
 		ctx    context.Context
 		client *dagger.Client
