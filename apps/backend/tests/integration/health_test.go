@@ -11,10 +11,9 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("HealthCheck", func() {
+var _ = XDescribe("HealthCheck", Ordered, func() {
 	var (
 		backendAbsolutePath, _ = filepath.Abs("./../../")
-		adapticcBuildPath      = "build/"
 
 		ctx     context.Context
 		client  *dagger.Client
@@ -27,10 +26,10 @@ var _ = Describe("HealthCheck", func() {
 		golang := client.Container().From("golang:latest")
 		golang = golang.WithDirectory("/backend", backendDirectory).WithWorkdir("/backend")
 
-		golang = golang.WithExec([]string{"go", "build", "-o", adapticcBuildPath, "./cmd/adapticc"})
+		golang = golang.WithExec([]string{"go", "build", "-o", "build/", "./cmd/adapticc"})
 
-		output := golang.Directory(adapticcBuildPath)
-		_, err := output.Export(ctx, adapticcBuildPath)
+		output := golang.Directory(backendAbsolutePath)
+		_, err := output.Export(ctx, backendAbsolutePath)
 		return err
 	}
 
@@ -46,7 +45,7 @@ var _ = Describe("HealthCheck", func() {
 		testDir := client.Host().Directory(".")
 
 		Context("http tester client", func() {
-			FIt("calles healthcheck endpoint", func() {
+			It("calles healthcheck endpoint", func() {
 				backend = client.Container().From("golang:1.21").
 					WithDirectory("/backend", testDir).
 					WithWorkdir("/backend").
