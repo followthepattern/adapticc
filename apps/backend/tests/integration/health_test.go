@@ -11,78 +11,78 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = XDescribe("HealthCheck", Ordered, func() {
+var _ = Describe("HealthCheck", Ordered, func() {
 	var (
 		backendAbsolutePath, _ = filepath.Abs("./../../")
+		testDir                *dagger.Directory
 
 		ctx     context.Context
 		client  *dagger.Client
 		backend *dagger.Service
 	)
 
-	buildAdapticc := func(client *dagger.Client) error {
-		backendDirectory := client.Host().Directory(backendAbsolutePath)
-
-		golang := client.Container().From("golang:latest")
-		golang = golang.WithDirectory("/backend", backendDirectory).WithWorkdir("/backend")
-
-		golang = golang.WithExec([]string{"go", "build", "-o", "build/", "./cmd/adapticc"})
-
-		output := golang.Directory(backendAbsolutePath)
-		_, err := output.Export(ctx, backendAbsolutePath)
-		return err
-	}
-
-	When("build adapticc", func() {
+	BeforeAll(func() {
 		var err error
 		ctx = context.Background()
+
 		client, err = dagger.Connect(ctx, dagger.WithLogOutput(os.Stderr))
-		Expect(err).Should(BeNil())
+		Expect(err).To(BeNil())
 
-		err = buildAdapticc(client)
-		Expect(err).Should(BeNil())
+		backendDirectory := client.Host().Directory(backendAbsolutePath)
 
-		testDir := client.Host().Directory(".")
+		builder := client.Container().From("golang:latest")
+		builder = builder.WithDirectory("/backend", backendDirectory).WithWorkdir("/backend")
 
-		Context("http tester client", func() {
-			It("calles healthcheck endpoint", func() {
-				backend = client.Container().From("golang:1.21").
-					WithDirectory("/backend", testDir).
-					WithWorkdir("/backend").
-					WithExec([]string{"./build/adapticc"}).
-					WithExposedPort(8080).
-					AsService()
+		outputPath := "out/"
+		builder = builder.WithExec([]string{"go", "build", "-o", outputPath, "./cmd/adapticc"})
 
-				// Run application tests
-				out, err := client.Container().From("golang:1.21").
-					WithServiceBinding("backend", backend).
-					WithDirectory("/httpClient", testDir).
-					WithWorkdir("/httpClient").
-					WithExec([]string{"go", "run", "./tester_client/client.go"}). // execute go test
-					Stdout(ctx)
+		output := builder.Directory(outputPath)
+		_, err = output.Export(ctx, filepath.Join(backendAbsolutePath, outputPath))
+		Expect(err).To(BeNil())
 
-				Expect(err).Should(BeNil())
+		backend = client.Container().From("golang:1.21").
+			WithDirectory("/backend", backendDirectory).
+			WithWorkdir("/backend").
+			WithExec([]string{"./out/adapticc"}).
+			WithExposedPort(8080).
+			AsService()
 
-				fmt.Println(out)
-			})
-			It("just test", func() {
+	})
 
-				// Run application tests
-				out, err := client.Container().From("golang:1.21").
-					WithServiceBinding("backend", backend).
-					WithDirectory("/httpClient", testDir).
-					WithWorkdir("/httpClient").
-					WithExec([]string{"go", "run", "./tester_client/client.go"}). // execute go test
-					Stdout(ctx)
+	Context("healtchcheck", func() {
+		BeforeEach(func() {
+			testDir = client.Host().Directory(".")
+		})
 
-				Expect(err).Should(BeNil())
+		It("calles healthcheck endpoint", func() {
+			out, err := client.Container().From("golang:1.21").
+				WithServiceBinding("backend", backend).
+				WithDirectory("/httpClient", testDir).
+				WithWorkdir("/httpClient").
+				WithExec([]string{"go", "run", "./tester_client/client.go"}). // execute go test
+				Stdout(ctx)
 
-				fmt.Println(out)
-			})
+			Expect(err).Should(BeNil())
+
+			fmt.Println(out)
+		})
+
+		It("just test", func() {
+			// Run application tests
+			out, err := client.Container().From("golang:1.21").
+				WithServiceBinding("backend", backend).
+				WithDirectory("/httpClient", testDir).
+				WithWorkdir("/httpClient").
+				WithExec([]string{"go", "run", "./tester_client/client.go"}). // execute go test
+				Stdout(ctx)
+
+			Expect(err).Should(BeNil())
+
+			fmt.Println(out)
 		})
 	})
 
-	AfterEach(func() {
+	AfterAll(func() {
 		client.Close()
 	})
 
