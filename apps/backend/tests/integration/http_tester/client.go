@@ -5,10 +5,17 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
-	result, err := runRequest()
+	args := os.Args
+
+	if len(args) < 3 {
+		log.Fatal("provide the method and the url you want to test")
+	}
+
+	result, err := runGetRequest(args[1], args[2])
 	if err != nil {
 		log.Fatal("error", err)
 	}
@@ -16,11 +23,11 @@ func main() {
 	fmt.Println(result)
 }
 
-func runRequest() (string, error) {
+func runGetRequest(method string, url string) (string, error) {
 	var err error
 	var client = &http.Client{}
 
-	request, err := http.NewRequest("GET", "http://backend:8080/healthcheck", nil)
+	request, err := http.NewRequest(method, url, nil)
 	if err != nil {
 		return "", err
 	}

@@ -2,9 +2,9 @@ package test_integration
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"dagger.io/dagger"
 	. "github.com/onsi/ginkgo/v2"
@@ -59,26 +59,15 @@ var _ = Describe("HealthCheck", Ordered, func() {
 				WithServiceBinding("backend", backend).
 				WithDirectory("/httpClient", testDir).
 				WithWorkdir("/httpClient").
-				WithExec([]string{"go", "run", "./tester_client/client.go"}). // execute go test
+				WithExec([]string{"go", "run", "./http_tester/client.go", "GET", "http://backend:8080/healthcheck"}).
 				Stdout(ctx)
 
 			Expect(err).Should(BeNil())
 
-			fmt.Println(out)
-		})
+			splits := strings.Split(out, "\n")
+			Expect(splits).To(HaveLen(2))
 
-		It("just test", func() {
-			// Run application tests
-			out, err := client.Container().From("golang:1.21").
-				WithServiceBinding("backend", backend).
-				WithDirectory("/httpClient", testDir).
-				WithWorkdir("/httpClient").
-				WithExec([]string{"go", "run", "./tester_client/client.go"}). // execute go test
-				Stdout(ctx)
-
-			Expect(err).Should(BeNil())
-
-			fmt.Println(out)
+			Expect(splits[0]).To(Equal("0.0.0"))
 		})
 	})
 
