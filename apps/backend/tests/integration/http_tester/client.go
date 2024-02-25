@@ -6,16 +6,17 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 )
 
 func main() {
 	args := os.Args
 
-	if len(args) < 3 {
+	if len(args) < 4 {
 		log.Fatal("provide the method and the url you want to test")
 	}
 
-	result, err := runRequest(args[1], args[2])
+	result, err := runRequest(args[1], args[2], args[3])
 	if err != nil {
 		log.Fatal("error", err)
 	}
@@ -23,11 +24,13 @@ func main() {
 	fmt.Println(result)
 }
 
-func runRequest(method string, url string) (string, error) {
+func runRequest(method string, url string, body string) (string, error) {
 	var err error
 	var client = &http.Client{}
 
-	request, err := http.NewRequest(method, url, nil)
+	reader := strings.NewReader(body)
+
+	request, err := http.NewRequest(method, url, reader)
 	if err != nil {
 		return "", err
 	}

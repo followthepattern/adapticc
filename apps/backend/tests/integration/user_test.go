@@ -12,7 +12,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("HealthCheck", Ordered, func() {
+var _ = Describe("User queries", Ordered, func() {
 	var (
 		backendAbsolutePath, _ = filepath.Abs("./../../")
 		testDir                *dagger.Directory
@@ -20,6 +20,8 @@ var _ = Describe("HealthCheck", Ordered, func() {
 		ctx     context.Context
 		client  *dagger.Client
 		backend *dagger.Service
+
+		graphQLURL = "http://backend:8080/graphql"
 	)
 
 	BeforeAll(func() {
@@ -41,7 +43,16 @@ var _ = Describe("HealthCheck", Ordered, func() {
 		_, err = output.Export(ctx, filepath.Join(backendAbsolutePath, outputPath))
 		Expect(err).To(BeNil())
 
+		database := client.Container().From("postgres:latest").
+			WithEnvVariable("POSTGRES_DB", "adapticc").
+			WithEnvVariable("POSTGRES_USER", "adapticcuser").
+			WithEnvVariable("POSTGRES_PASSWORD", "dbpass").
+			WithExec([]string{"postgres"}).
+			WithExposedPort(5432).
+			AsService()
+
 		backend = client.Container().From("golang:1.21").
+			WithServiceBinding("db", database).
 			WithDirectory("/backend", backendDirectory).
 			WithWorkdir("/backend").
 			WithExec([]string{"./out/adapticc"}).
@@ -50,17 +61,28 @@ var _ = Describe("HealthCheck", Ordered, func() {
 
 	})
 
-	Context("healtchcheck", func() {
+	Context("Single", func() {
 		BeforeEach(func() {
 			testDir = client.Host().Directory(".")
 		})
 
-		FIt("calles healthcheck endpoint", func() {
+		It("succeeds to return with a user", func() {
+			query := `{
+				users {
+					profile {
+						id
+						email
+						firstName
+						lastName
+					}
+				}
+			}`
+
 			out, err := client.Container().From("golang:1.21").
 				WithServiceBinding("backend", backend).
 				WithDirectory("/httpClient", testDir).
 				WithWorkdir("/httpClient").
-				WithExec([]string{"go", "run", "./http_tester/client.go", http.MethodGet, "http://backend:8080/healthcheck", ""}).
+				WithExec([]string{"go", "run", "./http_tester/client.go", http.MethodPost, graphQLURL, query}).
 				Stdout(ctx)
 
 			Expect(err).Should(BeNil())
