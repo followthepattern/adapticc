@@ -55,7 +55,7 @@ var _ = Describe("HealthCheck", Ordered, func() {
 			testDir = client.Host().Directory(".")
 		})
 
-		FIt("calles healthcheck endpoint", func() {
+		It("calles healthcheck endpoint", func() {
 			out, err := client.Container().From("golang:1.21").
 				WithServiceBinding("backend", backend).
 				WithDirectory("/httpClient", testDir).
