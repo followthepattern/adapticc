@@ -15,7 +15,7 @@ func main() {
 		log.Fatal("provide the method and the url you want to test")
 	}
 
-	result, err := runGetRequest(args[1], args[2])
+	result, err := runRequest(args[1], args[2])
 	if err != nil {
 		log.Fatal("error", err)
 	}
@@ -23,7 +23,7 @@ func main() {
 	fmt.Println(result)
 }
 
-func runGetRequest(method string, url string) (string, error) {
+func runRequest(method string, url string) (string, error) {
 	var err error
 	var client = &http.Client{}
 
