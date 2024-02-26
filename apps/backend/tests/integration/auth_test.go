@@ -9,11 +9,27 @@ import (
 	"path/filepath"
 
 	"dagger.io/dagger"
+	"github.com/followthepattern/adapticc/features/auth"
+	"github.com/graph-gophers/graphql-go/errors"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("User queries", Ordered, func() {
+type graphqlAuthResponse struct {
+	Data   authenticationData `json:"data"`
+	Errors []*errors.QueryError
+}
+
+type authenticationData struct {
+	Authentication authentication `json:"authentication"`
+}
+
+type authentication struct {
+	Register auth.RegisterResponse `json:"register"`
+	Login    auth.LoginResponse    `json:"login"`
+}
+
+var _ = Describe("Auth queries", Ordered, func() {
 	var (
 		backendAbsolutePath, _ = filepath.Abs("./../../")
 
@@ -55,7 +71,7 @@ var _ = Describe("User queries", Ordered, func() {
 			AsService()
 
 		backend = client.Container().From("golang:1.21").
-			WithServiceBinding("db", database).
+			WithServiceBinding("adapticc_db", database).
 			WithDirectory("/backend", backendDirectory).
 			WithWorkdir("/backend").
 			WithExec([]string{"./out/adapticc"}).
@@ -64,26 +80,29 @@ var _ = Describe("User queries", Ordered, func() {
 
 	})
 
-	Context("Single", func() {
-		BeforeEach(func() {
-			testDir = client.Host().Directory(".")
-		})
-
-		It("succeeds to return with a user", func() {
-			queryStr := `
-			query {
-				users {
-					profile {
-						id
-						email
-						firstName
-						lastName
+	Context("Login", func() {
+		var (
+			queryTemplate = `
+			mutation {
+				authentication {
+					login(email: "%v", password: "%v") {
+						jwt
+						expires_at
 					}
 				}
 			}`
 
+			adminEmail = "admin@admin.com"
+			password   = "Admin@123!"
+		)
+
+		BeforeEach(func() {
+			testDir = client.Host().Directory(".")
+		})
+
+		It("succeeds to login with admin", func() {
 			query := graphqlRequest{
-				Query: queryStr,
+				Query: fmt.Sprintf(queryTemplate, adminEmail, password),
 			}
 
 			requestBody, _ := json.Marshal(query)
@@ -97,7 +116,14 @@ var _ = Describe("User queries", Ordered, func() {
 
 			Expect(err).Should(BeNil())
 
-			fmt.Println(out)
+			response := graphqlAuthResponse{}
+
+			err = json.Unmarshal([]byte(out), &response)
+			Expect(err).Should(BeNil())
+
+			Expect(response.Errors).Should(BeEmpty())
+
+			Expect(response.Data.Authentication.Login.JWT).ShouldNot(BeEmpty())
 		})
 	})
 

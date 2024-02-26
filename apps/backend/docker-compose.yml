@@ -13,7 +13,7 @@ services:
       POSTGRES_USER: adapticcuser
       POSTGRES_PASSWORD: dbpass
     volumes:
-      - ./../../db/testdata/testdata.sql:/docker-entrypoint-initdb.d/testdata.sql
+      - ./tests/integration/testdata/database.sql:/docker-entrypoint-initdb.d/database.sql
 
   cerbos:
     image: ghcr.io/cerbos/cerbos:latest
