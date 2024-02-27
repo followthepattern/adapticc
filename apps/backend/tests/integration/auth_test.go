@@ -81,28 +81,28 @@ var _ = Describe("Auth queries", Ordered, func() {
 	})
 
 	Context("Login", func() {
-		var (
-			queryTemplate = `
-			mutation {
-				authentication {
-					login(email: "%v", password: "%v") {
-						jwt
-						expires_at
-					}
-				}
-			}`
-
-			adminEmail = "admin@admin.com"
-			password   = "Admin@123!"
-		)
-
 		BeforeEach(func() {
 			testDir = client.Host().Directory(".")
 		})
 
 		It("succeeds to login with admin", func() {
+			var (
+				queryTemplate = `
+							mutation {
+								authentication {
+									login(email: "%v", password: "%v") {
+										jwt
+										expires_at
+									}
+								}
+							}`
+
+				loginEmail = "admin@admin.com"
+				password   = "Admin@123!"
+			)
+
 			query := graphqlRequest{
-				Query: fmt.Sprintf(queryTemplate, adminEmail, password),
+				Query: fmt.Sprintf(queryTemplate, loginEmail, password),
 			}
 
 			requestBody, _ := json.Marshal(query)
