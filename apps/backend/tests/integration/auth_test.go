@@ -49,7 +49,7 @@ var _ = Describe("Auth queries", Ordered, func() {
 
 		backendDirectory := client.Host().Directory(backendAbsolutePath)
 
-		builder := client.Container().From("golang:latest")
+		builder := client.Container().From(GolangImage)
 		builder = builder.WithDirectory("/backend", backendDirectory).WithWorkdir("/backend")
 
 		outputPath := "out/"
@@ -61,7 +61,7 @@ var _ = Describe("Auth queries", Ordered, func() {
 
 		testDataDir := client.Host().Directory("./testdata")
 
-		database := client.Container().From("postgres:latest").
+		database := client.Container().From(PostgresImage).
 			WithEnvVariable("POSTGRES_DB", "adapticc").
 			WithDirectory("/docker-entrypoint-initdb.d", testDataDir).
 			WithEnvVariable("POSTGRES_USER", "adapticcuser").
@@ -70,7 +70,7 @@ var _ = Describe("Auth queries", Ordered, func() {
 			WithExposedPort(5432).
 			AsService()
 
-		backend = client.Container().From("golang:1.21").
+		backend = client.Container().From(GolangImage).
 			WithServiceBinding("adapticc_db", database).
 			WithDirectory("/backend", backendDirectory).
 			WithWorkdir("/backend").
@@ -107,7 +107,7 @@ var _ = Describe("Auth queries", Ordered, func() {
 
 			requestBody, _ := json.Marshal(query)
 
-			out, err := client.Container().From("golang:1.21").
+			out, err := client.Container().From(GolangImage).
 				WithServiceBinding("backend", backend).
 				WithDirectory("/httpClient", testDir).
 				WithWorkdir("/httpClient").

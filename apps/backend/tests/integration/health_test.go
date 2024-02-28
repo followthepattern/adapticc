@@ -31,7 +31,7 @@ var _ = Describe("HealthCheck", Ordered, func() {
 
 		backendDirectory := client.Host().Directory(backendAbsolutePath)
 
-		builder := client.Container().From("golang:latest")
+		builder := client.Container().From(GolangImage)
 		builder = builder.WithDirectory("/backend", backendDirectory).WithWorkdir("/backend")
 
 		outputPath := "out/"
@@ -41,7 +41,7 @@ var _ = Describe("HealthCheck", Ordered, func() {
 		_, err = output.Export(ctx, filepath.Join(backendAbsolutePath, outputPath))
 		Expect(err).To(BeNil())
 
-		backend = client.Container().From("golang:1.21").
+		backend = client.Container().From(GolangImage).
 			WithDirectory("/backend", backendDirectory).
 			WithWorkdir("/backend").
 			WithExec([]string{"./out/adapticc"}).
@@ -56,7 +56,7 @@ var _ = Describe("HealthCheck", Ordered, func() {
 		})
 
 		It("calles healthcheck endpoint", func() {
-			out, err := client.Container().From("golang:1.21").
+			out, err := client.Container().From(GolangImage).
 				WithServiceBinding("backend", backend).
 				WithDirectory("/httpClient", testDir).
 				WithWorkdir("/httpClient").
