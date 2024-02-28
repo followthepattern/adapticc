@@ -11,6 +11,7 @@ import (
 	"dagger.io/dagger"
 	"github.com/followthepattern/adapticc/features/user"
 	"github.com/followthepattern/adapticc/models"
+	"github.com/followthepattern/adapticc/tests/datagenerator"
 	"github.com/graph-gophers/graphql-go/errors"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -122,8 +123,17 @@ var _ = Describe("User queries", Ordered, func() {
 			WithExposedPort(5432).
 			AsService()
 
+		cerbosDir := client.Host().Directory(filepath.Join(backendAbsolutePath, "cerbos"))
+
+		cerbos := client.Container().From(CerbosImage).
+			WithDirectory("/data", cerbosDir).
+			WithExec([]string{"server", "--config=/data/.cerbos.yaml"}).
+			WithExposedPort(3592).
+			AsService()
+
 		backend = client.Container().From(GolangImage).
 			WithServiceBinding("adapticc_db", database).
+			WithServiceBinding("cerbos", cerbos).
 			WithDirectory("/backend", backendDirectory).
 			WithWorkdir("/backend").
 			WithExec([]string{"./out/adapticc"}).
@@ -166,6 +176,80 @@ var _ = Describe("User queries", Ordered, func() {
 
 			Expect(userResponse.Data.Users.Profile.ID.Data).ShouldNot(BeEmpty())
 			Expect(userResponse.Data.Users.Profile.Email.Data).To(Equal(testUserEmail))
+		})
+	})
+
+	Context("Retrieves User", func() {
+		Context("Single", func() {
+			It("returns with a user by id", func() {
+				userID := "613254df-c779-479c-9d76-b8036e342979"
+
+				queryTemplate := `
+				query {
+					users {
+						single(id: "%v") {
+							id
+							email
+						}
+					}
+				}`
+
+				query := graphqlRequest{
+					Query: fmt.Sprintf(queryTemplate, userID),
+				}
+
+				requestBody, _ := json.Marshal(query)
+
+				out, err := client.Container().From(GolangImage).
+					WithServiceBinding("backend", backend).
+					WithDirectory("/httpClient", testDir).
+					WithWorkdir("/httpClient").
+					WithExec([]string{"go", "run", "./http_tester/client.go", http.MethodPost, graphQLURL, string(requestBody), jwtToken}).
+					Stdout(ctx)
+
+				Expect(err).Should(BeNil())
+				json.Unmarshal([]byte(out), &userResponse)
+
+				Expect(userResponse.Data.Users.Single.ID.Data).Should(Equal(userID))
+				Expect(userResponse.Data.Users.Single.Email.Data).To(Equal(testUserEmail))
+			})
+		})
+
+		Context("Create", func() {
+			It("creates a new user", func() {
+				createdUser := datagenerator.NewRandomUser()
+
+				queryTemplate := `
+					mutation {
+						users {
+							create (model: {
+								email: "%s"
+								firstName: "%s"
+								lastName: "%s"
+							}) {
+								code
+							}
+						}
+					}`
+
+				query := graphqlRequest{
+					Query: fmt.Sprintf(queryTemplate, createdUser.Email.Data, createdUser.FirstName.Data, createdUser.LastName.Data),
+				}
+
+				requestBody, _ := json.Marshal(query)
+
+				out, err := client.Container().From(GolangImage).
+					WithServiceBinding("backend", backend).
+					WithDirectory("/httpClient", testDir).
+					WithWorkdir("/httpClient").
+					WithExec([]string{"go", "run", "./http_tester/client.go", http.MethodPost, graphQLURL, string(requestBody), jwtToken}).
+					Stdout(ctx)
+
+				Expect(err).Should(BeNil())
+				json.Unmarshal([]byte(out), &userResponse)
+
+				Expect(userResponse.Data.Users.Create.Code).Should(Equal(int32(http.StatusCreated)))
+			})
 		})
 	})
 
