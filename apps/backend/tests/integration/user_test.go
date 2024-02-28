@@ -9,9 +9,30 @@ import (
 	"path/filepath"
 
 	"dagger.io/dagger"
+	"github.com/followthepattern/adapticc/features/user"
+	"github.com/followthepattern/adapticc/models"
+	"github.com/graph-gophers/graphql-go/errors"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
+
+type graphqlUserResponse struct {
+	Data   userData             `json:"data"`
+	Errors []*errors.QueryError `json:"errors,omitempty"`
+}
+
+type userData struct {
+	Users users `json:"users"`
+}
+
+type users struct {
+	Single  user.UserModel                      `json:"single,omitempty"`
+	Profile user.UserModel                      `json:"profile,omitempty"`
+	List    models.ListResponse[user.UserModel] `json:"list,omitempty"`
+	Create  models.ResponseStatus               `json:"create,omitempty"`
+	Update  models.ResponseStatus               `json:"update,omitempty"`
+	Delete  models.ResponseStatus               `json:"delete,omitempty"`
+}
 
 var _ = Describe("User queries", Ordered, func() {
 	var (
@@ -22,7 +43,53 @@ var _ = Describe("User queries", Ordered, func() {
 		ctx     context.Context
 		client  *dagger.Client
 		backend *dagger.Service
+
+		jwtToken     string
+		userResponse graphqlUserResponse
+
+		testUserEmail    = "admin@admin.com"
+		testUserPassword = "Admin@123!"
 	)
+
+	AssertSucceedsLogin := func(email, password string) {
+		var (
+			queryTemplate = `
+							mutation {
+								authentication {
+									login(email: "%v", password: "%v") {
+										jwt
+										expires_at
+									}
+								}
+							}`
+		)
+
+		query := graphqlRequest{
+			Query: fmt.Sprintf(queryTemplate, email, password),
+		}
+
+		requestBody, _ := json.Marshal(query)
+
+		out, err := client.Container().From("golang:1.21").
+			WithServiceBinding("backend", backend).
+			WithDirectory("/httpClient", testDir).
+			WithWorkdir("/httpClient").
+			WithExec([]string{"go", "run", "./http_tester/client.go", http.MethodPost, graphQLURL, string(requestBody)}).
+			Stdout(ctx)
+
+		Expect(err).Should(BeNil())
+
+		response := graphqlAuthResponse{}
+
+		err = json.Unmarshal([]byte(out), &response)
+		Expect(err).Should(BeNil())
+
+		Expect(response.Errors).Should(BeEmpty())
+
+		Expect(response.Data.Authentication.Login.JWT).ShouldNot(BeEmpty())
+
+		jwtToken = response.Data.Authentication.Login.JWT
+	}
 
 	BeforeAll(func() {
 		var err error
@@ -32,6 +99,7 @@ var _ = Describe("User queries", Ordered, func() {
 		Expect(err).To(BeNil())
 
 		backendDirectory := client.Host().Directory(backendAbsolutePath)
+		testDir = client.Host().Directory(".")
 
 		builder := client.Container().From("golang:latest")
 		builder = builder.WithDirectory("/backend", backendDirectory).WithWorkdir("/backend")
@@ -55,21 +123,19 @@ var _ = Describe("User queries", Ordered, func() {
 			AsService()
 
 		backend = client.Container().From("golang:1.21").
-			WithServiceBinding("db", database).
+			WithServiceBinding("adapticc_db", database).
 			WithDirectory("/backend", backendDirectory).
 			WithWorkdir("/backend").
 			WithExec([]string{"./out/adapticc"}).
 			WithExposedPort(8080).
 			AsService()
 
+		AssertSucceedsLogin(testUserEmail, testUserPassword)
+
 	})
 
-	Context("Single", func() {
-		BeforeEach(func() {
-			testDir = client.Host().Directory(".")
-		})
-
-		It("succeeds to return with a user", func() {
+	Context("Profile", func() {
+		It("returns with the signed in user", func() {
 			queryStr := `
 			query {
 				users {
@@ -92,12 +158,14 @@ var _ = Describe("User queries", Ordered, func() {
 				WithServiceBinding("backend", backend).
 				WithDirectory("/httpClient", testDir).
 				WithWorkdir("/httpClient").
-				WithExec([]string{"go", "run", "./http_tester/client.go", http.MethodPost, graphQLURL, string(requestBody)}).
+				WithExec([]string{"go", "run", "./http_tester/client.go", http.MethodPost, graphQLURL, string(requestBody), jwtToken}).
 				Stdout(ctx)
 
 			Expect(err).Should(BeNil())
+			json.Unmarshal([]byte(out), &userResponse)
 
-			fmt.Println(out)
+			Expect(userResponse.Data.Users.Profile.ID.Data).ShouldNot(BeEmpty())
+			Expect(userResponse.Data.Users.Profile.Email.Data).To(Equal(testUserEmail))
 		})
 	})
 

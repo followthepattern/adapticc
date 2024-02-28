@@ -11,12 +11,17 @@ import (
 
 func main() {
 	args := os.Args
+	token := ""
 
 	if len(args) < 4 {
 		log.Fatal("provide the method and the url you want to test")
 	}
 
-	result, err := runRequest(args[1], args[2], args[3])
+	if len(args) == 5 {
+		token = args[4]
+	}
+
+	result, err := runRequest(args[1], args[2], args[3], token)
 	if err != nil {
 		log.Fatal("error", err)
 	}
@@ -24,7 +29,7 @@ func main() {
 	fmt.Println(result)
 }
 
-func runRequest(method string, url string, body string) (string, error) {
+func runRequest(method, url, body, token string) (string, error) {
 	var err error
 	var client = &http.Client{}
 
@@ -33,6 +38,10 @@ func runRequest(method string, url string, body string) (string, error) {
 	request, err := http.NewRequest(method, url, reader)
 	if err != nil {
 		return "", err
+	}
+
+	if token != "" {
+		request.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 	}
 
 	response, err := client.Do(request)
