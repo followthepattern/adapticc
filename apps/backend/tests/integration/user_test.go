@@ -214,6 +214,51 @@ var _ = Describe("User queries", Ordered, func() {
 		})
 	})
 
+	Context("List", func() {
+		It("returns with users", func() {
+			queryStr := `
+				query {
+					users {
+						list (
+							filter: { search: "" }
+						) {
+							page
+							pageSize
+							count
+							data {
+								id
+								email
+								firstName
+								lastName
+							}
+						}
+					}
+				}`
+
+			query := graphqlRequest{
+				Query: queryStr,
+			}
+
+			requestBody, _ := json.Marshal(query)
+
+			out, err := client.Container().From(GolangImage).
+				WithServiceBinding("backend", backend).
+				WithDirectory("/httpClient", testDir).
+				WithWorkdir("/httpClient").
+				WithExec([]string{"go", "run", "./http_tester/client.go", http.MethodPost, graphQLURL, string(requestBody), jwtToken}).
+				Stdout(ctx)
+
+			Expect(err).Should(BeNil())
+			json.Unmarshal([]byte(out), &userResponse)
+
+			Expect(userResponse.Data.Users.List.Count.Data).ShouldNot(Equal(0))
+			Expect(userResponse.Data.Users.List.Data).Should(HaveEach(HaveField("ID.Data", Not(BeEmpty()))))
+			Expect(userResponse.Data.Users.List.Data).Should(HaveEach(HaveField("Email.Data", Not(BeEmpty()))))
+			Expect(userResponse.Data.Users.List.Data).Should(HaveEach(HaveField("FirstName.Data", Not(BeEmpty()))))
+			Expect(userResponse.Data.Users.List.Data).Should(HaveEach(HaveField("LastName.Data", Not(BeEmpty()))))
+		})
+	})
+
 	Context("Create", func() {
 		It("creates a new user", func() {
 			createdUser := datagenerator.NewRandomUser()
