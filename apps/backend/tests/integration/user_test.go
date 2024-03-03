@@ -179,12 +179,11 @@ var _ = Describe("User queries", Ordered, func() {
 		})
 	})
 
-	Context("Retrieves User", func() {
-		Context("Single", func() {
-			It("returns with a user by id", func() {
-				userID := "613254df-c779-479c-9d76-b8036e342979"
+	Context("Single", func() {
+		It("returns with a user by id", func() {
+			userID := "613254df-c779-479c-9d76-b8036e342979"
 
-				queryTemplate := `
+			queryTemplate := `
 				query {
 					users {
 						single(id: "%v") {
@@ -194,32 +193,32 @@ var _ = Describe("User queries", Ordered, func() {
 					}
 				}`
 
-				query := graphqlRequest{
-					Query: fmt.Sprintf(queryTemplate, userID),
-				}
+			query := graphqlRequest{
+				Query: fmt.Sprintf(queryTemplate, userID),
+			}
 
-				requestBody, _ := json.Marshal(query)
+			requestBody, _ := json.Marshal(query)
 
-				out, err := client.Container().From(GolangImage).
-					WithServiceBinding("backend", backend).
-					WithDirectory("/httpClient", testDir).
-					WithWorkdir("/httpClient").
-					WithExec([]string{"go", "run", "./http_tester/client.go", http.MethodPost, graphQLURL, string(requestBody), jwtToken}).
-					Stdout(ctx)
+			out, err := client.Container().From(GolangImage).
+				WithServiceBinding("backend", backend).
+				WithDirectory("/httpClient", testDir).
+				WithWorkdir("/httpClient").
+				WithExec([]string{"go", "run", "./http_tester/client.go", http.MethodPost, graphQLURL, string(requestBody), jwtToken}).
+				Stdout(ctx)
 
-				Expect(err).Should(BeNil())
-				json.Unmarshal([]byte(out), &userResponse)
+			Expect(err).Should(BeNil())
+			json.Unmarshal([]byte(out), &userResponse)
 
-				Expect(userResponse.Data.Users.Single.ID.Data).Should(Equal(userID))
-				Expect(userResponse.Data.Users.Single.Email.Data).To(Equal(testUserEmail))
-			})
+			Expect(userResponse.Data.Users.Single.ID.Data).Should(Equal(userID))
+			Expect(userResponse.Data.Users.Single.Email.Data).To(Equal(testUserEmail))
 		})
+	})
 
-		Context("Create", func() {
-			It("creates a new user", func() {
-				createdUser := datagenerator.NewRandomUser()
+	Context("Create", func() {
+		It("creates a new user", func() {
+			createdUser := datagenerator.NewRandomUser()
 
-				queryTemplate := `
+			queryTemplate := `
 					mutation {
 						users {
 							create (model: {
@@ -232,24 +231,23 @@ var _ = Describe("User queries", Ordered, func() {
 						}
 					}`
 
-				query := graphqlRequest{
-					Query: fmt.Sprintf(queryTemplate, createdUser.Email.Data, createdUser.FirstName.Data, createdUser.LastName.Data),
-				}
+			query := graphqlRequest{
+				Query: fmt.Sprintf(queryTemplate, createdUser.Email.Data, createdUser.FirstName.Data, createdUser.LastName.Data),
+			}
 
-				requestBody, _ := json.Marshal(query)
+			requestBody, _ := json.Marshal(query)
 
-				out, err := client.Container().From(GolangImage).
-					WithServiceBinding("backend", backend).
-					WithDirectory("/httpClient", testDir).
-					WithWorkdir("/httpClient").
-					WithExec([]string{"go", "run", "./http_tester/client.go", http.MethodPost, graphQLURL, string(requestBody), jwtToken}).
-					Stdout(ctx)
+			out, err := client.Container().From(GolangImage).
+				WithServiceBinding("backend", backend).
+				WithDirectory("/httpClient", testDir).
+				WithWorkdir("/httpClient").
+				WithExec([]string{"go", "run", "./http_tester/client.go", http.MethodPost, graphQLURL, string(requestBody), jwtToken}).
+				Stdout(ctx)
 
-				Expect(err).Should(BeNil())
-				json.Unmarshal([]byte(out), &userResponse)
+			Expect(err).Should(BeNil())
+			json.Unmarshal([]byte(out), &userResponse)
 
-				Expect(userResponse.Data.Users.Create.Code).Should(Equal(int32(http.StatusCreated)))
-			})
+			Expect(userResponse.Data.Users.Create.Code).Should(Equal(int32(http.StatusCreated)))
 		})
 	})
 
