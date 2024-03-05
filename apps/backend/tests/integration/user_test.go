@@ -48,8 +48,9 @@ var _ = Describe("User queries", Ordered, func() {
 		jwtToken     string
 		userResponse graphqlUserResponse
 
-		testUserEmail    = "admin@admin.com"
-		testUserPassword = "Admin@123!"
+		testUserEmail      = "admin@admin.com"
+		testUserPassword   = "Admin@123!"
+		preparedTestUserID = "613254df-c779-479c-9d76-b8036e342979"
 	)
 
 	AssertSucceedsLogin := func(email, password string) {
@@ -181,8 +182,6 @@ var _ = Describe("User queries", Ordered, func() {
 
 	Context("Single", func() {
 		It("returns with a user by id", func() {
-			userID := "613254df-c779-479c-9d76-b8036e342979"
-
 			queryTemplate := `
 				query {
 					users {
@@ -194,7 +193,7 @@ var _ = Describe("User queries", Ordered, func() {
 				}`
 
 			query := graphqlRequest{
-				Query: fmt.Sprintf(queryTemplate, userID),
+				Query: fmt.Sprintf(queryTemplate, preparedTestUserID),
 			}
 
 			requestBody, _ := json.Marshal(query)
@@ -209,7 +208,7 @@ var _ = Describe("User queries", Ordered, func() {
 			Expect(err).Should(BeNil())
 			json.Unmarshal([]byte(out), &userResponse)
 
-			Expect(userResponse.Data.Users.Single.ID.Data).Should(Equal(userID))
+			Expect(userResponse.Data.Users.Single.ID.Data).Should(Equal(preparedTestUserID))
 			Expect(userResponse.Data.Users.Single.Email.Data).To(Equal(testUserEmail))
 		})
 	})
@@ -293,6 +292,74 @@ var _ = Describe("User queries", Ordered, func() {
 			json.Unmarshal([]byte(out), &userResponse)
 
 			Expect(userResponse.Data.Users.Create.Code).Should(Equal(int32(http.StatusCreated)))
+		})
+	})
+
+	Context("Update", func() {
+		It("updates user", func() {
+			newFirstName := datagenerator.String(8)
+			newLastName := datagenerator.String(8)
+
+			queryTemplate := `
+					mutation {
+						users {
+							update (id: "%s", model: {
+								firstName: "%s"
+								lastName: "%s"
+							}) {
+								code
+							}
+						}
+					}`
+
+			query := graphqlRequest{
+				Query: fmt.Sprintf(queryTemplate, preparedTestUserID, newFirstName, newLastName),
+			}
+
+			requestBody, _ := json.Marshal(query)
+
+			out, err := client.Container().From(GolangImage).
+				WithServiceBinding("backend", backend).
+				WithDirectory("/httpClient", testDir).
+				WithWorkdir("/httpClient").
+				WithExec([]string{"go", "run", "./http_tester/client.go", http.MethodPost, graphQLURL, string(requestBody), jwtToken}).
+				Stdout(ctx)
+
+			Expect(err).Should(BeNil())
+			json.Unmarshal([]byte(out), &userResponse)
+
+			Expect(userResponse.Data.Users.Update.Code).Should(Equal(int32(http.StatusOK)))
+		})
+	})
+
+	Context("Delete", func() {
+		It("deletes a user", func() {
+			queryTemplate := `
+					mutation {
+						users {
+							delete (id: "%s") {
+								code
+							}
+						}
+					}`
+
+			query := graphqlRequest{
+				Query: fmt.Sprintf(queryTemplate, preparedTestUserID),
+			}
+
+			requestBody, _ := json.Marshal(query)
+
+			out, err := client.Container().From(GolangImage).
+				WithServiceBinding("backend", backend).
+				WithDirectory("/httpClient", testDir).
+				WithWorkdir("/httpClient").
+				WithExec([]string{"go", "run", "./http_tester/client.go", http.MethodPost, graphQLURL, string(requestBody), jwtToken}).
+				Stdout(ctx)
+
+			Expect(err).Should(BeNil())
+			json.Unmarshal([]byte(out), &userResponse)
+
+			Expect(userResponse.Data.Users.Delete.Code).Should(Equal(int32(http.StatusOK)))
 		})
 	})
 
