@@ -114,7 +114,7 @@ var _ = Describe("Authentication", func() {
 			code, err := runRequest(handler, httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request)), testResponse)
 			Expect(err).To(BeNil())
 
-			Expect(testResponse.Errors).To(HaveLen(0))
+			Expect(testResponse.Errors).Should(BeEmpty())
 
 			Expect(mock.ExpectationsWereMet()).To(BeNil())
 			Expect(code).To(Equal(http.StatusOK))
@@ -177,11 +177,11 @@ var _ = Describe("Authentication", func() {
 					cfg.Mail.Host))
 
 			code, err := runRequest(handler, httptest.NewRequest("POST", graphqlURL, bytes.NewReader(request)), testResponse)
-			Expect(err).To(BeNil())
+			Expect(err).Should(BeNil())
 
-			Expect(code).To(Equal(http.StatusOK))
+			Expect(code).Should(Equal(http.StatusOK))
 
-			Expect(testResponse.Errors).To(HaveLen(0))
+			Expect(testResponse.Errors).Should(BeEmpty())
 
 			Expect(generatedUser.FirstName.Data).To(Equal(testResponse.Data.Authentication.Register.FirstName.Data))
 			Expect(generatedUser.LastName.Data).To(Equal(testResponse.Data.Authentication.Register.LastName.Data))
