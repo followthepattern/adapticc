@@ -31,12 +31,6 @@ RUN mkdir ./configs
 # Copy configs from builder
 COPY --from=builder /dev/configs/config.yaml.tmpl ./configs/config.yaml
 
-# Create templates folder to mailing and other templates
-RUN mkdir ./templates
-
-# Copy templates from the builder stage to the final image
-COPY --from=builder /dev/templates/guest_mail.tmpl ./templates
-
 # Expose port 8080 for the application
 EXPOSE 8080
 
