@@ -13,7 +13,6 @@ import (
 	"github.com/followthepattern/adapticc/accesscontrol"
 	"github.com/followthepattern/adapticc/api"
 	"github.com/followthepattern/adapticc/api/graphql"
-	"github.com/followthepattern/adapticc/api/graphql/schema"
 	"github.com/followthepattern/adapticc/api/rest"
 	"github.com/followthepattern/adapticc/config"
 	"github.com/followthepattern/adapticc/container"
@@ -53,11 +52,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	schemaDef, err := schema.GetSchema(cfg.Server)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	emailClient := mail.NewClient()
 
 	c := make(chan os.Signal, 1)
@@ -67,7 +61,7 @@ func main() {
 
 	ctrls := controllers.New(cont)
 
-	graphqlHandler := graphql.NewHandler(ctrls, schemaDef)
+	graphqlHandler := graphql.NewHandler(ctrls)
 
 	restHandler := rest.New(ctrls)
 
