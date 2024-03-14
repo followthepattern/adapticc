@@ -58,9 +58,6 @@ build backend:
       --dockerfile "${CI_PROJECT_DIR}/ci/images/backend/Dockerfile"
       --destination "${CI_REGISTRY_IMAGE}:${TAG}"
 
-  only:
-    - tags
-
 deploy backend:
   stage: deploy
 
@@ -75,6 +72,3 @@ deploy backend:
 
   script:
     - ${CI_PROJECT_DIR}/ci/deploy.sh
-
-  only:
-    - tags
