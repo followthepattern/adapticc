@@ -1,5 +1,5 @@
 # base Golang image
-FROM golang:1.20.3-bullseye AS builder
+FROM golang:1.22 AS builder
 
 # Set the working directory
 WORKDIR /dev
@@ -17,7 +17,7 @@ COPY . .
 RUN CGO_ENABLED=0 go build -o app ./cmd/adapticc
 
 # Start with a minimal image to reduce the attack surface
-FROM alpine:3.17.3
+FROM alpine:3.19.1
 
 # Set the working directory
 WORKDIR /prod
