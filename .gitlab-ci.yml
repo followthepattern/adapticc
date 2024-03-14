@@ -12,7 +12,7 @@ frontend:
 backend:
   stage: triggers
   trigger:
-    include: ${CI_PROJECT_DIR}/apps/frontend/.gitlab-ci.yml
+    include: ${CI_PROJECT_DIR}/apps/backend/.gitlab-ci.yml
   # rules:
     # - changes:
     #     - b/*
