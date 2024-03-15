@@ -24,15 +24,13 @@ build frontend:
 deploy frontend:
   stage: deploy
   variables:
-    DISTRIBUTION_ID: E2KM8EMXSNFJ4Y
-    WWW_DISTRIBUTION_ID: E3T1ME5XK3W76I
     CI_PROJECT_DIR_FRONTEND: ${CI_PROJECT_DIR}/apps/frontend
 
   tags:
     - ftp
     
   script:
-    - aws s3 sync ${CI_PROJECT_DIR_FRONTEND}/dist s3://adapticc
+    - aws s3 sync ${CI_PROJECT_DIR_FRONTEND}/dist s3://$AWS_S3_BUCKET
     - aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*" > /dev/null
     - aws cloudfront create-invalidation --distribution-id $WWW_DISTRIBUTION_ID --paths "/*" > /dev/null
   
