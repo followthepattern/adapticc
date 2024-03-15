@@ -30,9 +30,9 @@ deploy frontend:
     - ftp
     
   script:
-    - aws s3 sync ${CI_PROJECT_DIR_FRONTEND}/dist s3://$AWS_S3_BUCKET
-    - aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*" > /dev/null
-    - aws cloudfront create-invalidation --distribution-id $WWW_DISTRIBUTION_ID --paths "/*" > /dev/null
+    - aws s3 sync ${CI_PROJECT_DIR_FRONTEND}/dist s3://${AWS_S3_BUCKET}
+    - aws cloudfront create-invalidation --distribution-id ${DISTRIBUTION_ID} --paths "/*" > /dev/null
+    - aws cloudfront create-invalidation --distribution-id ${WWW_DISTRIBUTION_ID} --paths "/*" > /dev/null
   
   dependencies:
     - build frontend
