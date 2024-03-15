@@ -5,14 +5,14 @@ frontend:
   stage: triggers
   trigger:
     include: ${CI_PROJECT_DIR}/apps/frontend/.gitlab-ci.yml
-  # rules:
-    # - changes:
-    #     - a/*
+  rules:
+    - changes:
+        - ${CI_PROJECT_DIR}/apps/frontend/*
 
 backend:
   stage: triggers
   trigger:
     include: ${CI_PROJECT_DIR}/apps/backend/.gitlab-ci.yml
-  # rules:
-    # - changes:
-    #     - b/*
+  rules:
+    - changes:
+        - ${CI_PROJECT_DIR}/apps/backend/*
