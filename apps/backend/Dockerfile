@@ -13,5 +13,3 @@ RUN curl -L -o /sidecar/cerbos.tar.gz "https://github.com/cerbos/cerbos/releases
 RUN tar -xzvf /sidecar/cerbos.tar.gz -C /sidecar
 
 RUN chmod +x /sidecar/cerbos
-
-VOLUME ["/policies", "/tmp", "/.cache"]
