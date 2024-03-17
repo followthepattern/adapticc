@@ -1,6 +1,7 @@
 ---
 server:
-  httpListenAddr: ":3592"
+  # httpListenAddr: ":3592"
+  httpListenAddr: "unix:/sock/cerbos.sock"
   grpcListenAddr: ":3593"
   apiExplorerEnabled: false
   adminAPI:
