@@ -17,5 +17,5 @@ build backend:
       --dockerfile "${CI_PROJECT_DIR_BACKEND}/prod.Dockerfile"
       --destination "${CI_REGISTRY_IMAGE}:${TAG}"
 
-tags:
-  - ftp
+  tags:
+    - ftp
