@@ -2,6 +2,9 @@ package config
 
 import (
 	"crypto"
+	"crypto/ed25519"
+	"crypto/rand"
+	"log/slog"
 	"os"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -12,9 +15,28 @@ type JwtKeyPair struct {
 	Public  crypto.PublicKey
 }
 
-func ReadKeys(cfg Server) (JwtKeyPair, error) {
-	res := JwtKeyPair{}
+func GetKeys(logger *slog.Logger, cfg Server) (JwtKeyPair, error) {
+	if len(cfg.Ed25519PrivateKey) < 1 || len(cfg.Ed25519PublicKey) < 1 {
+		logger.Info("generating Ed25519 key pairs")
+		return GenerateKeys()
+	}
+	logger.Info("reading Ed25519 key pairs from %s - %s", cfg.Ed25519PrivateKey, cfg.Ed25519PublicKey)
+	return ReadKeys(cfg)
+}
 
+func GenerateKeys() (JwtKeyPair, error) {
+	publicKey, privateKey, err := ed25519.GenerateKey(rand.Reader)
+	if err != nil {
+		return JwtKeyPair{}, err
+	}
+
+	return JwtKeyPair{
+		Public:  publicKey,
+		Private: privateKey,
+	}, nil
+}
+
+func ReadKeys(cfg Server) (res JwtKeyPair, err error) {
 	key, err := os.ReadFile(cfg.Ed25519PublicKey)
 	if err != nil {
 		return JwtKeyPair{}, err

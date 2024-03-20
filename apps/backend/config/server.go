@@ -18,7 +18,5 @@ func (cfg Server) Validate() error {
 	return validation.ValidateStruct(&cfg,
 		validation.Field(&cfg.Host, validation.Required),
 		validation.Field(&cfg.Port, validation.Required),
-		validation.Field(&cfg.Ed25519PrivateKey, validation.Required),
-		validation.Field(&cfg.Ed25519PublicKey, validation.Required),
 	)
 }

@@ -29,7 +29,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	jwt, err := config.ReadKeys(cfg.Server)
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		Level: slog.Level(cfg.Server.LogLevel),
+	}))
+
+	jwt, err := config.GetKeys(logger, cfg.Server)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -38,8 +42,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
 	if err != nil {
 		log.Fatal(err)
