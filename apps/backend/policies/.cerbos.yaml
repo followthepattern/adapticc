@@ -17,5 +17,5 @@ auxData:
 storage:
   driver: "disk"
   disk:
-    directory: "/backend/policies"
+    directory: "./policies"
     watchForChanges: true
