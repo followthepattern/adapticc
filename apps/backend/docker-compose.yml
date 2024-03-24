@@ -15,13 +15,30 @@ services:
     volumes:
       - ./tests/integration/testdata/database.sql:/docker-entrypoint-initdb.d/database.sql
 
-  backend-prod:
-    build:
-      context: .
-      dockerfile: Dockerfile
+  cerbos:
+    image: ghcr.io/cerbos/cerbos:latest
+    restart: unless-stopped
+    command: ["server", "--config=/policies/.cerbos.yaml"]
+    ports:
+      - 3592:3592
+    volumes:
+      - ./policies:/policies:rw
+      - shared-volume:/sock
+
+  backend:
+    image: golang:1.22
     hostname: adapticc_backend
     container_name: adapticc_backend
+    command: bash -c "go run ./cmd/adapticc"
+    working_dir: /backend
     depends_on:
       - db
+      - cerbos
     ports:
       - 8080:8080
+    volumes:
+      - ./:/backend:rw
+      - shared-volume:/sock
+
+volumes:
+  shared-volume:

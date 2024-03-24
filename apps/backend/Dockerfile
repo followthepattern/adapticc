@@ -34,14 +34,17 @@ COPY --from=builder /build/app .
 # Create configs folder to configs
 RUN mkdir ./configs
 
-# Copy configs from builder
-COPY --from=builder /build/configs/config.yaml.tmpl ./configs/config.yaml
+# Copy configs
+COPY ./configs/config.yaml.tmpl ./configs/config.yaml
 
-# Copy cerbos config from builder
-COPY --from=builder /build/policies ./policies
+# Create policies folder to cerbos config and policies
+RUN mkdir /policies
+
+# Copy cerbos config
+COPY ./policies /policies
 
 # Expose port 8080 for the application
 EXPOSE 8080
 
 # Set the command to run the binary
-CMD ["sh", "-c", "./cerbos server --config=./policies/.cerbos.yaml & ./app"]
+CMD ["sh", "-c", "./cerbos server --config=/policies/.cerbos.yaml & ./app"]
