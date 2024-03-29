@@ -17,15 +17,6 @@ type Config struct {
 	Cerbos       Cerbos
 }
 
-func (cfg Config) Validate() error {
-	return validation.ValidateStruct(&cfg,
-		validation.Field(&cfg.Server, validation.Required),
-		validation.Field(&cfg.DB, validation.Required),
-		validation.Field(&cfg.Mail, validation.Required),
-		validation.Field(&cfg.Organization, validation.Required),
-	)
-}
-
 func Parse() (result *Config, err error) {
 	viper.SetConfigName("config")
 	viper.AddConfigPath("configs")
@@ -49,4 +40,13 @@ func Parse() (result *Config, err error) {
 	}
 
 	return
+}
+
+func (cfg Config) Validate() error {
+	return validation.ValidateStruct(&cfg,
+		validation.Field(&cfg.Server, validation.Required),
+		validation.Field(&cfg.DB, validation.Required),
+		validation.Field(&cfg.Mail, validation.Required),
+		validation.Field(&cfg.Organization, validation.Required),
+	)
 }

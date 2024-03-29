@@ -8,9 +8,6 @@ server:
   log_level: 0
   host: 0.0.0.0
   port: 8080
-  ed25519_private_key: ./configs/dev_private.pem
-  ed25519_public_key: ./configs/dev_public.pem
-  graphql_schema_filepath: "./../pkg/api/graphql/schema/schema.graph"
 db:
   host: adapticc_db
   port: 5432
@@ -23,4 +20,4 @@ mail:
   username:
   password:
 cerbos:
-  address: cerbos:3592
+  address: "unix:/sock/cerbos.sock"

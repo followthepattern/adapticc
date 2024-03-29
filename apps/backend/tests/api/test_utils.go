@@ -16,7 +16,6 @@ import (
 	"github.com/followthepattern/adapticc/accesscontrol"
 	"github.com/followthepattern/adapticc/api"
 	"github.com/followthepattern/adapticc/api/graphql"
-	"github.com/followthepattern/adapticc/api/graphql/schema"
 	"github.com/followthepattern/adapticc/api/rest"
 	"github.com/followthepattern/adapticc/config"
 	"github.com/followthepattern/adapticc/container"
@@ -52,9 +51,7 @@ func NewMockHandler(ac accesscontrol.AccessControl, emailClient mail.Email, db *
 
 	ctrls := controllers.New(cont)
 
-	schemaDef, _ := schema.GetSchema(cfg.Server)
-
-	graphqlHandler := graphql.NewHandler(ctrls, schemaDef)
+	graphqlHandler := graphql.NewHandler(ctrls)
 
 	restHandler := rest.New(ctrls)
 

@@ -1,0 +1,22 @@
+stages:
+  - triggers
+
+frontend:
+  stage: triggers
+  trigger:
+    include: ${CI_PROJECT_DIR}/apps/frontend/.gitlab-ci.yml
+  # rules:
+  #   - changes:
+  #       - ${CI_PROJECT_DIR}/apps/frontend/*
+  only:
+    - tags
+
+backend:
+  stage: triggers
+  trigger:
+    include: ${CI_PROJECT_DIR}/apps/backend/.gitlab-ci.yml
+  # rules:
+  #   - changes:
+  #       - ${CI_PROJECT_DIR}/apps/backend/*
+  only:
+    - tags

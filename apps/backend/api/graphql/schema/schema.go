@@ -1,16 +1,8 @@
 package schema
 
 import (
-	"os"
-
-	"github.com/followthepattern/adapticc/config"
+	_ "embed"
 )
 
-func GetSchema(cfg config.Server) (string, error) {
-	content, err := os.ReadFile(cfg.GraphqlSchemaFilepath)
-	if err != nil {
-		return "", err
-	}
-
-	return string(content), nil
-}
+//go:embed schema.graph
+var Schema string

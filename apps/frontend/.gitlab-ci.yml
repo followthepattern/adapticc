@@ -1,0 +1,41 @@
+stages:
+  - build
+  - deploy
+
+build frontend:
+  image: node:lts-alpine
+  stage: build
+  variables:
+    CI_PROJECT_DIR_FRONTEND: ${CI_PROJECT_DIR}/apps/frontend
+
+  script:
+    - cd ${CI_PROJECT_DIR_FRONTEND}
+    - npm install
+    - npm run build
+
+  artifacts:
+    paths:
+      - ${CI_PROJECT_DIR_FRONTEND}/dist
+    expire_in: 1 hour
+  
+  only:
+    - tags
+
+deploy frontend:
+  stage: deploy
+  variables:
+    CI_PROJECT_DIR_FRONTEND: ${CI_PROJECT_DIR}/apps/frontend
+
+  tags:
+    - ftp
+    
+  script:
+    - aws s3 sync ${CI_PROJECT_DIR_FRONTEND}/dist s3://${AWS_S3_BUCKET}
+    - aws cloudfront create-invalidation --distribution-id ${DISTRIBUTION_ID} --paths "/*" > /dev/null
+    - aws cloudfront create-invalidation --distribution-id ${WWW_DISTRIBUTION_ID} --paths "/*" > /dev/null
+  
+  dependencies:
+    - build frontend
+  
+  only:
+    - tags

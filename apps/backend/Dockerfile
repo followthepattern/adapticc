@@ -1,8 +1,8 @@
 # base Golang image
-FROM golang:1.20.3-bullseye AS builder
+FROM golang:1.22 AS builder
 
 # Set the working directory
-WORKDIR /dev
+WORKDIR /build
 
 # Copy go.mod and go.sum files to the container
 COPY go.mod go.sum ./
@@ -17,28 +17,34 @@ COPY . .
 RUN CGO_ENABLED=0 go build -o app ./cmd/adapticc
 
 # Start with a minimal image to reduce the attack surface
-FROM alpine:3.17.3
+FROM alpine:3.19.1
 
 # Set the working directory
-WORKDIR /prod
+WORKDIR /out
+
+# Create sock directory for unix socket communication
+RUN mkdir /sock
+
+# Copy cerbos binary
+COPY --from=ghcr.io/cerbos/cerbos:0.34.0 /cerbos .
 
 # Copy the binary from the builder stage to the final image
-COPY --from=builder /dev/app .
+COPY --from=builder /build/app .
 
 # Create configs folder to configs
 RUN mkdir ./configs
 
-# Copy configs from builder
-COPY --from=builder /dev/configs/config.yaml.tmpl ./configs/config.yaml
+# Copy configs
+COPY ./configs/config.yaml.tmpl ./configs/config.yaml
 
-# Create templates folder to mailing and other templates
-RUN mkdir ./templates
+# Create policies folder to cerbos config and policies
+RUN mkdir /policies
 
-# Copy templates from the builder stage to the final image
-COPY --from=builder /dev/templates/guest_mail.tmpl ./templates
+# Copy cerbos config
+COPY ./policies /policies
 
 # Expose port 8080 for the application
 EXPOSE 8080
 
 # Set the command to run the binary
-CMD ["./app"]
+CMD ["sh", "-c", "./cerbos server --config=/policies/.cerbos.yaml & ./app"]

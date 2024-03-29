@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 
 services:
   db:
@@ -18,15 +18,15 @@ services:
   cerbos:
     image: ghcr.io/cerbos/cerbos:latest
     restart: unless-stopped
-    command: ["server", "--config=/data/.cerbos.yaml"]
+    command: ["server", "--config=/policies/.cerbos.yaml"]
     ports:
       - 3592:3592
     volumes:
-      - ./cerbos:/data:rw
-      # - shared-tmpfs:/sock
+      - ./policies:/policies:rw
+      - shared-volume:/sock
 
   backend:
-    image: golang:1.21
+    image: golang:1.22
     hostname: adapticc_backend
     container_name: adapticc_backend
     command: bash -c "go run ./cmd/adapticc"
@@ -38,4 +38,7 @@ services:
       - 8080:8080
     volumes:
       - ./:/backend:rw
-      # - shared-tmpfs:/sock
+      - shared-volume:/sock
+
+volumes:
+  shared-volume:
