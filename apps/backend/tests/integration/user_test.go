@@ -97,7 +97,7 @@ var _ = Describe("User queries", Ordered, func() {
 		var err error
 		ctx = context.Background()
 
-		client, err = dagger.Connect(ctx, dagger.WithLogOutput(os.Stderr))
+		client, err = dagger.Connect(ctx, dagger.WithLogOutput(os.Stdout))
 		Expect(err).To(BeNil())
 
 		backendDirectory := client.Host().Directory(backendAbsolutePath)
@@ -108,6 +108,10 @@ var _ = Describe("User queries", Ordered, func() {
 
 		outputPath := "out/"
 		builder = builder.WithExec([]string{"go", "build", "-o", outputPath, "./cmd/adapticc"})
+
+		out, err := builder.Stdout(ctx)
+		Expect(err).To(BeNil())
+		fmt.Println(out)
 
 		output := builder.Directory(outputPath)
 		_, err = output.Export(ctx, filepath.Join(backendAbsolutePath, outputPath))
@@ -124,15 +128,16 @@ var _ = Describe("User queries", Ordered, func() {
 			WithExposedPort(5432).
 			AsService()
 
-		cerbosDir := client.Host().Directory(filepath.Join(backendAbsolutePath, "cerbos"))
+		policiesDir := client.Host().Directory(filepath.Join(backendAbsolutePath, "policies"))
 
 		cerbos := client.Container().From(CerbosImage).
-			WithDirectory("/data", cerbosDir).
-			WithExec([]string{"server", "--config=/data/.cerbos.yaml"}).
+			WithDirectory("/policies", policiesDir).
+			WithExec([]string{"server", "--config=/policies/.cerbos.yaml", "--set=server.httpListenAddr=:3592"}).
 			WithExposedPort(3592).
 			AsService()
 
 		backend = client.Container().From(GolangImage).
+			WithEnvVariable("ADAPTICC_CERBOS_ADDRESS", "cerbos:3592").
 			WithServiceBinding("adapticc_db", database).
 			WithServiceBinding("cerbos", cerbos).
 			WithDirectory("/backend", backendDirectory).
