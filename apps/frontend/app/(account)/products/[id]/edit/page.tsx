@@ -106,13 +106,13 @@ export default function ProductEdit() {
                     </div>
                 </GridFields>
                 <SingleLayout.Footer className="justify-between">
+                    <div className="flex gap-x-2">
+                        <PrimaryButton onClick={onSave}>Save</PrimaryButton>
+                        <SecondaryButton onClick={onCancel}>Cancel</SecondaryButton>
+                    </div>
                     <ConfirmModal onConfirm={onDelete} title="Delete products" body={`Are you sure you want to delete ${data?.title}?`}>
                         Delete
                     </ConfirmModal>
-                    <div className="flex gap-x-2">
-                        <SecondaryButton onClick={onCancel}>Cancel</SecondaryButton>
-                        <PrimaryButton onClick={onSave}>Save</PrimaryButton>
-                    </div>
                 </SingleLayout.Footer>
             </form>
         </SingleLayout>

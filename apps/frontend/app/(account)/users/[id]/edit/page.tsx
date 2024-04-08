@@ -10,7 +10,6 @@ import SingleLayout from "@/app/(account)/components/singleView/layout";
 import GridFields from "@/app/(account)/components/singleView/gridFields/gridFields";
 import Label from "@/app/(account)/components/labels/label";
 import Input from "@/app/(account)/components/inputFields/input";
-import AlertButton from "@/app/(account)/components/buttons/alertButton";
 import SecondaryButton from "@/app/(account)/components/buttons/secondaryButton";
 import PrimaryButton from "@/app/(account)/components/buttons/primaryButton";
 import { Id, toast } from 'react-toastify';
@@ -119,13 +118,13 @@ export default function UserEdit() {
                     </div>
                 </GridFields>
                 <SingleLayout.Footer className="justify-between">
+                    <div className="flex gap-x-2">
+                        <PrimaryButton onClick={onSave}>Save</PrimaryButton>
+                        <SecondaryButton onClick={onCancel}>Cancel</SecondaryButton>
+                    </div>
                     <ConfirmModal onConfirm={onDelete} title="Delete users" body={`Are you sure you want to delete ${data?.firstName} ${data?.lastName}?`}>
                         Delete
                     </ConfirmModal>
-                    <div className="flex gap-x-2">
-                        <SecondaryButton onClick={onCancel}>Cancel</SecondaryButton>
-                        <PrimaryButton onClick={onSave}>Save</PrimaryButton>
-                    </div>
                 </SingleLayout.Footer>
             </form>
 

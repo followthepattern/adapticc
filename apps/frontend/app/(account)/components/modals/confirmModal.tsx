@@ -1,8 +1,9 @@
 import classNames from 'classnames';
 import React, { MouseEventHandler } from 'react';
 import { Button, Dialog, DialogTrigger, Modal, ModalOverlay } from 'react-aria-components';
-import AlertButton from '../buttons/alertButton';
+import TertiaryButton from '../buttons/tertiaryButton';
 import SecondaryButton from '../buttons/secondaryButton';
+import PrimaryButton from '../buttons/primaryButton';
 
 interface ConfirmModalProperties {
   className?: string
@@ -15,7 +16,7 @@ interface ConfirmModalProperties {
 export default function ConfirmModal(props: ConfirmModalProperties) {
   return (
     <DialogTrigger>
-      <Button className={classNames(props.className, AlertButton.ClassName)}>
+      <Button className={classNames(props.className, TertiaryButton.ClassName)}>
         {props.children}
       </Button>
 
@@ -47,18 +48,18 @@ export default function ConfirmModal(props: ConfirmModalProperties) {
                 <p className="mt-3 text-gray-700">
                   {props.body}
                 </p>
-                <div className="flex flex-col-reverse gap-2 mt-6 sm:flex-row sm:flex sm:justify-end">
+                <div className="flex flex-col-reverse gap-2 mt-6 sm:flex-row sm:flex sm:justify-start">
+                  <PrimaryButton
+                    onClick={props.onConfirm}
+                  >
+                    Delete
+                  </PrimaryButton>
                   <SecondaryButton
                     onClick={close}
 
                   >
                     Cancel
                   </SecondaryButton>
-                  <AlertButton
-                    onClick={props.onConfirm}
-                  >
-                    Delete
-                  </AlertButton>
                 </div>
               </>
             )}
