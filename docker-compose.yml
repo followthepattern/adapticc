@@ -30,3 +30,6 @@ services:
     working_dir: /usr/src/app
     volumes:
       - ${FRONTEND_APP_PATH}:/usr/src/app:rw
+
+volumes:
+  shared-volume:
