@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  frontend:
+    image: node:21.2.0
+    hostname: adapticc_frontend
+    container_name: adapticc_frontend
+    command: bash -c "npm install && npm start"
+    environment:
+      - NODE_ENV=development
+    ports:
+      - 3000:3000
+      - 9999:9999
+    user: node
+    working_dir: /usr/src/app
+    volumes:
+      - ./:/usr/src/app:rw
