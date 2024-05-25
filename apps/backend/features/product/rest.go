@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/followthepattern/adapticc/api"
+	"github.com/followthepattern/adapticc/api/httpresponses"
 )
 
 type ProductRest struct {
@@ -21,15 +21,15 @@ func (service ProductRest) Create(w http.ResponseWriter, r *http.Request) {
 	var product ProductModel
 	err := json.NewDecoder(r.Body).Decode(&product)
 	if err != nil {
-		api.BadRequest(w, api.FailedToDecodeRequestBody)
+		httpresponses.BadRequest(w, httpresponses.FailedToDecodeRequestBody)
 		return
 	}
 
 	err = service.product.Create(r.Context(), product)
 	if err != nil {
-		api.BadRequest(w, err.Error())
+		httpresponses.BadRequest(w, err.Error())
 		return
 	}
 
-	api.Created(w)
+	httpresponses.Created(w)
 }

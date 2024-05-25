@@ -3,7 +3,7 @@ package user
 import (
 	"net/http"
 
-	"github.com/followthepattern/adapticc/api"
+	"github.com/followthepattern/adapticc/api/httpresponses"
 	"github.com/go-chi/chi"
 )
 
@@ -21,9 +21,9 @@ func (rest UserRest) ActivateUser(w http.ResponseWriter, r *http.Request) {
 	userID := chi.URLParam(r, "userID")
 
 	if err := rest.user.ActivateUser(r.Context(), userID); err != nil {
-		api.BadRequest(w, err.Error())
+		httpresponses.BadRequest(w, err.Error())
 		return
 	}
 
-	api.Success(w)
+	httpresponses.Success(w)
 }

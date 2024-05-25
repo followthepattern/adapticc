@@ -1,4 +1,4 @@
-package api
+package httpresponses
 
 import (
 	"encoding/json"
