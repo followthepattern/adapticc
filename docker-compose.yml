@@ -1,25 +1,5 @@
 version: '3'
 
-services:
-  db:
-    extends:
-      file: ${BACKEND_APP_PATH}/docker-compose.yml
-      service: db
-
-  cerbos:
-    extends:
-      file: ${BACKEND_APP_PATH}/docker-compose.yml
-      service: cerbos
-
-  backend:
-    extends:
-      file: ${BACKEND_APP_PATH}/docker-compose.yml
-      service: backend
-
-  frontend:
-    extends:
-      file: ${FRONTEND_APP_PATH}/docker-compose.yml
-      service: frontend
-
-volumes:
-  shared-volume:
+include:
+  - apps/backend/docker-compose.yml
+  - apps/frontend/docker-compose.yml
