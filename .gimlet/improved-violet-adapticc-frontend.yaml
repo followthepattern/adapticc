@@ -13,7 +13,7 @@ values:
 
     npm install
     npm run build
-  builtAssets: apps/frontend/dist
+  builtAssets: dist
   gitCloneUrl: https://github.com/followthepattern/adapticc.git
   gitRepository: followthepattern/adapticc
   gitSha: '{{ .SHA }}'
