@@ -1,5 +1,5 @@
 app: adapticc-backend
-env: improved-violet
+env: major-bush
 namespace: default
 chart:
   repository: https://chart.onechart.dev
@@ -13,7 +13,7 @@ values:
     context: apps/backend
     dockerfile: apps/backend/Dockerfile
     registry: customRegistry
-    repository: registry.gimlet:30003/followthepatternodckgsbe/{{ .APP }}
+    repository: registry.gimlet:30003/followthepatternqhogxfdq/{{ .APP }}
     strategy: dockerfile
     tag: '{{ .SHA }}'
   imagePullSecrets:
@@ -22,7 +22,7 @@ values:
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt
       kubernetes.io/ingress.class: nginx
-    host: followthepattern-adapticc-backend-odckgsbe.gimlet.app
+    host: followthepattern-adapticc-backend-qhogxfdq.gimlet.app
     tlsEnabled: true
   resources:
     ignoreLimits: true
