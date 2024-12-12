@@ -1,0 +1,28 @@
+app: adapticc-backend
+env: major-bush
+namespace: default
+chart:
+  repository: https://chart.onechart.dev
+  name: onechart
+  version: 0.70.0
+values:
+  containerPort: 8080
+  gitRepository: followthepattern/adapticc
+  gitSha: '{{ .SHA }}'
+  image:
+    context: apps/backend
+    dockerfile: apps/backend/Dockerfile
+    registry: customRegistry
+    repository: registry.gimlet:30003/followthepatternqhogxfdq/{{ .APP }}
+    strategy: dockerfile
+    tag: '{{ .SHA }}'
+  imagePullSecrets:
+    - '{{ .APP }}-customregistry-pullsecret'
+  ingress:
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt
+      kubernetes.io/ingress.class: nginx
+    host: followthepattern-adapticc-backend-qhogxfdq.gimlet.app
+    tlsEnabled: true
+  resources:
+    ignoreLimits: true
